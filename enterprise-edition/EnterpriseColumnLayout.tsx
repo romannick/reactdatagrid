@@ -431,6 +431,13 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
       enableTreeRowReorderNestingChange,
     } = props;
 
+    if (!DRAG_INFO) {
+      this.clearDropInfo();
+      return;
+    }
+
+    let { dragIndex } = DRAG_INFO;
+
     if (
       dropIndex === -1 &&
       computedTreeEnabled &&
@@ -445,8 +452,6 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
       this.clearDropInfo();
       return;
     }
-
-    let { dragIndex } = DRAG_INFO;
 
     if (dropIndex === dragIndex) {
       this.clearDropInfo();
