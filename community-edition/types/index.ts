@@ -501,6 +501,7 @@ export type TypeDiff = {
 export type TypeConfig = {
   diff: TypeDiff;
   didDrag: boolean;
+  scope?: any;
 };
 
 export type RangeResultType = {

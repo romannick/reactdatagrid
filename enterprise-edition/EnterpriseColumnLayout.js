@@ -82,7 +82,9 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
         return (React.createElement(ScrollingRegion, { ref: this.scrollBottomRegionRef, dir: 1, onMouseEnter: (event) => this.onScrollingRegionMouseEnter(event, 1), onMouseLeave: this.onScrollingRegionMouseLeave }));
     };
     onScrollingRegionMouseEnter = (event, dir) => {
-        event.preventDefault();
+        if (event.cancelable) {
+            event.preventDefault();
+        }
         if (DRAG_INFO && DRAG_INFO.dragging) {
             scrolling = true;
             const props = this.lastComputedProps;

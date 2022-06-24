@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export default function once(fn, scope) {
-  var called;
-  var result;
+export default function once(fn?: any, scope?: any) {
+  var called: boolean;
+  var result: any;
 
   return function() {
     if (called) {
@@ -16,6 +16,6 @@ export default function once(fn, scope) {
 
     called = true;
 
-    return (result = fn.apply(scope || this, arguments));
+    return (result = fn && fn.apply(scope || this, arguments));
   };
 }

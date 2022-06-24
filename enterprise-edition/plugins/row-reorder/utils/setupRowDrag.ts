@@ -10,25 +10,28 @@ import DragHelper from '@inovua/reactdatagrid-community/packages/drag-helper';
 
 import { TypeDragHelper, TypeConfig } from '../../../types';
 
+type Event = (MouseEvent & TouchEvent) | any;
+
 const emptyFn = () => {};
 
-const setupRowDrag = (
-  event: MouseEvent,
-  region: any,
-  cfg: TypeDragHelper
-): void => {
+const setupRowDrag = (event: Event, region: any, cfg: TypeDragHelper): void => {
   const onDrag = cfg.onDrag || emptyFn;
   const onDrop = cfg.onDrop || emptyFn;
+
+  const mobile = !!(event.type === 'touchstart');
 
   DragHelper(event, {
     region,
     onDrag(event: MouseEvent, config: TypeConfig) {
-      event.preventDefault();
+      if (event.cancelable) {
+        event.preventDefault();
+      }
       onDrag(event, config);
     },
     onDrop(event: MouseEvent, config: TypeConfig) {
       onDrop(event, config);
     },
+    mobile,
   });
 };
 

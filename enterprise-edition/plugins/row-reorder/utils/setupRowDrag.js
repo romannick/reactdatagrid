@@ -9,15 +9,19 @@ const emptyFn = () => { };
 const setupRowDrag = (event, region, cfg) => {
     const onDrag = cfg.onDrag || emptyFn;
     const onDrop = cfg.onDrop || emptyFn;
+    const mobile = !!(event.type === 'touchstart');
     DragHelper(event, {
         region,
         onDrag(event, config) {
-            event.preventDefault();
+            if (event.cancelable) {
+                event.preventDefault();
+            }
             onDrag(event, config);
         },
         onDrop(event, config) {
             onDrop(event, config);
         },
+        mobile,
     });
 };
 export default setupRowDrag;

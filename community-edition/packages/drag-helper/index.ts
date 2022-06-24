@@ -5,34 +5,64 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import hasTouch from '../hasTouch';
-
 import Region from '../region-align';
 
 import once from './utils/once';
 import isMobile from '../isMobile';
 import { getGlobal } from '../../getGlobal';
+import { TypeConfig } from '../../types';
+
+type Event = MouseEvent & TouchEvent;
+
+type HelperConfig = {
+  mobile?: boolean;
+  onDrag: (event: Event, config: TypeConfig) => void;
+  onDrop: (event: Event, config: TypeConfig) => void;
+  region: any;
+  events?: { move: string; up: string };
+  constrainTo?: any;
+};
+
+type DragConfig = {
+  diff: { top: number; left: number };
+  dragRegion?: any;
+  didDrag?: boolean;
+};
+
+type HelperState = {
+  config: DragConfig;
+  initialRegion?: any;
+  dragRegion?: any;
+  constrainTo?: any;
+  initPageCoords?: { pageX: number; pageY: number };
+  didDrag?: boolean;
+};
 
 const globalObject = getGlobal();
 
-var Helper = function(config) {
+var Helper: any = function(
+  this: { config: HelperConfig },
+  config: HelperConfig
+) {
   this.config = config;
 };
 
-var EVENTS = {
-  move: isMobile ? 'touchmove' : 'mousemove',
-  up: isMobile ? 'touchend' : 'mouseup',
+const getEvents = (mobile: boolean) => {
+  return {
+    move: mobile ? 'touchmove' : 'mousemove',
+    up: mobile ? 'touchend' : 'mouseup',
+  };
 };
 
-function emptyFn() {}
+// function emptyFn() {}
 
-function getPageCoords(event) {
+function getPageCoords(event: Event, mobile: boolean) {
   var firstTouch;
 
   var pageX = event.pageX;
   var pageY = event.pageY;
 
-  if (isMobile && event.touches && (firstTouch = event.touches[0])) {
+  if (mobile && event.touches && (firstTouch = event.touches[0])) {
     pageX = firstTouch.pageX;
     pageY = firstTouch.pageY;
   }
@@ -50,45 +80,65 @@ Object.assign(Helper.prototype, {
    * @param  {Event} event
    * @return {[type]}       [description]
    */
-  initDrag: function(event) {
+  initDrag: function(
+    this: {
+      config: HelperConfig;
+      onDragInit: (event: Event) => void;
+      onDragStart: (event: Event) => void;
+    },
+    event: Event
+  ) {
     this.onDragInit(event);
 
-    var events = this.config.events || EVENTS;
+    let mobile = this.config.mobile;
+    if (mobile === undefined) {
+      mobile = isMobile;
+    }
 
-    var onDragStart = once(this.onDragStart, this);
-    var target = isMobile ? event.target : globalObject;
+    var events = this.config.events || getEvents(mobile);
 
-    var mouseUpListener = function(event) {
+    var onDragStart: any = once(this.onDragStart, this);
+    var target = mobile ? event.target : globalObject;
+
+    var mouseUpListener: any = function(this: any, event: Event) {
       this.onDrop(event);
 
-      target.removeEventListener(events.move, mouseMoveListener);
-      target.removeEventListener(events.up, mouseUpListener);
+      target && target.removeEventListener(events.move, mouseMoveListener);
+      target && target.removeEventListener(events.up, mouseUpListener);
     }.bind(this);
 
-    var mouseMoveListener = function(event) {
+    var mouseMoveListener: any = function(this: any, event: Event) {
       /**
        * Make sure the left mouse button is pressed
        */
-      if (!isMobile && event.which !== 1) {
+      if (!mobile && event.which !== 1) {
         mouseUpListener(event);
         return;
       }
 
-      onDragStart(event);
-      this.onDrag(event);
+      onDragStart(event, mobile);
+      this.onDrag(event, mobile);
     }.bind(this);
 
-    target.addEventListener(events.move, mouseMoveListener, false);
-    target.addEventListener(events.up, mouseUpListener);
+    target && target.addEventListener(events.move, mouseMoveListener, false);
+    target && target.addEventListener(events.up, mouseUpListener);
   },
 
-  onDragInit: function(event) {
-    var config = {
+  onDragInit: function(
+    this: {
+      state: HelperState;
+      config: HelperConfig;
+      callConfig: (fnName: string, event: Event) => void;
+    },
+    event: Event
+  ) {
+    var config: DragConfig = {
       diff: {
         left: 0,
         top: 0,
       },
     };
+
     this.state = {
       config: config,
     };
@@ -108,8 +158,15 @@ Object.assign(Helper.prototype, {
    * Called when the first mousemove event occurs after drag is initialized
    * @param  {Event} event
    */
-  onDragStart: function(event) {
-    this.state.initPageCoords = getPageCoords(event);
+  onDragStart: function(
+    this: {
+      state: HelperState;
+      callConfig: (fnName: string, event: Event) => void;
+    },
+    event: Event,
+    mobile: boolean
+  ) {
+    this.state.initPageCoords = getPageCoords(event, mobile);
 
     this.state.didDrag = this.state.config.didDrag = true;
     this.callConfig('onDragStart', event);
@@ -120,11 +177,11 @@ Object.assign(Helper.prototype, {
    *
    * @param  {Event} event
    */
-  onDrag: function(event) {
+  onDrag: function(this: any, event: Event, mobile: boolean): void {
     var config = this.state.config;
 
     var initPageCoords = this.state.initPageCoords;
-    var eventCoords = getPageCoords(event);
+    var eventCoords = getPageCoords(event, mobile);
 
     var diff = (config.diff = {
       left: eventCoords.pageX - initPageCoords.pageX,
@@ -142,7 +199,7 @@ Object.assign(Helper.prototype, {
 
       if (this.state.constrainTo) {
         //and finally constrain it if it's the case
-        var boolConstrained = dragRegion.constrainTo(this.state.constrainTo);
+        // var boolConstrained = dragRegion.constrainTo(this.state.constrainTo);
 
         diff.left = dragRegion.left - this.state.initialRegion.left;
         diff.top = dragRegion.top - this.state.initialRegion.top;
@@ -159,13 +216,13 @@ Object.assign(Helper.prototype, {
    *
    * @param  {Event} event
    */
-  onDrop: function(event) {
+  onDrop: function(this: any, event: Event) {
     this.callConfig('onDrop', event);
 
     this.state = null;
   },
 
-  callConfig: function(fnName, event) {
+  callConfig: function(this: any, fnName: string, event: Event) {
     var config = this.state.config;
     var args = [event, config];
 
@@ -177,7 +234,7 @@ Object.assign(Helper.prototype, {
   },
 });
 
-export default function(event, config) {
+export default function(event: Event, config: any) {
   if (config.scope) {
     var skippedKeys = {
       scope: 1,
@@ -185,8 +242,8 @@ export default function(event, config) {
       constrainTo: 1,
     };
 
-    Object.keys(config).forEach(function(key) {
-      var value = config[key];
+    Object.keys(config).forEach(function(key: string) {
+      var value: any = config[key];
 
       if (key in skippedKeys) {
         return;
@@ -197,6 +254,7 @@ export default function(event, config) {
       }
     });
   }
+
   var helper = new Helper(config);
 
   helper.initDrag(event);

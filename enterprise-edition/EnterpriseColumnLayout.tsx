@@ -45,6 +45,8 @@ const raf = globalObject.requestAnimationFrame;
 const identity = (a: any) => a;
 let iterate = true;
 
+type Event = MouseEvent & TouchEvent;
+
 export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGridColumnLayout {
   private dropIndex: number | undefined;
   private dragBoxInitialHeight: number = 0;
@@ -159,7 +161,9 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
   };
 
   onScrollingRegionMouseEnter = (event: any, dir?: -1 | 1) => {
-    event.preventDefault();
+    if (event.cancelable) {
+      event.preventDefault();
+    }
     if (DRAG_INFO && DRAG_INFO.dragging) {
       scrolling = true;
 
@@ -220,7 +224,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
   };
 
   onDragRowMouseDownHandle = (
-    ev: MouseEvent | any,
+    ev: Event | any,
     index: number,
     cellNode: any
   ) => {
@@ -251,7 +255,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
   };
 
   setupDrag = (
-    event: MouseEvent,
+    event: Event,
     {
       dragIndex,
       contentRegion,
@@ -319,14 +323,14 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
     this.setReorderArrowAt(dragIndex, ranges, 0);
 
     setupRowDrag(event, dragBoxInitialRegion, {
-      onDrag: (event: MouseEvent, config: TypeConfig) =>
+      onDrag: (event: Event, config: TypeConfig) =>
         this.onRowDrag(event, config, props),
-      onDrop: (event: MouseEvent, config: TypeConfig) =>
+      onDrop: (event: Event, config: TypeConfig) =>
         this.onRowDrop(event, config, props),
     });
   };
 
-  onRowDrag = (_event: MouseEvent, config: TypeConfig, props: any) => {
+  onRowDrag = (_event: Event, config: TypeConfig, props: any) => {
     if (!DRAG_INFO) {
       return;
     }
@@ -420,7 +424,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
     }
   };
 
-  onRowDrop = (_event: MouseEvent, _config: TypeConfig, props: any) => {
+  onRowDrop = (_event: Event, _config: TypeConfig, props: any) => {
     const { dropIndex } = this;
     const {
       onRowReorder,
@@ -1195,7 +1199,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
   };
 
   onRowReorderValidation = (
-    ev: MouseEvent | any,
+    ev: Event | any,
     props: any,
     dragIndex: number
   ): boolean => {
