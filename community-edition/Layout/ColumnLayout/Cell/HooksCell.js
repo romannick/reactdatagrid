@@ -69,16 +69,17 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
     const state = useInitialProps ? { ...theState, props } : theState;
     const latestPropsRef = useRef(state.props);
     latestPropsRef.current = state.props;
-    // console.log({
-    //   propsRowIndex: props.rowIndex,
-    //   stateRowIndex: state.props?.rowIndex,
-    //   useInitialProps,
-    //   propsId: props.id,
-    //   stateId: theState.props?.id,
-    // });
     const getProps = useCallback(() => {
         return latestPropsRef.current;
     }, []);
+    // console.log({
+    // stateId: getProps().id,
+    // propsRowIndex: props.rowIndex,
+    // stateRowIndex: state.props?.rowIndex,
+    // useInitialProps,
+    // propsId: props.id,
+    // stateId: theState.props?.id,
+    // });
     const updateState = useCallback((newState, callback) => {
         callbackRef.current = callback;
         setState(newState);
@@ -382,6 +383,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         }
         return Object.assign({}, domProps, specificDomProps);
     }, [
+        getProps,
         props.domProps,
         props.headerCell,
         props.headerDOMProps,

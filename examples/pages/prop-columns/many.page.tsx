@@ -137,7 +137,7 @@ class App extends React.Component<any, any> {
           columns={this.state.columns}
           dataSource={this.state.dataSource}
           virtualizeColumnsThreshold={3}
-          virtualizeColumns
+          // virtualizeColumns={false}
           rtl={this.state.rtl}
           // virtualizeColumnsThreshold={10}
         />

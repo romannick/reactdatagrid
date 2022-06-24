@@ -5,7 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export default (array, value, low = 0, high = array.length - 1) => {
+export default (
+  array: number[],
+  value: number,
+  low = 0,
+  high = array.length - 1
+) => {
   let mid;
   let midValue;
 
