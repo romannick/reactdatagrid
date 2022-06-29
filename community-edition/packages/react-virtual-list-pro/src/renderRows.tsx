@@ -29,7 +29,7 @@ export default ({
   from = 0,
   to = count,
   virtualized,
-}) => {
+}: any) => {
   const rows = [];
   for (let i = from; i < to; i++) {
     rows.push(

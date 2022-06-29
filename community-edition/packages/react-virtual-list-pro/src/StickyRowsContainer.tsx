@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect, useState, CSSProperties } from 'react';
 import { sticky as stickyString } from '../../../packages/hasSticky';
 
 import { TypeStickyRowInfo } from './TypeStickyRowInfo';
@@ -15,7 +15,7 @@ export const StickyRowsContainerClassName =
   'InovuaReactDataGrid__virtual-list-sticky-rows-container';
 
 type TypeProps = {
-  handle: (...args: any[]) => void;
+  handle: any;
   rowHeightManager: RowHeightManager;
   rtl: boolean;
   stickyOffset: number;
@@ -26,7 +26,7 @@ const StickyRowsContainer = (props: TypeProps) => {
   const [content, setContent] = useState<JSX.Element | null>(null);
 
   const currentHeightRef = useRef<number>(0);
-  const domNodeRef = useRef<HTMLElement>(null);
+  const domNodeRef = useRef<any>(null);
 
   const nonEmptyRowElementsRefRef = useRef<any>(null);
   const rowElementsRef = useRef<any>(null);
@@ -65,7 +65,7 @@ const StickyRowsContainer = (props: TypeProps) => {
       return result;
     });
 
-    rowsToTranslate.forEach((rowToTranslate, i) => {
+    rowsToTranslate.forEach((_rowToTranslate, i) => {
       const rowToTranslateIndex = rowsToTranslateIndexes[i];
       const domNode = domNodeRef.current;
       const rowNode = domNode!.children[rowToTranslateIndex];
@@ -159,18 +159,20 @@ const StickyRowsContainer = (props: TypeProps) => {
     <div
       className={StickyRowsContainerClassName}
       ref={domNodeRef}
-      style={{
-        position: stickyString,
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 0,
-        zIndex: 1,
-        contain: 'layout',
-        [props.rtl ? 'transform' : '']: props.rtl
-          ? `translate3d(${props.stickyOffset}px, 0px, 0px)`
-          : '',
-      }}
+      style={
+        {
+          position: stickyString,
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 0,
+          zIndex: 1,
+          contain: 'layout',
+          [props.rtl ? 'transform' : '']: props.rtl
+            ? `translate3d(${props.stickyOffset}px, 0px, 0px)`
+            : '',
+        } as CSSProperties
+      }
     >
       {content}
     </div>

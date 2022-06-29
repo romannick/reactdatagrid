@@ -337,9 +337,9 @@ export default class InovuaVirtualListRow extends React.Component {
     getIndex() {
         return this.index === undefined ? this.props.index : this.index;
     }
-    getRowSpan() {
+    getRowSpan = () => {
         return this.rowSpan;
-    }
+    };
     getInfo(updateHeight) {
         if (this.mounted === false) {
             return this.info;

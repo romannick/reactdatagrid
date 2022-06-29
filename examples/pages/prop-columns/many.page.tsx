@@ -66,7 +66,7 @@ class App extends React.Component<any, any> {
   }
 
   componentDidMount(): void {
-    this.loadDataSource(10);
+    this.loadDataSource(100);
   }
 
   loadDataSource = n => {

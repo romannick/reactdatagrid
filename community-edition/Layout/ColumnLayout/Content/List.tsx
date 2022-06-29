@@ -52,13 +52,13 @@ export default class InovuaDataGridList extends Component<ListProps> {
   scrollingDirection?: 'horizontal' | 'vertical' | 'none';
   lastScrollTimestamp: number = 0;
   scrollLeft: any;
+  virtualListRef: any;
 
   constructor(props) {
     super(props);
 
-    this.refVirtualList = vl => {
-      this.virtualList = vl;
-    };
+    this.virtualListRef = createRef();
+
     this._scrollLeft = 0;
     this._scrollTop = 0;
 
@@ -90,7 +90,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
   }
 
   isRowFullyVisible = index => {
-    return this.virtualList.isRowVisible(index);
+    return this.getVirtualList().isRowVisible(index);
   };
 
   computeRows = (
@@ -131,6 +131,10 @@ export default class InovuaDataGridList extends Component<ListProps> {
       },
       props
     );
+  };
+
+  getVirtualList = () => {
+    return this.virtualListRef.current;
   };
 
   tryRowEdit = (nextEditRowIndex, dir, columnIndex, isEnterNavigation) => {
@@ -231,12 +235,14 @@ export default class InovuaDataGridList extends Component<ListProps> {
       // we do some short-circuiting around the virtual list
       // so only the rendeRow for the specific row gets called
       // so only the editing row is being re-rendered by the update
-      this.virtualList.getRows().forEach(r => {
-        const row = r.getInstance();
-        if (row && row.props.rowIndex === rowIndex) {
-          r.update();
-        }
-      });
+      this.getVirtualList()
+        .getRows()
+        .forEach(r => {
+          const row = r.getInstance();
+          if (row && row.props.rowIndex === rowIndex) {
+            r.update();
+          }
+        });
       return;
     }
 
@@ -344,7 +350,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
         useTransformRowPosition={this.props.useTransformRowPosition}
         useTransformPosition={this.props.useTransformPosition}
         shouldComponentUpdate={shouldUpdate}
-        ref={this.refVirtualList}
+        ref={this.virtualListRef}
         count={thisProps.data.length || 0}
         pureRows={pureRows}
         renderRow={renderRow}
@@ -661,7 +667,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
     if (columnRenderStartIndex === this.columnRenderStartIndex && !force) {
       return;
     }
-    if (!this.virtualList) {
+    if (!this.getVirtualList()) {
       return;
     }
 
@@ -670,7 +676,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
     }
     this.columnRenderStartIndex = columnRenderStartIndex;
 
-    const rows = this.virtualList.getRows();
+    const rows = this.getVirtualList().getRows();
 
     rows.forEach(row => {
       const rowInstance = row.getInstance();
@@ -683,14 +689,16 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   getRows = () => {
-    if (!this.virtualList) {
+    if (!this.getVirtualList()) {
       return [];
     }
-    return this.virtualList.getRows().map(row => row.getInstance());
+    return this.getVirtualList()
+      .getRows()
+      .map(row => row.getInstance());
   };
 
   getScrollLeftMax() {
-    return this.virtualList ? this.virtualList.scrollLeftMax : 0;
+    return this.getVirtualList() ? this.getVirtualList().scrollLeftMax : 0;
   }
 
   onScrollbarsChange = scrollbars => {
@@ -704,7 +712,9 @@ export default class InovuaDataGridList extends Component<ListProps> {
     }
 
     if (this.props.onScrollbarsChange) {
-      this.props.onScrollbarsChange(scrollbars);
+      raf(() => {
+        this.props.onScrollbarsChange(scrollbars);
+      });
     }
     if (this.props.scrollProps && this.props.scrollProps.onScrollbarsChange) {
       this.props.scrollProps.onScrollbarsChange(scrollbars);
@@ -797,7 +807,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   getDOMNode = () => {
-    return this.node || (this.node = this.virtualList.getDOMNode());
+    return this.node || (this.node = this.getVirtualList().getDOMNode());
   };
 
   renderRow = args => {
@@ -820,7 +830,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   getVisibleCount = () => {
-    return this.virtualList ? this.virtualList.getVisibleCount() : -1;
+    return this.getVirtualList() ? this.getVirtualList().getVisibleCount() : -1;
   };
 }
 
