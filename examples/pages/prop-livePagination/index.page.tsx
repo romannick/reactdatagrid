@@ -34,7 +34,7 @@ const defaultFilterValue = [
 const App = () => {
   const [count, setCount] = useState<any>(800);
 
-  const dataSource = ({ skip, sortInfo, limit, filterValue }) =>
+  const dataSource = ({ skip, sortInfo, limit, filterValue }: any) =>
     fetch(
       DATASET_URL +
         '/contacts?skip=' +
@@ -68,6 +68,7 @@ const App = () => {
         theme="default-dark"
         style={gridStyle}
         defaultLimit={15}
+        scrollThreshold={'70%'}
         columns={columns}
         handle={x => {
           (globalObject as any).x = x;
