@@ -385,8 +385,6 @@ const GridFactory = (
       const onChange = () => {
         const vl = getVirtualList();
 
-        console.log('factory', vl.getDOMNode());
-
         const computedStyle =
           vl && globalObject.getComputedStyle(vl.getDOMNode());
         if (!computedStyle) {

@@ -240,7 +240,6 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
         const onScrollbarsChange = (scrollbars) => {
             const onChange = () => {
                 const vl = getVirtualList();
-                console.log('factory', vl.getDOMNode());
                 const computedStyle = vl && globalObject.getComputedStyle(vl.getDOMNode());
                 if (!computedStyle) {
                     return;
