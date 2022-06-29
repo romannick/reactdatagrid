@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { CSSProperties, RefObject } from 'react';
+import React, { CSSProperties } from 'react';
 
 import NumericInput from '../packages/NumericInput';
 import debounce from 'lodash.debounce';
@@ -46,7 +46,7 @@ class NumberFilter extends React.Component<
   NumberFilterProps,
   NumberFilterState
 > {
-  private input: any;
+  input: any;
   private refInput: any;
 
   constructor(props: NumberFilterProps) {
@@ -89,7 +89,7 @@ class NumberFilter extends React.Component<
     }
   };
 
-  onChange(value: string) {
+  onChange(value: string | number) {
     if (value === this.state.value) {
       return;
     }
@@ -120,13 +120,13 @@ class NumberFilter extends React.Component<
     this.setValue(newValue);
   }
 
-  setValue(value?: string | null) {
+  setValue(value?: string | number | null) {
     this.setState({
       value,
     });
   }
 
-  onValueChange(value?: string | null) {
+  onValueChange(value?: string | number | null) {
     this.props.onChange &&
       this.props.onChange({
         ...this.props.filterValue,
