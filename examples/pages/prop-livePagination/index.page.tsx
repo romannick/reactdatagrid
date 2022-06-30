@@ -14,7 +14,7 @@ const globalObject = getGlobal();
 
 const DATASET_URL = 'https://demos.reactdatagrid.io/api/v1/';
 
-const gridStyle = { minHeight: '70vh', margin: 20 };
+const gridStyle = { minHeight: '70vh' };
 const columns = [
   { name: 'id', type: 'number', maxWidth: 60 },
   { name: 'lastName', header: 'Name', defaultFlex: 2 },
@@ -67,8 +67,8 @@ const App = () => {
         idProperty="id"
         theme="default-dark"
         style={gridStyle}
-        defaultLimit={15}
-        scrollThreshold={'70%'}
+        defaultLimit={40}
+        scrollThreshold={'50%'}
         columns={columns}
         handle={x => {
           (globalObject as any).x = x;
