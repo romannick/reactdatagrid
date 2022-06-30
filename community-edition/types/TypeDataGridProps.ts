@@ -1353,7 +1353,7 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ) => TypeColumns;
   dataPromiseRef: MutableRefObject<Promise<any> | null>;
   hasNextPage: () => boolean;
-  gotoNextPage: () => boolean;
+  gotoNextPage: ({ append }: { append: boolean }) => boolean;
   computedHasColSpan: boolean;
   updateMainMenuPosition?: (alignTo: any) => void;
   isInEdit?: any;

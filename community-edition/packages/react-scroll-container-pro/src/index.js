@@ -655,7 +655,7 @@ export default class InovuaScrollContainer extends Component {
     }
     computeScrollWithThreshold = (scrollTop, scrollThreshold, scrollMaxDelta) => {
         const scrollPercent = (threshold) => {
-            threshold = threshold < 0.5 ? 0.5 : threshold;
+            threshold = threshold < 0.4 ? 0.4 : threshold;
             threshold = threshold > 1 ? 1 : threshold;
             const scrollMax = scrollMaxDelta
                 ? this.scrollTopMax - scrollMaxDelta
