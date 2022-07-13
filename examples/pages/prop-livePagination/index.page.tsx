@@ -14,7 +14,7 @@ const globalObject = getGlobal();
 
 const DATASET_URL = 'https://demos.reactdatagrid.io/api/v1/';
 
-const gridStyle = { minHeight: '70vh', margin: 20 };
+const gridStyle = { minHeight: '70vh' };
 const columns = [
   { name: 'id', type: 'number', maxWidth: 60 },
   { name: 'lastName', header: 'Name', defaultFlex: 2 },
@@ -34,7 +34,7 @@ const defaultFilterValue = [
 const App = () => {
   const [count, setCount] = useState<any>(800);
 
-  const dataSource = ({ skip, sortInfo, limit, filterValue }) =>
+  const dataSource = ({ skip, sortInfo, limit, filterValue }: any) =>
     fetch(
       DATASET_URL +
         '/contacts?skip=' +
@@ -67,7 +67,8 @@ const App = () => {
         idProperty="id"
         theme="default-dark"
         style={gridStyle}
-        defaultLimit={15}
+        defaultLimit={40}
+        scrollThreshold={'50%'}
         columns={columns}
         handle={x => {
           (globalObject as any).x = x;

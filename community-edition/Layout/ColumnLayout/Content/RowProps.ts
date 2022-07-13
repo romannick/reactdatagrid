@@ -241,6 +241,7 @@ export type RowProps = {
   renderRowDetailsCollapsedIcon?: () => void;
   renderGroupCollapseTool?: TypeGroupTool;
   renderGroupExpandTool?: TypeGroupTool;
+  memorizedScrollLeft?: number;
 };
 
 export type EnhancedRowProps = RowProps & {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { Component } from 'react';
+import React, { Component, createRef, RefObject } from 'react';
 import PropTypes from 'prop-types';
 
 import assignDefined from '../../../packages/assign-defined';
@@ -51,6 +51,8 @@ type ListProps = {
 export default class InovuaDataGridList extends Component<ListProps> {
   scrollingDirection?: 'horizontal' | 'vertical' | 'none';
   lastScrollTimestamp: number = 0;
+  scrollLeft: any;
+
   constructor(props) {
     super(props);
 
@@ -67,6 +69,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
 
     this.rows = [];
     this.scrollbars = {};
+    this.scrollLeft = createRef();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -124,6 +127,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
         editRowIndex: this.editRowIndex,
         editColumnIndex: this.editColumnIndex,
         editColumnId: this.editColumnId,
+        memorizedScrollLeft: this.scrollLeft.current,
       },
       props
     );
@@ -240,6 +244,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   onScrollHorizontal = (scrollLeft, _, __, scrollLeftMax) => {
+    this.scrollLeft.current = scrollLeft;
     this.onContainerScrollHorizontal(scrollLeft, undefined, scrollLeftMax);
   };
 

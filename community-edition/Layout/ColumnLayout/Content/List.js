@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import assignDefined from '../../../packages/assign-defined';
 import VirtualList, { propTypes as virtualListPropTypes, getScrollbarWidth, } from '../../../packages/react-virtual-list-pro/src';
@@ -30,6 +30,7 @@ const VirtualListClassName = 'InovuaReactDataGrid__virtual-list';
 export default class InovuaDataGridList extends Component {
     scrollingDirection;
     lastScrollTimestamp = 0;
+    scrollLeft;
     constructor(props) {
         super(props);
         this.refVirtualList = vl => {
@@ -42,6 +43,7 @@ export default class InovuaDataGridList extends Component {
         this.state = { columnRenderCount: 0 };
         this.rows = [];
         this.scrollbars = {};
+        this.scrollLeft = createRef();
     }
     shouldComponentUpdate(nextProps, nextState) {
         if (nextProps.shouldComponentUpdate) {
@@ -80,6 +82,7 @@ export default class InovuaDataGridList extends Component {
             editRowIndex: this.editRowIndex,
             editColumnIndex: this.editColumnIndex,
             editColumnId: this.editColumnId,
+            memorizedScrollLeft: this.scrollLeft.current,
         }, props);
     };
     tryRowEdit = (nextEditRowIndex, dir, columnIndex, isEnterNavigation) => {
@@ -168,6 +171,7 @@ export default class InovuaDataGridList extends Component {
         this.forceUpdate();
     };
     onScrollHorizontal = (scrollLeft, _, __, scrollLeftMax) => {
+        this.scrollLeft.current = scrollLeft;
         this.onContainerScrollHorizontal(scrollLeft, undefined, scrollLeftMax);
     };
     renderRowContainer = props => {

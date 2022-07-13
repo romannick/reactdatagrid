@@ -154,6 +154,7 @@ export type EnumRowDetailsWidth =
 type TypeGridPublicAPI = any;
 
 type TypeDataGridPropsNoI18n = {
+  scrollThreshold?: number | string;
   rowContextMenuAlignPositions?: string[];
   rowContextMenuPosition?: 'fixed' | 'absolute';
   filteredRowsCount?: (filteredRows: number) => void;
@@ -708,9 +709,18 @@ type TypeDataGridPropsNoI18n = {
     updatedTreeData: any[];
   }) => void;
   enableColumnAutosize?: boolean;
+  skipHeaderOnAutoSize?: boolean;
+  setColumnsSizesAuto?: ({
+    columnIds,
+    skipHeader,
+  }: {
+    columnIds?: string[];
+    skipHeader?: boolean;
+  }) => void;
+  setColumnSizesToFit?: () => void;
+  setColumnSizeAuto?: (id: string, skipHeader?: boolean) => void;
   getRows?: () => void;
   getHeader?: () => void;
-  skipHeaderOnAutoSize?: boolean;
   enableColumnHover?: boolean;
   viewportSize?: TypeSize;
   columnHoverClassName?: string;
@@ -1352,7 +1362,7 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ) => TypeColumns;
   dataPromiseRef: MutableRefObject<Promise<any> | null>;
   hasNextPage: () => boolean;
-  gotoNextPage: () => boolean;
+  gotoNextPage: ({ append }: { append: boolean }) => boolean;
   computedHasColSpan: boolean;
   updateMainMenuPosition?: (alignTo: any) => void;
   isInEdit?: any;

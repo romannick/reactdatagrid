@@ -11,6 +11,7 @@ export default (props, computedProps) => {
     const scrollProps = {
         scrollMaxDelta: SCROLLBAR_WIDTH ? 1 : 1,
         //, it was 0 when !SCROLLBAR_WIDTH, but with some zoom levels it didn't work as chrome fails calculating properly due to float rounding issues
+        scrollThreshold: computedProps.scrollThreshold,
         scrollDebounceDelay: 1,
         // that's why we also had to add scrollDebounceDelay to be 1
         // in order not to load multiple pages on livepagination scrolltobottom reached

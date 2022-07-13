@@ -82,7 +82,9 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
         return (React.createElement(ScrollingRegion, { ref: this.scrollBottomRegionRef, dir: 1, onMouseEnter: (event) => this.onScrollingRegionMouseEnter(event, 1), onMouseLeave: this.onScrollingRegionMouseLeave }));
     };
     onScrollingRegionMouseEnter = (event, dir) => {
-        event.preventDefault();
+        if (event.cancelable) {
+            event.preventDefault();
+        }
         if (DRAG_INFO && DRAG_INFO.dragging) {
             scrolling = true;
             const props = this.lastComputedProps;
@@ -248,6 +250,11 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
     onRowDrop = (_event, _config, props) => {
         const { dropIndex } = this;
         const { onRowReorder, setActiveIndex, computedGroupBy, computedTreeEnabled, generateIdFromPath, enableTreeRowReorderNestingChange, } = props;
+        if (!DRAG_INFO) {
+            this.clearDropInfo();
+            return;
+        }
+        let { dragIndex } = DRAG_INFO;
         if (dropIndex === -1 &&
             computedTreeEnabled &&
             enableTreeRowReorderNestingChange) {
@@ -259,7 +266,6 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
             this.clearDropInfo();
             return;
         }
-        let { dragIndex } = DRAG_INFO;
         if (dropIndex === dragIndex) {
             this.clearDropInfo();
             return;

@@ -12,6 +12,6 @@ export default function once(fn, scope) {
             return result;
         }
         called = true;
-        return (result = fn.apply(scope || this, arguments));
+        return (result = fn && fn.apply(scope || this, arguments));
     };
 }

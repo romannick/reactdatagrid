@@ -23,10 +23,12 @@ export { TypeGroupBy, TypeGroupTool } from './TypeGroupBy';
 export { TypeSize } from './TypeSize';
 export { TypeDataSource } from './TypeDataSource';
 export {
+  TypeFilter,
   TypeFilterValue,
   TypeSingleFilterValue,
   TypeFilterType,
   TypeFilterTypes,
+  TypeFnParam,
   TypeFilterOperator,
   TypeFilterParam,
 } from './TypeFilterValue';
@@ -501,6 +503,7 @@ export type TypeDiff = {
 export type TypeConfig = {
   diff: TypeDiff;
   didDrag: boolean;
+  scope?: any;
 };
 
 export type RangeResultType = {

@@ -653,6 +653,39 @@ export default class InovuaScrollContainer extends Component {
     hasHorizontalScrollbar() {
         return this.hasScrollbar(HORIZONTAL);
     }
+    computeScrollWithThreshold = (scrollTop, scrollThreshold, scrollMaxDelta) => {
+        const scrollPercent = (threshold) => {
+            threshold = threshold < 0.4 ? 0.4 : threshold;
+            threshold = threshold > 1 ? 1 : threshold;
+            const scrollMax = scrollMaxDelta
+                ? this.scrollTopMax - scrollMaxDelta
+                : this.scrollTopMax;
+            const percent = scrollTop / scrollMax;
+            if (percent >= threshold) {
+                return true;
+            }
+            return false;
+        };
+        if (typeof scrollThreshold === 'number') {
+            return scrollPercent(scrollThreshold);
+        }
+        if (typeof scrollThreshold === 'string') {
+            if (scrollThreshold.match(/^(\d*(\.\d+)?)%$/)) {
+                const threshold = parseFloat(scrollThreshold) / 100;
+                return scrollPercent(threshold);
+            }
+            if (scrollThreshold.match(/^(\d*(\.\d+)?)px$/)) {
+                const scrollMax = scrollMaxDelta
+                    ? this.scrollTopMax - scrollMaxDelta
+                    : this.scrollTopMax;
+                const threshold = parseFloat(scrollThreshold);
+                if (scrollTop >= scrollMax - threshold) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
     onScroll(event) {
         const eventTarget = event.target;
         if (this.props.onScroll) {
@@ -665,7 +698,7 @@ export default class InovuaScrollContainer extends Component {
     }
     onScrollDebounce(eventTarget) {
         const { props } = this;
-        const { rafOnScroll, cancelPrevScrollRaf, avoidScrollTopBrowserLayout, scrollMaxDelta, } = props;
+        const { rafOnScroll, cancelPrevScrollRaf, avoidScrollTopBrowserLayout, scrollMaxDelta, scrollThreshold, } = props;
         const rafFn = rafOnScroll ? raf : callFn;
         if (this.scrollRafId && rafOnScroll && cancelPrevScrollRaf) {
             globalObject.cancelAnimationFrame(this.scrollRafId);
@@ -729,11 +762,18 @@ export default class InovuaScrollContainer extends Component {
                 if (props.onContainerScrollVerticalMin && scrollTop == 0) {
                     props.onContainerScrollVerticalMin(0, eventTarget);
                 }
-                if (props.onContainerScrollVerticalMax &&
-                    (scrollMaxDelta
+                if (props.onContainerScrollVerticalMax) {
+                    if (scrollThreshold) {
+                        const reachScrollMax = this.computeScrollWithThreshold(scrollTop, scrollThreshold, scrollMaxDelta);
+                        if (reachScrollMax) {
+                            props.onContainerScrollVerticalMax(scrollTop);
+                        }
+                    }
+                    else if (scrollMaxDelta
                         ? scrollTop >= this.scrollTopMax - scrollMaxDelta
-                        : scrollTop == this.scrollTopMax)) {
-                    props.onContainerScrollVerticalMax(scrollTop);
+                        : scrollTop == this.scrollTopMax) {
+                        props.onContainerScrollVerticalMax(scrollTop);
+                    }
                 }
             }
             let scrollLeftChange = scrollLeft != prevScrollLeft;
@@ -994,6 +1034,7 @@ const propTypes = {
     viewStyle: PropTypes.shape({}),
     wrapperStyle: PropTypes.shape({}),
     ResizeObserver: PropTypes.func,
+    scrollThreshold: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 InovuaScrollContainer.propTypes = propTypes;
 export { propTypes, cleanProps, smoothScrollTo, scrollPage, getScrollbarWidth, isMobile, };

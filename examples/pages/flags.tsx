@@ -5,7 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const flags = {
+import { ReactElement } from 'react';
+
+export type FlagsType = {
+  ca: ReactElement;
+  uk: ReactElement;
+  usa: ReactElement;
+};
+
+const flags: FlagsType = {
   ca: (
     <div
       style={{

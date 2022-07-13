@@ -8,7 +8,7 @@ import React from 'react';
 import Row from './Row';
 import getRowSpans from './getRowSpans';
 const emptyObject = Object.freeze ? Object.freeze({}) : {};
-const renderRows = ({ from, to, empty, renderIndex, editRowIndex, editValue, editColumnIndex, editColumnId, setRowSpan, sticky, rowHeight, tryNextRowEdit, onEditStop, onEditStart, onEditValueChange, scrollLeft, columnRenderCount, columnRenderStartIndex, }, { 
+const renderRows = ({ from, to, empty, renderIndex, editRowIndex, editValue, editColumnIndex, editColumnId, setRowSpan, sticky, rowHeight, tryNextRowEdit, onEditStop, onEditStart, onEditValueChange, scrollLeft, columnRenderCount, columnRenderStartIndex, memorizedScrollLeft, }, { 
 // the full data array
 availableWidth, data, onTransitionEnd, columns, computedPivot, groupColumn, activeRowRef, columnsMap, renderLockedStartCells, renderLockedEndCells, computedOnCellMouseDown, computedEnableRowspan, lockedStartColumns, lockedEndColumns, renderDetailsGrid, editable, rowDetailsWidth, scrollbars, scrollToColumn, scrollToIndexIfNeeded, hasLockedStart, hasLockedEnd, computedShowEmptyRows, setRowSelected, setRowExpanded, toggleRowExpand, toggleNodeExpand, expandOnMouseDown, loadNodeAsync, computedTreeEnabled, computedActiveCell, rtl, naturalRowHeight, lastCellInRange, getCellSelectionKey, onRowContextMenu, 
 // should have the following props:
@@ -209,6 +209,7 @@ computedSelected, computedUnselected, treeColumn, renderNodeTool, renderTreeColl
             computedEnableColumnHover,
             renderRowDetailsExpandIcon,
             renderRowDetailsCollapsedIcon,
+            memorizedScrollLeft,
         };
         if (rowProps.rowIndex === editRowIndex) {
             rowProps.editing = true;

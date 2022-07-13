@@ -12,16 +12,18 @@ const globalObject = getGlobal();
 var Helper = function (config) {
     this.config = config;
 };
-var EVENTS = {
-    move: isMobile ? 'touchmove' : 'mousemove',
-    up: isMobile ? 'touchend' : 'mouseup',
+const getEvents = (mobile) => {
+    return {
+        move: mobile ? 'touchmove' : 'mousemove',
+        up: mobile ? 'touchend' : 'mouseup',
+    };
 };
-function emptyFn() { }
-function getPageCoords(event) {
+// function emptyFn() {}
+function getPageCoords(event, mobile) {
     var firstTouch;
     var pageX = event.pageX;
     var pageY = event.pageY;
-    if (isMobile && event.touches && (firstTouch = event.touches[0])) {
+    if (mobile && event.touches && (firstTouch = event.touches[0])) {
         pageX = firstTouch.pageX;
         pageY = firstTouch.pageY;
     }
@@ -39,27 +41,31 @@ Object.assign(Helper.prototype, {
      */
     initDrag: function (event) {
         this.onDragInit(event);
-        var events = this.config.events || EVENTS;
+        let mobile = this.config.mobile;
+        if (mobile === undefined) {
+            mobile = isMobile;
+        }
+        var events = this.config.events || getEvents(mobile);
         var onDragStart = once(this.onDragStart, this);
-        var target = isMobile ? event.target : globalObject;
+        var target = mobile ? event.target : globalObject;
         var mouseUpListener = function (event) {
             this.onDrop(event);
-            target.removeEventListener(events.move, mouseMoveListener);
-            target.removeEventListener(events.up, mouseUpListener);
+            target && target.removeEventListener(events.move, mouseMoveListener);
+            target && target.removeEventListener(events.up, mouseUpListener);
         }.bind(this);
         var mouseMoveListener = function (event) {
             /**
              * Make sure the left mouse button is pressed
              */
-            if (!isMobile && event.which !== 1) {
+            if (!mobile && event.which !== 1) {
                 mouseUpListener(event);
                 return;
             }
-            onDragStart(event);
-            this.onDrag(event);
+            onDragStart(event, mobile);
+            this.onDrag(event, mobile);
         }.bind(this);
-        target.addEventListener(events.move, mouseMoveListener, false);
-        target.addEventListener(events.up, mouseUpListener);
+        target && target.addEventListener(events.move, mouseMoveListener, false);
+        target && target.addEventListener(events.up, mouseUpListener);
     },
     onDragInit: function (event) {
         var config = {
@@ -84,8 +90,8 @@ Object.assign(Helper.prototype, {
      * Called when the first mousemove event occurs after drag is initialized
      * @param  {Event} event
      */
-    onDragStart: function (event) {
-        this.state.initPageCoords = getPageCoords(event);
+    onDragStart: function (event, mobile) {
+        this.state.initPageCoords = getPageCoords(event, mobile);
         this.state.didDrag = this.state.config.didDrag = true;
         this.callConfig('onDragStart', event);
     },
@@ -94,10 +100,10 @@ Object.assign(Helper.prototype, {
      *
      * @param  {Event} event
      */
-    onDrag: function (event) {
+    onDrag: function (event, mobile) {
         var config = this.state.config;
         var initPageCoords = this.state.initPageCoords;
-        var eventCoords = getPageCoords(event);
+        var eventCoords = getPageCoords(event, mobile);
         var diff = (config.diff = {
             left: eventCoords.pageX - initPageCoords.pageX,
             top: eventCoords.pageY - initPageCoords.pageY,
@@ -110,7 +116,7 @@ Object.assign(Helper.prototype, {
             dragRegion.shift(diff);
             if (this.state.constrainTo) {
                 //and finally constrain it if it's the case
-                var boolConstrained = dragRegion.constrainTo(this.state.constrainTo);
+                // var boolConstrained = dragRegion.constrainTo(this.state.constrainTo);
                 diff.left = dragRegion.left - this.state.initialRegion.left;
                 diff.top = dragRegion.top - this.state.initialRegion.top;
             }

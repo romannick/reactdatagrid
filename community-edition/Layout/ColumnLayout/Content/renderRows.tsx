@@ -32,6 +32,7 @@ const renderRows = (
     scrollLeft,
     columnRenderCount,
     columnRenderStartIndex,
+    memorizedScrollLeft,
   }: any,
   {
     // the full data array
@@ -392,6 +393,7 @@ const renderRows = (
       computedEnableColumnHover,
       renderRowDetailsExpandIcon,
       renderRowDetailsCollapsedIcon,
+      memorizedScrollLeft,
     };
 
     if (rowProps.rowIndex === editRowIndex) {

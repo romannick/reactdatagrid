@@ -167,7 +167,11 @@ export default class InovuaDataGridColumnLayout extends React.Component {
       />
     );
   };
-  onDragRowMouseDownHandle = (ev: MouseEvent, index: number, cellNode: any) => {
+  onDragRowMouseDownHandle = (
+    ev: MouseEvent & TouchEvent,
+    index: number,
+    cellNode: any
+  ) => {
     // implemented in enterprise
   };
 

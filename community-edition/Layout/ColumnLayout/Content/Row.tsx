@@ -1948,6 +1948,18 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       detailsStyle.display = 'none';
     }
 
+    if (
+      rowProps.memorizedScrollLeft &&
+      rowDetailsWidth !== 'min-viewport-width'
+    ) {
+      const scrollLeftMax =
+        rowProps.getScrollLeftMax && rowProps.getScrollLeftMax();
+      const scrollLeft = !rtl
+        ? rowProps.memorizedScrollLeft
+        : -(scrollLeftMax - rowProps.memorizedScrollLeft);
+      detailsStyle.transform = `translate3d(${scrollLeft}px, 0px, 0px)`;
+    }
+
     if (rowDetailsStyle) {
       if (typeof rowDetailsStyle === 'function') {
         let styleResult = rowDetailsStyle(detailsStyle, rowDetailsInfo);
@@ -1963,6 +1975,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     if (nativeScroll && last && expanded) {
       showBorderBottom = false;
     }
+
     rowProps.children.push(
       <div
         key="rowDetails"
@@ -2236,6 +2249,7 @@ DataGridRow.propTypes = {
     'min-viewport-width',
     'viewport-width',
   ]),
+  memorizedScrollLeft: PropTypes.number,
   computedHasColSpan: PropTypes.bool,
   onRowReorder: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   onDragRowMouseDown: PropTypes.func,
