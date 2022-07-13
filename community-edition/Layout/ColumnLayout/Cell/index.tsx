@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import ClassCell from './ClassCell';
+// import ClassCell from './ClassCell';
 import HooksCell from './HooksCell';
 
-export default ClassCell;
-// export default HooksCell;
+// export default ClassCell;
+export default HooksCell;

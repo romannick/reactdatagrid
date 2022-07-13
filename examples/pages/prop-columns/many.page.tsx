@@ -63,7 +63,7 @@ class App extends React.Component<any, any> {
     this.state = {
       rtl: false,
       columns,
-      rows: 2,
+      rows: 1000,
       dataSource: [],
     };
   }
@@ -131,6 +131,8 @@ class App extends React.Component<any, any> {
         <DataGrid
           idProperty="id"
           style={gridStyle}
+          showHeader={false}
+          licenseKey="AppName=ReactDataGridDemo,Company=InovuaTrading,ExpiryDate=2023-04-12,LicenseDeveloperCount=1,LicenseType=single_app,Ref=InovuaTradingLicenseRef,Z=-18176192341092618148-630603300-20857373091880339054-1662388975"
           handle={x => {
             (globalObject as any).x = x;
           }}

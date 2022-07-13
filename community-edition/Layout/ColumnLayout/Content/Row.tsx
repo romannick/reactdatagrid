@@ -89,8 +89,16 @@ const getValueForPivotColumnSummary = (
 };
 
 const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
-  const cells = useRef<CellProps[]>([]);
-  const cellRef = useRef<(c: CellProps | null | undefined) => void>();
+  const cells = useRef<CellInstance[]>([]);
+  const cellRef = useCallback<(c: CellInstance | null | undefined) => void>(
+    (c: CellInstance | null | undefined) => {
+      if (!c) {
+        return;
+      }
+      cells.current.push(c);
+    },
+    []
+  );
   const domRef = useRef<RefObject<HTMLElement>>(null);
   const columnRenderStartIndex = useRef<number>(0);
   const hasBorderTop = useRef<boolean>(false);
@@ -98,14 +106,6 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
   const maxRowspan = useRef<number>(1);
   const scrollingInProgress = useRef<boolean>(false);
   const scrollingDirection = useRef<'horizontal' | 'vertical'>('vertical');
-
-  const initCells = () => {
-    cellRef.current = (c: CellProps | null | undefined) => {
-      if (!c) return;
-
-      cells.current.push(c);
-    };
-  };
 
   const cleanupCells = useCallback(() => {
     cells.current = cells.current.filter(Boolean);
@@ -153,8 +153,6 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
   }
 
   useEffect(() => {
-    initCells();
-
     if (props.columnRenderStartIndex) {
       setColumnRenderStartIndex(props.columnRenderStartIndex);
     }
@@ -870,7 +868,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
         props.editable ||
         cellProps.computedEditable
       ) {
-        cellProps.cellRef = cellRef.current;
+        cellProps.cellRef = cellRef;
         cellProps.onUnmount = onCellUnmount;
       }
 

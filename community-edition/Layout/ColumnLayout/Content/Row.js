@@ -55,7 +55,12 @@ const getValueForPivotColumnSummary = (item, { pivotSummaryPath: path, }) => {
 };
 const DataGridRow = React.forwardRef((props, ref) => {
     const cells = useRef([]);
-    const cellRef = useRef();
+    const cellRef = useCallback((c) => {
+        if (!c) {
+            return;
+        }
+        cells.current.push(c);
+    }, []);
     const domRef = useRef(null);
     const columnRenderStartIndex = useRef(0);
     const hasBorderTop = useRef(false);
@@ -63,13 +68,6 @@ const DataGridRow = React.forwardRef((props, ref) => {
     const maxRowspan = useRef(1);
     const scrollingInProgress = useRef(false);
     const scrollingDirection = useRef('vertical');
-    const initCells = () => {
-        cellRef.current = (c) => {
-            if (!c)
-                return;
-            cells.current.push(c);
-        };
-    };
     const cleanupCells = useCallback(() => {
         cells.current = cells.current.filter(Boolean);
         return cells.current;
@@ -104,7 +102,6 @@ const DataGridRow = React.forwardRef((props, ref) => {
         setActiveRowRef();
     }
     useEffect(() => {
-        initCells();
         if (props.columnRenderStartIndex) {
             setColumnRenderStartIndex(props.columnRenderStartIndex);
         }
@@ -565,7 +562,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
                 enableColumnAutosize ||
                 props.editable ||
                 cellProps.computedEditable) {
-                cellProps.cellRef = cellRef.current;
+                cellProps.cellRef = cellRef;
                 cellProps.onUnmount = onCellUnmount;
             }
             const { computedLocked, colspan } = cellProps;

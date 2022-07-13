@@ -13,6 +13,7 @@ export type CellProps = {
   onTransitionEnd?: (e: any) => void;
   inEdit?: boolean;
   cellRef?: any;
+  left?: number;
   colspan?: any;
   rowspan?: any;
   computedColspanToStart?: boolean;

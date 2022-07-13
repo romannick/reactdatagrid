@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { useState, useEffect, useCallback, useRef, useImperativeHandle, cloneElement, } from 'react';
+import React, { useState, useEffect, useCallback, useRef, cloneElement, } from 'react';
 import PropTypes from 'prop-types';
 import Region from '../../../packages/region';
 import shallowequal, { equalReturnKey } from '../../../packages/shallowequal';
@@ -56,7 +56,7 @@ const CELL_RENDER_SECOND_OBJ = sealedObjectFactory({
     headerProps: null,
 });
 const wrapInContent = (value) => (React.createElement("div", { key: "content", className: "InovuaReactDataGrid__cell__content", children: value }));
-const InovuaDataGridCell = React.forwardRef((props, ref) => {
+function InovuaDataGridCell(props) {
     const domRef = useRef(null);
     const isCancelled = useRef(false);
     const sortTimeoutId = useRef(null);
@@ -66,7 +66,9 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
     const callbackRef = useRef(undefined);
     const [theState, setState] = useState({ props });
     const useInitialProps = !theState.props || props.timestamp > theState.props.timestamp;
-    const state = useInitialProps ? { ...theState, props } : theState;
+    const state = useInitialProps
+        ? { ...theState, props, left: props.left || 0 }
+        : theState;
     const latestPropsRef = useRef(state.props);
     latestPropsRef.current = state.props;
     const getProps = useCallback(() => {
@@ -109,6 +111,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         if (props.onMount) {
             props.onMount(props, cellInstance);
         }
+        props.cellRef(cellInstance);
         // if (props.naturalRowHeight) {
         //   const node = getDOMNode();
         //   cleanupResizeObserver.current = setupResizeObserver(node, size => {
@@ -286,8 +289,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
             (isHeaderCell ? !thisProps.headerAlign : true) &&
             `${baseClassName}--align-${thisProps.textAlign}`, thisProps.textVerticalAlign &&
             (isHeaderCell ? !thisProps.headerVerticalAlign : true) &&
-            `${baseClassName}--vertical-align-${thisProps.textVerticalAlign}`, thisProps.virtualizeColumns && `${baseClassName}--virtualize-columns`, thisProps.computedVisibleIndex === 0 && `${baseClassName}--first`, thisProps.rowIndexInGroup === 0 &&
-            `${baseClassName}--first-row-in-group`, last && `${baseClassName}--last`, showBorderLeft &&
+            `${baseClassName}--vertical-align-${thisProps.textVerticalAlign}`, thisProps.virtualizeColumns && `${baseClassName}--virtualize-columns`, thisProps.computedVisibleIndex === 0 && `${baseClassName}--first`, thisProps.rowIndexInGroup === 0 && `${baseClassName}--first-row-in-group`, last && `${baseClassName}--last`, showBorderLeft &&
             computedWidth !== 0 &&
             (!isHeaderCell || !(computedResizable || computedFilterable)) &&
             `${baseClassName}--show-border-${rtl ? 'right' : 'left'}`, firstInSection && `${baseClassName}--first-in-section`, lastInSection && `${baseClassName}--last-in-section`, showBorderRight &&
@@ -306,8 +308,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
                 `${baseClassName}--cell-has-${rtl ? 'left' : 'right'}-selected-sibling`);
         }
         if (isHeaderCell) {
-            className = join(className, commonClassName, thisProps.headerClassName, thisProps.titleClassName, state && state.dragging && `${baseClassName}--dragging`, state && state.left && `${baseClassName}--reordered`, thisProps.computedSortable && `${baseClassName}--sortable`, headerUserSelect &&
-                `${baseClassName}--user-select-${headerUserSelect}`, last && !headerEllipsis && `${baseClassName}--overflow-hidden`, `${baseClassName}--align-${thisProps.headerAlign || 'start'}`, thisProps.group
+            className = join(className, commonClassName, thisProps.headerClassName, thisProps.titleClassName, state && state.dragging && `${baseClassName}--dragging`, state && state.left && `${baseClassName}--reordered`, thisProps.computedSortable && `${baseClassName}--sortable`, headerUserSelect && `${baseClassName}--user-select-${headerUserSelect}`, last && !headerEllipsis && `${baseClassName}--overflow-hidden`, `${baseClassName}--align-${thisProps.headerAlign || 'start'}`, thisProps.group
                 ? `${baseClassName}--has-group`
                 : `${baseClassName}--has-no-group`, thisProps.headerVerticalAlign &&
                 `${baseClassName}--vertical-align-${thisProps.headerVerticalAlign}`, thisProps.computedResizable
@@ -742,8 +743,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         if (thisProps.onCellMouseDown) {
             thisProps.onCellMouseDown(event, thisProps);
         }
-        if (thisProps.onDragRowMouseDown &&
-            thisProps.id === REORDER_COLUMN_ID) {
+        if (thisProps.onDragRowMouseDown && thisProps.id === REORDER_COLUMN_ID) {
             thisProps.onDragRowMouseDown(event, thisProps.rowIndex, domRef);
         }
         // event.preventDefault() // DO NOT prevent default,
@@ -782,8 +782,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         if (thisProps.onCellTouchStart) {
             thisProps.onCellTouchStart(event, thisProps);
         }
-        if (thisProps.onDragRowMouseDown &&
-            thisProps.id === REORDER_COLUMN_ID) {
+        if (thisProps.onDragRowMouseDown && thisProps.id === REORDER_COLUMN_ID) {
             thisProps.onDragRowMouseDown(event, thisProps.rowIndex, domRef);
         }
         // event.preventDefault() // DO NOT prevent default,
@@ -1018,17 +1017,12 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         domRef: getDOMNode(),
         props,
     };
-    useImperativeHandle(ref, () => {
-        return cellInstance;
-    });
     const thisProps = getProps();
     const { cellActive, cellSelected, data, empty, groupProps, headerCell, hidden, name, onRender, treeColumn, groupSpacerColumn, loadNodeAsync, groupColumnVisible, rowIndex, remoteRowIndex, rowSelected, rowExpanded, setRowSelected, setRowExpanded, isRowExpandable, toggleRowExpand, toggleNodeExpand, totalDataCount, computedVisibleIndex, inEdit, renderRowDetailsMoreIcon, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, } = thisProps;
     let { value, render: renderCell, renderSummary } = thisProps;
     const className = prepareClassName(thisProps);
     const style = prepareStyle(thisProps);
-    const headerProps = headerCell
-        ? thisProps.headerProps || emptyObject
-        : null;
+    const headerProps = headerCell ? thisProps.headerProps || emptyObject : null;
     if (!headerCell &&
         groupSpacerColumn &&
         groupProps &&
@@ -1083,9 +1077,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         CELL_RENDER_OBJECT.renderRowDetailsExpandIcon = renderRowDetailsExpandIcon;
         CELL_RENDER_OBJECT.renderRowDetailsCollapsedIcon = renderRowDetailsCollapsedIcon;
     }
-    let rendersInlineEditor = headerCell
-        ? false
-        : cellProps.rendersInlineEditor;
+    let rendersInlineEditor = headerCell ? false : cellProps.rendersInlineEditor;
     if (rendersInlineEditor && typeof rendersInlineEditor === 'function') {
         rendersInlineEditor = cellProps.rendersInlineEditor(CELL_RENDER_OBJECT);
     }
@@ -1156,10 +1148,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
         }
         if (treeColumn) {
             if (Array.isArray(cellProps.children)) {
-                cellProps.children = [
-                    renderNodeTool(thisProps),
-                    ...cellProps.children,
-                ];
+                cellProps.children = [renderNodeTool(thisProps), ...cellProps.children];
             }
             else {
                 cellProps.children = [renderNodeTool(thisProps), cellProps.children];
@@ -1183,7 +1172,7 @@ const InovuaDataGridCell = React.forwardRef((props, ref) => {
     });
     domProps.ref = domRef;
     return headerCell ? (RENDER_HEADER(cellProps, domProps, cellInstance, state)) : (React.createElement("div", { ...domProps, children: cellProps.children, "data-props-id": props.id, "data-state-props-id": getProps().id, id: null, name: null, value: null, title: null, data: null }));
-});
+}
 InovuaDataGridCell.defaultProps = {
     cellDefaultClassName: cellBem(),
     headerCellDefaultClassName: headerBem(),
@@ -1192,7 +1181,7 @@ InovuaDataGridCell.defaultProps = {
     treeNestingSize: 10,
     checkboxTabIndex: null,
     onSortClick: emptyFn,
-    preventSortOnClick: event => {
+    preventSortOnClick: (event) => {
         const target = event.target;
         return isFocusable(target);
     },
