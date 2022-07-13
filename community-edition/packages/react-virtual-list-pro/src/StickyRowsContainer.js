@@ -37,7 +37,7 @@ const StickyRowsContainer = (props) => {
             }
             return result;
         });
-        rowsToTranslate.forEach((rowToTranslate, i) => {
+        rowsToTranslate.forEach((_rowToTranslate, i) => {
             const rowToTranslateIndex = rowsToTranslateIndexes[i];
             const domNode = domNodeRef.current;
             const rowNode = domNode.children[rowToTranslateIndex];

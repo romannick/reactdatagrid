@@ -383,9 +383,13 @@ const GridFactory = (
       horizontal: boolean;
     }) => {
       const onChange = () => {
-        const computedStyle = globalObject.getComputedStyle(
-          getVirtualList().getDOMNode()
-        );
+        const vl = getVirtualList();
+
+        const computedStyle =
+          vl && globalObject.getComputedStyle(vl.getDOMNode());
+        if (!computedStyle) {
+          return;
+        }
         const virtualListBorderLeft = parseInt(
           computedStyle.borderLeftWidth,
           10

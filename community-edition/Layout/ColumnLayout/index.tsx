@@ -260,7 +260,7 @@ export default class InovuaDataGridColumnLayout extends React.Component {
     if (!vl) {
       return 0;
     }
-    return vl.scrollContainer.scrollLeftMax;
+    return vl.scrollContainerRef.current.scrollLeftMax;
   };
 
   getScrollTopMax = () => {
@@ -293,7 +293,7 @@ export default class InovuaDataGridColumnLayout extends React.Component {
   };
 
   getVirtualList = () => {
-    return this.content ? this.content.virtualList : null;
+    return this.content ? this.content.getVirtualList() : null;
   };
 
   startEdit = args => {

@@ -239,7 +239,11 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
         });
         const onScrollbarsChange = (scrollbars) => {
             const onChange = () => {
-                const computedStyle = globalObject.getComputedStyle(getVirtualList().getDOMNode());
+                const vl = getVirtualList();
+                const computedStyle = vl && globalObject.getComputedStyle(vl.getDOMNode());
+                if (!computedStyle) {
+                    return;
+                }
                 const virtualListBorderLeft = parseInt(computedStyle.borderLeftWidth, 10);
                 const virtualListBorderRight = parseInt(computedStyle.borderRightWidth, 10);
                 const virtualListExtraWidth = virtualListBorderLeft + virtualListBorderRight;
