@@ -10,7 +10,7 @@ import VirtualList, {
   propTypes,
   shouldComponentUpdate,
   getScrollbarWidth,
-} from './ListClass';
+} from './VirtualList';
 
 export {
   RowHeightManager,
