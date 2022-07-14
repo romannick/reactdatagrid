@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import ReactDataGrid from '../../../enterprise-edition';
 
@@ -37,19 +37,6 @@ const countries = people.reduce((countries, p) => {
 
   return countries;
 }, []);
-
-const filterValue = [
-  { name: 'name', operator: 'startsWith', type: 'string', value: '' },
-  { name: 'age', operator: 'eq', type: 'number', value: null },
-  { name: 'city', operator: 'startsWith', type: 'string', value: '' },
-  {
-    name: 'birthDate',
-    operator: 'before',
-    type: 'date',
-    value: '',
-  },
-  { name: 'country', operator: 'startsWith', type: 'string', value: '' },
-];
 
 const columns = [
   {
@@ -101,16 +88,37 @@ const columns = [
   { name: 'city', header: 'City', defaultFlex: 1 },
 ];
 
+const initialFilterValue = [
+  { name: 'name', operator: 'startsWith', type: 'string', value: '' },
+  { name: 'age', operator: 'eq', type: 'number', value: null },
+  { name: 'city', operator: 'startsWith', type: 'string', value: '' },
+  {
+    name: 'birthDate',
+    operator: 'before',
+    type: 'date',
+    value: '07-05-2022',
+  },
+  { name: 'country', operator: 'startsWith', type: 'string', value: '' },
+];
 const App = () => {
+  const [filterValue, setFilterValue] = useState(initialFilterValue);
   return (
     <div>
       <h3>Grid with default filter value</h3>
+      <button
+        onClick={() => {
+          setFilterValue(initialFilterValue);
+        }}
+      >
+        reset
+      </button>
       <ReactDataGrid
         idProperty="id"
+        licenseKey="AppName=ReactDataGridDemo,Company=InovuaTrading,ExpiryDate=2023-04-12,LicenseDeveloperCount=1,LicenseType=single_app,Ref=InovuaTradingLicenseRef,Z=-18176192341092618148-630603300-20857373091880339054-1662388975"
         theme="default-dark"
-        licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
         style={gridStyle}
-        defaultFilterValue={filterValue}
+        filterValue={filterValue}
+        onFilterValueChange={setFilterValue}
         columns={columns}
         dataSource={people}
       />

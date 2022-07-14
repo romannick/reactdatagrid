@@ -18,9 +18,12 @@ class DateFilter extends Component {
         this.onEndChange = this.onEndChange.bind(this);
         this.onValueChange = this.onValueChange.bind(this);
     }
-    UNSAFE_componentWillReceiveProps({ filterValue: { value } }) {
-        if (this.props.filterValue && this.props.filterValue.value !== value) {
-            this.setValue(value);
+    componentDidUpdate(prevProps) {
+        if (this.props.filterValue &&
+            prevProps.filterValue &&
+            this.props.filterValue.value !== prevProps.filterValue.value) {
+            //@ts-ignore
+            this.setValue(this.props.filterValue.value);
         }
     }
     onChange(value) {
