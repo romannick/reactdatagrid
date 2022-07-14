@@ -260,7 +260,7 @@ export default class InovuaDataGridColumnLayout extends React.Component {
     if (!vl) {
       return 0;
     }
-    return vl.scrollContainerRef.current.scrollLeftMax;
+    return vl.scrollContainer.scrollLeftMax;
   };
 
   getScrollTopMax = () => {

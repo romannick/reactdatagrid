@@ -1611,7 +1611,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
           <Cell
             {...cProps}
             timestamp={Date.now()}
-            ref={cProps.cellRef ? cProps.cellRef : null}
+            cellRef={cProps.cellRef ? cProps.cellRef : null}
             key={key}
           />
         );

@@ -103,7 +103,7 @@ function InovuaDataGridCell(props) {
         if (props.onMount) {
             props.onMount(props, cellInstance);
         }
-        props.cellRef(cellInstance);
+        props.cellRef?.(cellInstance);
         // if (props.naturalRowHeight) {
         //   const node = getDOMNode();
         //   cleanupResizeObserver.current = setupResizeObserver(node, size => {

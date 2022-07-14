@@ -390,6 +390,12 @@ export default class InovuaVirtualList extends Component<TypeProps> {
       count,
     } = props;
 
+    if (this.oldProps) {
+      this.transitionProps(props, this.oldProps);
+    }
+
+    this.oldProps = props;
+
     const style = { position: 'relative', ...this.props.style };
     const className = join(
       props.className,
@@ -966,19 +972,19 @@ export default class InovuaVirtualList extends Component<TypeProps> {
     this.rowOffsets = null;
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  transitionProps(nextProps, thisProps) {
     const nextCount = Math.max(nextProps.count, 0);
     const rowHeightChange =
-      this.props.rowHeight && nextProps.rowHeight != this.props.rowHeight;
+      thisProps.rowHeight && nextProps.rowHeight != thisProps.rowHeight;
 
-    if (this.props.renderRow !== nextProps.renderRow) {
+    if (thisProps.renderRow !== nextProps.renderRow) {
       this.rowCoveredBy = {};
       this.rowSpans = {};
     }
 
     if (
-      nextCount != this.props.count ||
-      nextProps.showEmptyRows != this.props.showEmptyRows ||
+      nextCount != thisProps.count ||
+      nextProps.showEmptyRows != thisProps.showEmptyRows ||
       rowHeightChange
     ) {
       const oldVisibleCount = this.getVisibleCount();

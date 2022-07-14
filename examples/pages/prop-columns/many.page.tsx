@@ -17,7 +17,7 @@ const globalObject = getGlobal();
 
 import people from '../people';
 
-const gridStyle = { minHeight: '80vh' };
+const gridStyle = { minHeight: '50vh' };
 
 const times = (arr: any[], n: number, fn?: (x: any, i: number) => void) => {
   const result = [];
@@ -61,9 +61,9 @@ class App extends React.Component<any, any> {
     });
 
     this.state = {
-      rtl: false,
+      rtl: true,
       columns,
-      rows: 1000,
+      rows: 5,
       dataSource: [],
     };
   }
@@ -131,16 +131,17 @@ class App extends React.Component<any, any> {
         <DataGrid
           idProperty="id"
           style={gridStyle}
-          showHeader={false}
           licenseKey="AppName=ReactDataGridDemo,Company=InovuaTrading,ExpiryDate=2023-04-12,LicenseDeveloperCount=1,LicenseType=single_app,Ref=InovuaTradingLicenseRef,Z=-18176192341092618148-630603300-20857373091880339054-1662388975"
           handle={x => {
             (globalObject as any).x = x;
           }}
+          showHeader={true}
+          rowIndexColumn
           columns={this.state.columns}
           dataSource={this.state.dataSource}
           virtualizeColumnsThreshold={3}
           // virtualizeColumns={false}
-          rtl={this.state.rtl}
+
           // virtualizeColumnsThreshold={10}
         />
       </div>

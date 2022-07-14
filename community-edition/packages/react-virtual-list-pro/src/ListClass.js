@@ -273,6 +273,10 @@ export default class InovuaVirtualList extends Component {
     render() {
         const { props } = this;
         const { naturalRowHeight, scrollProps, theme, minRowHeight, rowHeightManager, count, } = props;
+        if (this.oldProps) {
+            this.transitionProps(props, this.oldProps);
+        }
+        this.oldProps = props;
         const style = { position: 'relative', ...this.props.style };
         const className = join(props.className, BASE_CLASS_NAME, theme && `${BASE_CLASS_NAME}--theme-${theme}`, `${BASE_CLASS_NAME}--virtual-scroll`);
         const scrollHeight = rowHeightManager
@@ -684,15 +688,15 @@ export default class InovuaVirtualList extends Component {
         this.rowHeights = null;
         this.rowOffsets = null;
     }
-    UNSAFE_componentWillReceiveProps(nextProps) {
+    transitionProps(nextProps, thisProps) {
         const nextCount = Math.max(nextProps.count, 0);
-        const rowHeightChange = this.props.rowHeight && nextProps.rowHeight != this.props.rowHeight;
-        if (this.props.renderRow !== nextProps.renderRow) {
+        const rowHeightChange = thisProps.rowHeight && nextProps.rowHeight != thisProps.rowHeight;
+        if (thisProps.renderRow !== nextProps.renderRow) {
             this.rowCoveredBy = {};
             this.rowSpans = {};
         }
-        if (nextCount != this.props.count ||
-            nextProps.showEmptyRows != this.props.showEmptyRows ||
+        if (nextCount != thisProps.count ||
+            nextProps.showEmptyRows != thisProps.showEmptyRows ||
             rowHeightChange) {
             const oldVisibleCount = this.getVisibleCount();
             this.updateVisibleCount(this.size.height, nextProps);

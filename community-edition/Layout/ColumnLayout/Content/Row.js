@@ -1098,7 +1098,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
                 cell = props.cellFactory(cProps);
             }
             if (cell === undefined) {
-                cell = (React.createElement(Cell, { ...cProps, timestamp: Date.now(), ref: cProps.cellRef ? cProps.cellRef : null, key: key }));
+                cell = (React.createElement(Cell, { ...cProps, timestamp: Date.now(), cellRef: cProps.cellRef ? cProps.cellRef : null, key: key }));
             }
             return cell;
         });
