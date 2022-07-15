@@ -149,11 +149,12 @@ const renderLoadMask = (props: {
   theme?: string;
   computedLoading: boolean;
   computedLivePagination: boolean;
-  renderLoadMask?: (loasMaskProps: {
+  renderLoadMask?: (loadMaskProps: {
     visible: boolean;
     livePagination: boolean;
     loadingText: ReactNode | (() => ReactNode);
     zIndex: number;
+    theme?: string;
   }) => ReactNode | null;
 }): ReactNode | null => {
   const loadMaskProps = {
