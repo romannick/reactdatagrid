@@ -45,7 +45,6 @@ const App = () => {
       <ReactDataGrid
         idProperty="id"
         theme="default-dark"
-        licenseKey="AppName=multi_app,Company=Ramco,ExpiryDate=2022-05-07,LicenseDeveloperCount=3,LicenseType=multi_app,Ref=RamcoMultipleAppLicenseRef,Z=-1716786780-183550988815965548371833524863-17167867801805052899"
         style={gridStyle}
         onEditComplete={onEditComplete}
         editable

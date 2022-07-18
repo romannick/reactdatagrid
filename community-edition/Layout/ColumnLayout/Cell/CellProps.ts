@@ -408,7 +408,10 @@ export type CellInstance = {
   onEditorTabNavigation: (complete: boolean, dir: number) => void;
   onEditorClick: (event: MouseEvent) => void;
   onEditorCancel: () => void;
-  startEdit: () => void;
+  startEdit: (
+    editValue?: any,
+    errBack?: (...args: any[]) => any
+  ) => Promise<void> | Promise<boolean | undefined>;
   stopEdit: () => void;
   cancelEdit: () => void;
   onEditorComplete: () => void;

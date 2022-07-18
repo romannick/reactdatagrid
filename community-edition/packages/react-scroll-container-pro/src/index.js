@@ -375,6 +375,7 @@ export default class InovuaScrollContainer extends Component {
         }
     }
     componentDidMount() {
+        this.unmounted = false;
         if (typeof this.props.onDidMount === 'function') {
             this.props.onDidMount(this, this.getDOMNode(), this._scrollerResizer);
         }

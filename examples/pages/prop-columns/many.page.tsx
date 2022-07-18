@@ -17,6 +17,8 @@ const globalObject = getGlobal();
 
 import people from '../people';
 
+let Btn = Button as any;
+
 const gridStyle = { minHeight: '50vh' };
 
 const times = (arr: any[], n: number, fn?: (x: any, i: number) => void) => {
@@ -45,25 +47,24 @@ class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
 
-    (this as any).COLS = 28;
+    (this as any).COLS = 10;
 
     let columns = times([{ name: 'id' }], (this as any).COLS, (_, i) => {
       return {
         name: `id-${i}`,
         id: `id-${i}`,
-        // defaultLocked: i < 2 ? 'start' : i > COLS - 2 ? 'end' : false,
-        // colspan: () => 1,
-        // render: ({ value, rowIndex }) => {
-        //   // console.log(`render ${rowIndex} - ${i}`);
-        //   return value;
-        // },
+        header: `ID--${i}`,
+        defaultWidth: 120,
+        render: ({ value, rowIndex }: { value: string; rowIndex: number }) => {
+          return `${rowIndex} - ${value}`;
+        },
       };
     });
 
     this.state = {
       rtl: true,
       columns,
-      rows: 5,
+      rows: 50,
       dataSource: [],
     };
   }
@@ -119,19 +120,18 @@ class App extends React.Component<any, any> {
           <NumericInput {...numericProps} />
         </div>
         <div style={{ marginBottom: 20 }}>
-          <Button
+          <Btn
             style={{ minWidth: 150 }}
             onClick={() => {
               this.loadDataSource(this.state.rows);
             }}
           >
             Set rows
-          </Button>
+          </Btn>
         </div>
         <DataGrid
           idProperty="id"
           style={gridStyle}
-          licenseKey="AppName=ReactDataGridDemo,Company=InovuaTrading,ExpiryDate=2023-04-12,LicenseDeveloperCount=1,LicenseType=single_app,Ref=InovuaTradingLicenseRef,Z=-18176192341092618148-630603300-20857373091880339054-1662388975"
           handle={x => {
             (globalObject as any).x = x;
           }}
@@ -140,6 +140,8 @@ class App extends React.Component<any, any> {
           columns={this.state.columns}
           dataSource={this.state.dataSource}
           virtualizeColumnsThreshold={3}
+          pagination={false}
+          // nativeScroll={true}
           // virtualizeColumns={false}
 
           // virtualizeColumnsThreshold={10}

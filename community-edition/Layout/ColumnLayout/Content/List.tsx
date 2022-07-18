@@ -85,6 +85,10 @@ export default class InovuaDataGridList extends Component<ListProps> {
     return !equal(nextState, this.state);
   }
 
+  componentDidMount() {
+    this.__willUnmount = false;
+  }
+
   componentWillUnmount() {
     this.__willUnmount = true;
   }

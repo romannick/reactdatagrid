@@ -114,7 +114,6 @@ const App = () => {
       </button>
       <ReactDataGrid
         idProperty="id"
-        licenseKey="AppName=ReactDataGridDemo,Company=InovuaTrading,ExpiryDate=2023-04-12,LicenseDeveloperCount=1,LicenseType=single_app,Ref=InovuaTradingLicenseRef,Z=-18176192341092618148-630603300-20857373091880339054-1662388975"
         theme="default-dark"
         style={gridStyle}
         filterValue={filterValue}

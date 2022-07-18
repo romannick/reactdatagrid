@@ -61,6 +61,10 @@ export default class DateInput extends Component {
     };
   }
 
+  componentDidMount() {
+    this.unmounted = false;
+  }
+
   componentWillUnmount() {
     this.unmounted = true;
   }

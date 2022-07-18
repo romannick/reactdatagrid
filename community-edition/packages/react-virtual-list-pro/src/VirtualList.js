@@ -345,6 +345,9 @@ export default class InovuaVirtualList extends Component {
             return;
         }
         this.mapping[r.props.index] = r;
+        if (this.rows === null) {
+            this.rows = [];
+        }
         this.rows[r.props.index] = r;
     };
     onScrollStart = (...args) => {
@@ -676,6 +679,7 @@ export default class InovuaVirtualList extends Component {
     };
     componentDidMount = () => {
         this.mounted = true;
+        this.unmounted = false;
         this.setupRowHeightManager(this.props.rowHeightManager);
     };
     componentWillUnmount() {
@@ -857,7 +861,7 @@ export default class InovuaVirtualList extends Component {
     };
     getCleanupRows = (props = this.props) => {
         const indexes = [];
-        const { length } = this.rows;
+        const length = this.rows && this.rows.length;
         const visibleCount = this.getVisibleCount(props);
         for (let i = visibleCount; i < length; i++) {
             indexes.push(i);

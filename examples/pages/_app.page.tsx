@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../community-edition/style/base.scss';
 import '../../community-edition/style/theme/default-light/index.scss';
 import '../../community-edition/style/theme/default-dark/index.scss';
@@ -53,6 +53,20 @@ ComboBox.defaultProps.theme = 'default-dark';
 Menu.defaultProps.theme = 'default-dark';
 
 function MyApp({ Component, pageProps }) {
+  const [showChild, setShowChild] = useState(false);
+
+  useEffect(() => {
+    setShowChild(true);
+  }, []);
+
+  if (!showChild) {
+    return null;
+  }
+
+  if (typeof window === 'undefined') {
+    return <></>;
+  }
+
   if (!(process as any).browser) {
     return null;
   }

@@ -100,6 +100,7 @@ function InovuaDataGridCell(props) {
         callbackRef.current = null;
     }, [state]);
     useEffect(() => {
+        unmounted.current = false;
         if (props.onMount) {
             props.onMount(props, cellInstance);
         }
