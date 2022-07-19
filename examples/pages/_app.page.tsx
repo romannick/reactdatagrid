@@ -83,7 +83,9 @@ function MyApp({ Component, pageProps }) {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <CheckBox onChange={setStrictMode}>Strict Mode</CheckBox>
+        <CheckBox checked={strictMode} onChange={setStrictMode}>
+          Strict Mode
+        </CheckBox>
       </div>
 
       <div
