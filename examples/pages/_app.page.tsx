@@ -54,6 +54,7 @@ Menu.defaultProps.theme = 'default-dark';
 
 function MyApp({ Component, pageProps }) {
   const [showChild, setShowChild] = useState(false);
+  const [strictMode, setStrictMode] = useState(true);
 
   useEffect(() => {
     setShowChild(true);
@@ -71,11 +72,30 @@ function MyApp({ Component, pageProps }) {
     return null;
   }
 
+  const strictModeApp = (
+    <React.StrictMode>
+      <Component {...pageProps} />
+    </React.StrictMode>
+  );
+
+  const app = <Component {...pageProps} />;
+
   return (
-    <>
-      <React.StrictMode>
-        <Component {...pageProps} />
-      </React.StrictMode>
+    <div>
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox onChange={setStrictMode}>Strict Mode</CheckBox>
+      </div>
+
+      <div
+        style={{
+          background: '#9ba7b4',
+          height: 1,
+          width: '100%',
+          marginBottom: 20,
+        }}
+      ></div>
+
+      {strictMode ? strictModeApp : app}
 
       <style global jsx>
         {`
@@ -95,7 +115,7 @@ function MyApp({ Component, pageProps }) {
           }
         `}
       </style>
-    </>
+    </div>
   );
 }
 
