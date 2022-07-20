@@ -88,7 +88,8 @@ export default class InovuaDataGridList extends Component {
         }, props);
     };
     getVirtualList = () => {
-        return this.virtualListRef.current;
+        const vl = this.virtualListRef.current;
+        return vl;
     };
     tryRowEdit = (nextEditRowIndex, dir, columnIndex, isEnterNavigation) => {
         const columnEditIndex = columnIndex;
@@ -452,12 +453,11 @@ export default class InovuaDataGridList extends Component {
         });
     };
     getRows = () => {
-        if (!this.getVirtualList()) {
+        const virtualList = this.getVirtualList();
+        if (!virtualList) {
             return [];
         }
-        return this.getVirtualList()
-            .getRows()
-            .map(row => row.getInstance());
+        return virtualList.getRows().map(row => row.getInstance());
     };
     getScrollLeftMax() {
         return this.getVirtualList() ? this.getVirtualList().scrollLeftMax : 0;

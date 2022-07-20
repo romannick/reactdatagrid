@@ -436,7 +436,7 @@ export default class InovuaVirtualListRow extends React.Component<
     return this.rowSpan;
   };
 
-  getInfo(updateHeight) {
+  getInfo(updateHeight?: boolean) {
     if (this.mounted === false) {
       return this.info;
     }

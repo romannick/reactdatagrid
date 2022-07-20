@@ -138,7 +138,9 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   getVirtualList = () => {
-    return this.virtualListRef.current;
+    const vl = this.virtualListRef.current;
+
+    return vl;
   };
 
   tryRowEdit = (nextEditRowIndex, dir, columnIndex, isEnterNavigation) => {
@@ -693,12 +695,11 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   getRows = () => {
-    if (!this.getVirtualList()) {
+    const virtualList = this.getVirtualList();
+    if (!virtualList) {
       return [];
     }
-    return this.getVirtualList()
-      .getRows()
-      .map(row => row.getInstance());
+    return virtualList.getRows().map(row => row.getInstance());
   };
 
   getScrollLeftMax() {
