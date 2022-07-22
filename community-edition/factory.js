@@ -1123,6 +1123,8 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
         virtualizeColumnsThreshold: 15,
         shareSpaceOnResize: false,
         enableColumnFilterContextMenu: true,
+        copySpreadsheetCompatibleString: false,
+        clipboardSeparator: '\t',
         resizable: true,
         virtualized: true,
         allowUnsort: true,

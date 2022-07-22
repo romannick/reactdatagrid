@@ -750,6 +750,8 @@ export type TypePivotUniqueValuesDescriptor = {
 };
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ColumnLayout?: any;
+  copySpreadsheetCompatibleString?: boolean;
+  clipboardSeparator?: string;
   enableColumnFilterContextMenu?: boolean;
   filteredRowsCount?: (filteredRows: number) => number;
   dataCountAfterFilter?: number;

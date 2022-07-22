@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
+import Checkbox from '../../../community-edition/packages/CheckBox';
 
 const columns = [
   { name: 'name', header: 'Name', minWidth: 50, defaultFlex: 2 },
@@ -18,15 +19,32 @@ const dataSource = [
 ];
 
 const App = () => {
+  const [
+    copySpreadsheetCompatibleString,
+    setCopySpreadsheetCompatibleString,
+  ] = useState(true);
+
   return (
-    <ReactDataGrid
-      defaultCellSelection={{}}
-      enableClipboard
-      idProperty="id"
-      columns={columns}
-      dataSource={dataSource}
-      style={gridStyle}
-    />
+    <div>
+      <div style={{ marginBottom: 20 }}>
+        <Checkbox
+          checked={copySpreadsheetCompatibleString}
+          onChange={setCopySpreadsheetCompatibleString}
+        >
+          copySpreadsheetCompatibleString
+        </Checkbox>
+      </div>
+
+      <ReactDataGrid
+        defaultCellSelection={{}}
+        enableClipboard
+        idProperty="id"
+        columns={columns}
+        dataSource={dataSource}
+        style={gridStyle}
+        copySpreadsheetCompatibleString={copySpreadsheetCompatibleString}
+      />
+    </div>
   );
 };
 
