@@ -59,6 +59,9 @@ export default class InovuaVirtualList extends Component {
         this.rowSpans = {};
         this.rowCoveredBy = {};
         this.rows = [];
+        this.rowRef = r => {
+            this.row = r;
+        };
         this.refScrollContainer = c => {
             this.scrollContainer = c;
         };
@@ -340,14 +343,11 @@ export default class InovuaVirtualList extends Component {
             this.rows.splice(index, /* delete count */ 1);
         }
     };
-    rowRef = r => {
+    onRowMount = r => {
         if (!r) {
             return;
         }
         this.mapping[r.props.index] = r;
-        if (this.rows === null) {
-            this.rows = [];
-        }
         this.rows[r.props.index] = r;
     };
     onScrollStart = (...args) => {
@@ -688,7 +688,7 @@ export default class InovuaVirtualList extends Component {
         }
         this.mounted = false;
         this.unmounted = true;
-        this.rows = null;
+        this.rows.length = 0;
         this.rowHeights = null;
         this.rowOffsets = null;
     }
@@ -933,6 +933,7 @@ export default class InovuaVirtualList extends Component {
         let to = this.getVisibleCount();
         return renderRows({
             ref: this.rowRef,
+            onMount: this.onRowMount,
             onUnmount: this.onRowUnmount,
             notifyRowSpan: this.setRowRowSpan,
             pure: pureRows,

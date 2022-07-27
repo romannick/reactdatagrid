@@ -21,6 +21,7 @@ export default ({
   onRowHeightChange,
   onKeyDown,
   onFocus,
+  onMount,
   onUnmount,
   rowContain,
   naturalRowHeight,
@@ -50,6 +51,7 @@ export default ({
         showEmptyRows={showEmptyRows}
         onKeyDown={onKeyDown}
         onFocus={onFocus}
+        onMount={onMount}
         onUnmount={onUnmount}
         virtualized={virtualized}
         naturalRowHeight={naturalRowHeight}

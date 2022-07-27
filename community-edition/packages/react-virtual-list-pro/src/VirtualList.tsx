@@ -97,6 +97,10 @@ export default class InovuaVirtualList extends Component<TypeProps> {
     this.rowCoveredBy = {};
     this.rows = [];
 
+    this.rowRef = r => {
+      this.row = r;
+    };
+
     this.refScrollContainer = c => {
       this.scrollContainer = c;
     };
@@ -518,14 +522,11 @@ export default class InovuaVirtualList extends Component<TypeProps> {
     }
   };
 
-  rowRef = r => {
+  onRowMount = r => {
     if (!r) {
       return;
     }
     this.mapping[r.props.index] = r;
-    if (this.rows === null) {
-      this.rows = [];
-    }
     this.rows[r.props.index] = r;
   };
 
@@ -971,7 +972,7 @@ export default class InovuaVirtualList extends Component<TypeProps> {
     }
     this.mounted = false;
     this.unmounted = true;
-    this.rows = null;
+    this.rows.length = 0;
     this.rowHeights = null;
     this.rowOffsets = null;
   }
@@ -1294,6 +1295,7 @@ export default class InovuaVirtualList extends Component<TypeProps> {
 
     return renderRows({
       ref: this.rowRef,
+      onMount: this.onRowMount,
       onUnmount: this.onRowUnmount,
       notifyRowSpan: this.setRowRowSpan,
       pure: pureRows,

@@ -64,6 +64,8 @@ export default class InovuaVirtualListRow extends React.Component<
     this.ref = r => {
       this.row = r;
     };
+
+    this.mounted = true;
   }
 
   getInstance() {
@@ -83,6 +85,10 @@ export default class InovuaVirtualListRow extends React.Component<
 
   componentDidMount() {
     this.mounted = true;
+
+    if (this.props.onMount) {
+      this.props.onMount(this);
+    }
 
     const { naturalRowHeight } = this.props;
     this.fetchNode();
