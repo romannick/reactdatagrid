@@ -40,6 +40,25 @@ class GenericFilter extends React.Component<
     this.onSettingsClick = this.onSettingsClick.bind(this);
     this.onSettingsClickListener = null;
 
+    this.ref = (specificFilter: any) => {
+      this.specificFilter = specificFilter;
+    };
+
+    this.state = {
+      focused: false,
+      open: false,
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.cellInstance) {
+      this.props.cellInstance.filter = this;
+    }
+
+    this.setupEventListener();
+  }
+
+  setupEventListener = () => {
     this.refSettings = (s: any) => {
       /**
        * https://inovua.freshdesk.com/a/tickets/221
@@ -64,24 +83,26 @@ class GenericFilter extends React.Component<
       }
       this.settings = s;
     };
+  };
 
-    this.ref = (specificFilter: any) => {
-      this.specificFilter = specificFilter;
-    };
-
-    this.state = {
-      focused: false,
-      open: false,
-    };
+  componentWillUnmount() {
+    if (this.props.cellInstance) {
+      this.props.cellInstance.filter = null;
+    }
+    if (this.settings && this.onSettingsClickListener) {
+      this.settings.removeEventListener(this.onSettingsClickListener);
+    }
+    this.onSettingsClickListener = null;
+    this.settings = null;
   }
 
-  onSettingsClick(e: any) {
+  onSettingsClick = (e: any) => {
     if (!this.state.open) {
       this.onMenuOpen(e);
     } else {
       this.onMenuClose(e);
     }
-  }
+  };
 
   onMenuOpen = (e: any) => {
     e.preventDefault();
@@ -101,28 +122,11 @@ class GenericFilter extends React.Component<
     });
   };
 
-  componentDidMount() {
-    if (this.props.cellInstance) {
-      this.props.cellInstance.filter = this;
-    }
-  }
-
-  setValue(value: any) {
+  setValue = (value: any) => {
     if (this.specificFilter.setValue) {
       this.specificFilter.setValue(value);
     }
-  }
-
-  componentWillUnmount() {
-    if (this.props.cellInstance) {
-      this.props.cellInstance.filter = null;
-    }
-    if (this.settings && this.onSettingsClickListener) {
-      this.settings.removeEventListener(this.onSettingsClickListener);
-    }
-    this.onSettingsClickListener = null;
-    this.settings = null;
-  }
+  };
 
   render() {
     const { props, cellInstance } = this.props;

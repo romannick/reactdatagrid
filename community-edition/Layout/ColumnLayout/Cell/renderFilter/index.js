@@ -17,6 +17,21 @@ class GenericFilter extends React.Component {
         super(props);
         this.onSettingsClick = this.onSettingsClick.bind(this);
         this.onSettingsClickListener = null;
+        this.ref = (specificFilter) => {
+            this.specificFilter = specificFilter;
+        };
+        this.state = {
+            focused: false,
+            open: false,
+        };
+    }
+    componentDidMount() {
+        if (this.props.cellInstance) {
+            this.props.cellInstance.filter = this;
+        }
+        this.setupEventListener();
+    }
+    setupEventListener = () => {
         this.refSettings = (s) => {
             /**
              * https://inovua.freshdesk.com/a/tickets/221
@@ -39,22 +54,25 @@ class GenericFilter extends React.Component {
             }
             this.settings = s;
         };
-        this.ref = (specificFilter) => {
-            this.specificFilter = specificFilter;
-        };
-        this.state = {
-            focused: false,
-            open: false,
-        };
+    };
+    componentWillUnmount() {
+        if (this.props.cellInstance) {
+            this.props.cellInstance.filter = null;
+        }
+        if (this.settings && this.onSettingsClickListener) {
+            this.settings.removeEventListener(this.onSettingsClickListener);
+        }
+        this.onSettingsClickListener = null;
+        this.settings = null;
     }
-    onSettingsClick(e) {
+    onSettingsClick = (e) => {
         if (!this.state.open) {
             this.onMenuOpen(e);
         }
         else {
             this.onMenuClose(e);
         }
-    }
+    };
     onMenuOpen = (e) => {
         e.preventDefault();
         this.props.cellInstance.showFilterContextMenu(this.settings);
@@ -71,26 +89,11 @@ class GenericFilter extends React.Component {
             open: false,
         });
     };
-    componentDidMount() {
-        if (this.props.cellInstance) {
-            this.props.cellInstance.filter = this;
-        }
-    }
-    setValue(value) {
+    setValue = (value) => {
         if (this.specificFilter.setValue) {
             this.specificFilter.setValue(value);
         }
-    }
-    componentWillUnmount() {
-        if (this.props.cellInstance) {
-            this.props.cellInstance.filter = null;
-        }
-        if (this.settings && this.onSettingsClickListener) {
-            this.settings.removeEventListener(this.onSettingsClickListener);
-        }
-        this.onSettingsClickListener = null;
-        this.settings = null;
-    }
+    };
     render() {
         const { props, cellInstance } = this.props;
         let filterValue = props.computedFilterValue;

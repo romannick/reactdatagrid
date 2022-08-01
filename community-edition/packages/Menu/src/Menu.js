@@ -124,7 +124,7 @@ class InovuaMenu extends Component {
         if ((!prevProps.visible && this.props.visible) ||
             !shallowequal(prevProps.alignTo, this.props.alignTo) ||
             this.props.constrainTo != prevProps.constrainTo) {
-            this.checkAlignment(this.props);
+            this.checkAlignment(this.props, true);
         }
     }
     componentDidMount() {
