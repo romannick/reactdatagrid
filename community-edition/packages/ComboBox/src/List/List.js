@@ -34,12 +34,12 @@ class List extends Component {
         this.componentIsMounted = false;
     }
     componentDidMount() {
+        this.componentIsMounted = true;
         if (!this.props.relativeToViewport) {
             setTimeout(() => {
                 this.updateListPosition();
             }, 0);
         }
-        this.componentIsMounted = true;
         if (this.props.activeItemIndex != null) {
             setTimeout(() => {
                 if (this.componentIsMounted) {

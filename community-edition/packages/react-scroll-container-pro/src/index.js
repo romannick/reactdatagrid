@@ -176,6 +176,22 @@ export default class InovuaScrollContainer extends Component {
             this.props.onWillUnmount(this);
         }
     }
+    componentDidMount() {
+        this.unmounted = false;
+        this.scrollerNode = this.refScroller.current;
+        const scrollerNode = this.getScrollerNode();
+        if (this.props.usePassiveScroll) {
+            if (scrollerNode) {
+                this.setupPassiveScrollListener(scrollerNode);
+            }
+            else {
+                this.removePassiveScrollListener(scrollerNode);
+            }
+        }
+        if (typeof this.props.onDidMount === 'function') {
+            this.props.onDidMount(this, this.getDOMNode(), this._scrollerResizer);
+        }
+    }
     shouldComponentUpdate(nextProps, nextState) {
         return shouldComponentUpdate(this, nextProps, nextState);
     }
@@ -374,22 +390,6 @@ export default class InovuaScrollContainer extends Component {
             if (this.props.onResize) {
                 this.props.onResize(size, this);
             }
-        }
-    }
-    componentDidMount() {
-        this.unmounted = false;
-        this.scrollerNode = this.refScroller.current;
-        const scrollerNode = this.getScrollerNode();
-        if (this.props.usePassiveScroll) {
-            if (scrollerNode) {
-                this.setupPassiveScrollListener(scrollerNode);
-            }
-            else {
-                this.removePassiveScrollListener(scrollerNode);
-            }
-        }
-        if (typeof this.props.onDidMount === 'function') {
-            this.props.onDidMount(this, this.getDOMNode(), this._scrollerResizer);
         }
     }
     getDOMNode() {
