@@ -665,7 +665,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
             : dragTarget == 'group'
                 ? dragColumn.id
                 : null;
-        const dragBoxNode = dragBox.domRef ? dragBox.domRef.current : null;
+        const dragBoxNode = dragBox.getDOMNode ? dragBox.getDOMNode() : null;
         const dragBoxInitialRegion = dragBox && dragBox.getProxyRegion
             ? dragBox.getProxyRegion()
             : Region.from(dragBoxNode);

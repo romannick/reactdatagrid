@@ -963,7 +963,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
         ? dragColumn.id
         : null;
 
-    const dragBoxNode = dragBox.domRef ? dragBox.domRef.current : null;
+    const dragBoxNode = dragBox.getDOMNode ? dragBox.getDOMNode() : null;
 
     const dragBoxInitialRegion =
       dragBox && dragBox.getProxyRegion
@@ -975,6 +975,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
     ) {
       dragBoxInitialRegion.setWidth(DRAG_CELL_MAX_WIDTH);
     }
+
     if (Region.from(dragBoxNode).getWidth() > headerRegion.getWidth() / 2) {
       // if the column or col group is bigger than half the width of the header
       // place the proxy left edge approx where the mouse is, so it can be dragged more easily
