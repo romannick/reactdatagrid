@@ -81,7 +81,9 @@ function InovuaDataGridCell(props) {
     const updateProps = useCallback((props, callback) => {
         props.timestamp = Date.now();
         const newState = { props };
-        updateState(newState, callback);
+        requestAnimationFrame(() => {
+            updateState(newState, callback);
+        });
     }, []);
     const setStateProps = useCallback((stateProps) => {
         if (unmounted.current) {
@@ -546,7 +548,6 @@ function InovuaDataGridCell(props) {
     }, [props.getEditCompleteValue, props.editValue]);
     const completeEdit = useCallback((completeValue = getEditCompleteValue()) => {
         const thisProps = getProps();
-        debugger;
         stopEdit();
         if (props.onEditComplete) {
             props.onEditComplete(completeValue, thisProps);

@@ -130,7 +130,9 @@ function InovuaDataGridCell(props: CellProps) {
       props.timestamp = Date.now();
       const newState = { props };
 
-      updateState(newState, callback);
+      requestAnimationFrame(() => {
+        updateState(newState, callback);
+      });
     },
     []
   );
