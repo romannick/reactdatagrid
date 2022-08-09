@@ -873,7 +873,6 @@ function InovuaDataGridCell(props: CellProps) {
   const completeEdit = useCallback(
     (completeValue = getEditCompleteValue()) => {
       const thisProps = getProps();
-      debugger;
 
       stopEdit();
 
