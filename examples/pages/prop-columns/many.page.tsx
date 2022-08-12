@@ -66,6 +66,7 @@ class App extends React.Component<any, any> {
       columns,
       rows: 50,
       dataSource: [],
+      checkboxColumn: true,
     };
   }
 
@@ -129,6 +130,18 @@ class App extends React.Component<any, any> {
             Set rows
           </Btn>
         </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <CheckBox
+            checked={this.state.checkboxColumn}
+            onChange={() => {
+              this.setState({ checkboxColumn: !this.state.checkboxColumn });
+            }}
+          >
+            Checkbox column
+          </CheckBox>
+        </div>
+
         <DataGrid
           idProperty="id"
           style={gridStyle}
@@ -136,11 +149,13 @@ class App extends React.Component<any, any> {
             (globalObject as any).x = x;
           }}
           showHeader={true}
-          rowIndexColumn
+          // rowIndexColumn
           columns={this.state.columns}
           dataSource={this.state.dataSource}
           virtualizeColumnsThreshold={3}
           pagination={false}
+          // onRowReorder={this.state.checkboxColumn}
+          checkboxColumn={this.state.checkboxColumn}
           // nativeScroll={true}
           // virtualizeColumns={false}
 
