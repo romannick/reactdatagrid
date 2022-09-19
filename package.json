@@ -55,6 +55,7 @@
     "release:minor:canary:nobuild": "release minor pre canary && npm run registry-publish:canary",
     "release:major": "npm run build && npm run major && npm run registry-publish",
     "//****   CANARY": "****//",
+    "major:canary": "npm version premajor --preid=canary && npm run registry-publish:canary",
     "minor:canary": "npm version preminor --preid=canary && npm run registry-publish:canary",
     "patch:canary": "npm version prepatch --preid=canary && npm run registry-publish:canary",
     "nobump:canary": "npm version prerelease --preid=canary && npm run registry-publish:canary",
