@@ -47,7 +47,7 @@ class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
 
-    (this as any).COLS = 10;
+    (this as any).COLS = 100;
 
     let columns = times([{ name: 'id' }], (this as any).COLS, (_, i) => {
       return {
@@ -64,7 +64,7 @@ class App extends React.Component<any, any> {
     this.state = {
       rtl: true,
       columns,
-      rows: 50,
+      rows: 1050,
       dataSource: [],
       checkboxColumn: true,
     };

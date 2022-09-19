@@ -78,12 +78,12 @@ const DataGridRow = React.forwardRef((props, ref) => {
     const prevColumnRenderCount = usePrevious(props.columnRenderCount, props.columnRenderCount);
     if (props.columnRenderCount < prevColumnRenderCount) {
         cleanupCells();
-        getCells().forEach((cell) => {
-            if (cell.getProps().computedLocked) {
-                return;
-            }
-            cell.setStateProps(null);
-        });
+        // getCells().forEach((cell: any) => {
+        //   if (cell.getProps().computedLocked) {
+        //     return;
+        //   }
+        //   // cell.setStateProps(null);
+        // });
     }
     const getDOMNode = useCallback(() => {
         return domRef.current;

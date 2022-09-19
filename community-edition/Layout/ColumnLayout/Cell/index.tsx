@@ -120,7 +120,7 @@ function InovuaDataGridCell(props: CellProps) {
     (newState: TypeState, callback?: Function) => {
       callbackRef.current = callback;
 
-      setState(newState);
+      setState(oldState => ({ ...oldState, ...newState }));
     },
     []
   );

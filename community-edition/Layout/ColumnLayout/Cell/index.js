@@ -76,7 +76,7 @@ function InovuaDataGridCell(props) {
     }, []);
     const updateState = useCallback((newState, callback) => {
         callbackRef.current = callback;
-        setState(newState);
+        setState(oldState => ({ ...oldState, ...newState }));
     }, []);
     const updateProps = useCallback((props, callback) => {
         props.timestamp = Date.now();
