@@ -162,7 +162,8 @@ class App extends React.Component<any, any> {
           // virtualizeColumnsThreshold={10}
 
           // activeCellThrottle={200}
-          defaultActiveCell={[1, 0]}
+          // activeIndexThrottle={1000}
+          // defaultActiveCell={[1, 0]}
         />
       </div>
     );
