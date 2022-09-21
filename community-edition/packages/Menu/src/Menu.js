@@ -1013,6 +1013,12 @@ class InovuaMenu extends Component {
     checkAlignment(props, skipReset, alignTo) {
         props = props || this.props;
         alignTo = alignTo || props.alignTo;
+        if (alignTo &&
+            alignTo instanceof HTMLElement &&
+            // if alignTo is no longer in DOM, skip this alignment operation
+            !containsNode(document.body, alignTo)) {
+            return;
+        }
         if (props.visible === false) {
             return;
         }
