@@ -1573,6 +1573,7 @@ function InovuaDataGridCell(props: CellProps) {
     renderRowDetailsMoreIcon,
     renderRowDetailsExpandIcon,
     renderRowDetailsCollapsedIcon,
+    notifyColumnFilterVisibleStateChange,
   }: CellProps = thisProps;
 
   let { value, render: renderCell, renderSummary } = thisProps;
@@ -1600,6 +1601,7 @@ function InovuaDataGridCell(props: CellProps) {
       instance: cellInstance,
       value,
       name,
+      notifyColumnFilterVisibleStateChange,
       columnIndex: computedVisibleIndex,
       children,
       onClick: onClick,

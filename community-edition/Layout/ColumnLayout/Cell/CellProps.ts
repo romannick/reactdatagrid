@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { FunctionNotifier } from '../../../utils/notifier';
 import { ReactNode, CSSProperties } from 'react';
 
 type func = (...args: any[]) => any;
@@ -37,6 +38,7 @@ export type CellProps = {
   columnResizeHandleWidth?: number | string;
   computedLocked?: false | 'start' | 'end';
   computedWidth?: number;
+  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
   data?: any | any[];
   defaultWidth?: number | string;
   depth?: number;

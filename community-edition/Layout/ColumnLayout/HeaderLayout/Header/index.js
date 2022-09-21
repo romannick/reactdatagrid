@@ -51,6 +51,7 @@ const propTypes = {
     unlockedColumns: PropTypes.array,
     lockedEndColumns: PropTypes.array,
     deselectAll: PropTypes.func,
+    notifyColumnFilterVisibleStateChange: PropTypes.func,
     firstLockedEndIndex: PropTypes.number,
     firstLockedStartIndex: PropTypes.number,
     isMultiSort: PropTypes.bool,
@@ -444,7 +445,7 @@ export default class InovuaDataGridHeader extends React.Component {
     };
     getPropsForCells = (startIndex, endIndex = startIndex + 1) => {
         const props = this.props;
-        const { renderInPortal, columnHeaderUserSelect, columnResizeHandleWidth, columnUserSelect, data, showColumnContextMenu, showColumnFilterContextMenu, hideColumnFilterContextMenu, deselectAll, firstLockedEndIndex, firstUnlockedIndex, filterable, computedShowHeaderBorderRight, hasLockedEnd, hasLockedStart, lockedEndColumns, nativeScroll, resizeProxyStyle, rtl, i18n, scrollbarWidth, selectAll, selectedCount, filterTypes, totalCount, renderSortTool, unselectedCount, virtualizeColumns, showColumnMenuTool, showColumnMenuToolOnHover, lastUnlockedIndex, lastLockedStartIndex, lastLockedEndIndex, theme, renderMenuTool, sortedColumnsInfo, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, columnHoverClassName, enableColumnFilterContextMenu, computedEnableColumnHover, renderRowDetailsMoreIcon, hideColumnContextMenu, updateMenuPosition, filterRowHeight, } = props;
+        const { renderInPortal, columnHeaderUserSelect, columnResizeHandleWidth, columnUserSelect, data, showColumnContextMenu, showColumnFilterContextMenu, hideColumnFilterContextMenu, deselectAll, notifyColumnFilterVisibleStateChange, firstLockedEndIndex, firstUnlockedIndex, filterable, computedShowHeaderBorderRight, hasLockedEnd, hasLockedStart, lockedEndColumns, nativeScroll, resizeProxyStyle, rtl, i18n, scrollbarWidth, selectAll, selectedCount, filterTypes, totalCount, renderSortTool, unselectedCount, virtualizeColumns, showColumnMenuTool, showColumnMenuToolOnHover, lastUnlockedIndex, lastLockedStartIndex, lastLockedEndIndex, theme, renderMenuTool, sortedColumnsInfo, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, columnHoverClassName, enableColumnFilterContextMenu, computedEnableColumnHover, renderRowDetailsMoreIcon, hideColumnContextMenu, updateMenuPosition, filterRowHeight, } = props;
         let columns = props.columns;
         if (startIndex !== undefined) {
             columns = columns.slice(startIndex, endIndex);
@@ -504,6 +505,7 @@ export default class InovuaDataGridHeader extends React.Component {
                 lastUnlockedIndex,
                 lastLockedStartIndex,
                 lastLockedEndIndex,
+                notifyColumnFilterVisibleStateChange,
                 filterTypes,
                 onFilterValueChange: this.onFilterValueChange,
                 lastUnlocked: column.computedVisibleIndex === firstLockedIndex - 1,

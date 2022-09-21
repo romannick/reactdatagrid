@@ -1012,7 +1012,7 @@ function InovuaDataGridCell(props) {
         props,
     };
     const thisProps = getProps();
-    const { cellActive, cellSelected, data, empty, groupProps, headerCell, hidden, name, onRender, treeColumn, groupSpacerColumn, loadNodeAsync, groupColumnVisible, rowIndex, remoteRowIndex, rowSelected, rowExpanded, setRowSelected, setRowExpanded, isRowExpandable, toggleRowExpand, toggleNodeExpand, totalDataCount, computedVisibleIndex, inEdit, renderRowDetailsMoreIcon, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, } = thisProps;
+    const { cellActive, cellSelected, data, empty, groupProps, headerCell, hidden, name, onRender, treeColumn, groupSpacerColumn, loadNodeAsync, groupColumnVisible, rowIndex, remoteRowIndex, rowSelected, rowExpanded, setRowSelected, setRowExpanded, isRowExpandable, toggleRowExpand, toggleNodeExpand, totalDataCount, computedVisibleIndex, inEdit, renderRowDetailsMoreIcon, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, notifyColumnFilterVisibleStateChange, } = thisProps;
     let { value, render: renderCell, renderSummary } = thisProps;
     const className = prepareClassName(thisProps);
     const style = prepareStyle(thisProps);
@@ -1028,6 +1028,7 @@ function InovuaDataGridCell(props) {
         instance: cellInstance,
         value,
         name,
+        notifyColumnFilterVisibleStateChange,
         columnIndex: computedVisibleIndex,
         children,
         onClick: onClick,
