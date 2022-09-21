@@ -122,6 +122,10 @@ export default class HeaderGroup extends React.Component<
     this.domRef = React.createRef();
   }
 
+  getDOMNode = () => {
+    return this.domRef && this.domRef.current;
+  };
+
   setTop = (top: number) => {
     this.setState({ top });
   };
