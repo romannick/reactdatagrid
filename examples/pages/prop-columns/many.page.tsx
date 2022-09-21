@@ -155,11 +155,15 @@ class App extends React.Component<any, any> {
           virtualizeColumnsThreshold={3}
           pagination={false}
           // onRowReorder={this.state.checkboxColumn}
-          checkboxColumn={this.state.checkboxColumn}
+          // checkboxColumn={this.state.checkboxColumn}
           // nativeScroll={true}
           // virtualizeColumns={false}
 
           // virtualizeColumnsThreshold={10}
+
+          // activeCellThrottle={200}
+          // activeIndexThrottle={1000}
+          // defaultActiveCell={[1, 0]}
         />
       </div>
     );

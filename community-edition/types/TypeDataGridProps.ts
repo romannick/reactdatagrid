@@ -155,6 +155,8 @@ export type EnumRowDetailsWidth =
 type TypeGridPublicAPI = any;
 
 type TypeDataGridPropsNoI18n = {
+  activeCellThrottle?: number;
+  activeIndexThrottle?: number;
   scrollThreshold?: number | string;
   rowContextMenuAlignPositions?: string[];
   rowContextMenuPosition?: 'fixed' | 'absolute';
