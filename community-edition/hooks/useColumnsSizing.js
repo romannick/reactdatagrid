@@ -154,7 +154,11 @@ const useColumnsSizing = (_props, _computedProps, computedPropsRef) => {
             const cellProps = cell.props;
             const cellId = cellProps.id;
             if (columnId === cellId) {
-                result = cell.domRef.current;
+                result = cell.domRef
+                    ? cell.domRef.current
+                    : cell.getDOMNode
+                        ? cell.getDOMNode()
+                        : null;
             }
         });
         return result;
