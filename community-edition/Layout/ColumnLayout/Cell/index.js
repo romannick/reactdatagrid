@@ -932,12 +932,14 @@ function InovuaDataGridCell(props) {
     }, [props.computedResizable, props.computedFilterable]);
     const renderGroupTool = useCallback(() => {
         const thisProps = getProps();
-        const { rtl, collapsed, groupProps } = thisProps;
+        const { rtl, collapsed, groupProps, renderGroupCollapseTool, renderGroupExpandTool, } = thisProps;
         return groupTool({
             render: groupProps?.renderGroupTool,
             collapsed,
             rtl,
             size: 20,
+            renderGroupCollapseTool,
+            renderGroupExpandTool,
             toggleGroup: toggleGroup,
         });
     }, [props.rtl, props.collapsed, props.groupProps]);

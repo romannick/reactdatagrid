@@ -6,6 +6,7 @@
  */
 
 import { ReactNode, CSSProperties } from 'react';
+import { TypeGroupTool } from '../../../types';
 
 type func = (...args: any[]) => any;
 export type CellProps = {
@@ -64,6 +65,8 @@ export type CellProps = {
       size: number;
     };
   };
+  renderGroupCollapseTool?: TypeGroupTool;
+  renderGroupExpandTool?: TypeGroupTool;
   hasBottomSelectedSibling?: boolean;
   hasLeftSelectedSibling?: boolean;
   hasLockedStart?: boolean;
