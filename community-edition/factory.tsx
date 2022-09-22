@@ -74,6 +74,7 @@ import InovuaDataGridLayout from './Layout';
 import { StickyRowsContainerClassName } from './packages/react-virtual-list-pro/src/StickyRowsContainer';
 import { getGlobal } from './getGlobal';
 import useColumnHover from './hooks/useColumnHover';
+import { notifier } from './utils/notifier';
 
 let GRID_ID = 0;
 export type Props = {
@@ -1178,6 +1179,9 @@ const GridFactory = (
       gridId: useMemo(() => ++GRID_ID, []),
       isRowFullyVisible,
       bodyRef,
+      notifyColumnFilterVisibleStateChange: useMemo(() => {
+        return notifier(false);
+      }, []),
       getMenuPortalContainer: getDOMNode,
       scrollToIndexIfNeeded,
       scrollToIndex,

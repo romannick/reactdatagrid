@@ -117,6 +117,9 @@ export default class HeaderWrapper extends React.Component<any> {
         ) : null}
         <Header
           {...headerProps}
+          notifyColumnFilterVisibleStateChange={
+            props.notifyColumnFilterVisibleStateChange
+          }
           setScrollLeft={props.setScrollLeft}
           getScrollLeftMax={props.getScrollLeftMax}
           availableWidth={props.availableWidth}

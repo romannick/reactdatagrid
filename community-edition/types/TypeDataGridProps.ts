@@ -68,6 +68,7 @@ import {
   TypeRowUnselected,
 } from './TypeSelected';
 import Renderable from './TypeRenderable';
+import { FunctionNotifier } from '../utils/notifier';
 
 export type TypeBuildColumnsProps = {
   groups: any;
@@ -761,6 +762,7 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   rowReorderAutoScroll?: boolean;
   rowReorderArrowStyle?: CSSProperties;
   rowReorderAutoScrollSpeed?: number;
+  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
   computedPivotUniqueValuesPerColumn: TypePivotUniqueValuesDescriptor;
   computedLicenseValid?: boolean;
   initialProps: TypeDataGridProps;

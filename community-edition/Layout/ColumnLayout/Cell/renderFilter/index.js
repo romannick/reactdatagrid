@@ -13,6 +13,7 @@ class GenericFilter extends React.Component {
     refSettings;
     ref;
     specificFilter;
+    unsubscribeColumnFilterVisibility;
     constructor(props) {
         super(props);
         this.onSettingsClick = this.onSettingsClick.bind(this);
@@ -32,6 +33,11 @@ class GenericFilter extends React.Component {
         this.setupEventListener();
     }
     setupEventListener = () => {
+        this.unsubscribeColumnFilterVisibility = this.props.props.notifyColumnFilterVisibleStateChange.onCalled((visible) => {
+            if (!visible && this.state.open) {
+                this.close();
+            }
+        });
         this.refSettings = (s) => {
             /**
              * https://inovua.freshdesk.com/a/tickets/221
@@ -64,6 +70,9 @@ class GenericFilter extends React.Component {
         }
         this.onSettingsClickListener = null;
         this.settings = null;
+        if (this.unsubscribeColumnFilterVisibility) {
+            this.unsubscribeColumnFilterVisibility();
+        }
     }
     onSettingsClick = (e) => {
         if (!this.state.open) {
@@ -83,10 +92,14 @@ class GenericFilter extends React.Component {
     };
     onMenuClose = (e) => {
         e.preventDefault();
-        this.props.cellInstance.hideFilterContextMenu();
+        this.close();
+    };
+    close = () => {
         this.setState({
             focused: false,
             open: false,
+        }, () => {
+            this.props.cellInstance.hideFilterContextMenu();
         });
     };
     setValue = (value) => {

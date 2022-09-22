@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { FunctionNotifier } from '../../../../utils/notifier';
 import React, { ReactNode } from 'react';
 
 import StringFilter from '../../../../StringFilter/StringFilter';
@@ -17,6 +18,7 @@ type TypeGenericFilterProps = {
   props?: any;
   rtl?: boolean;
   enableColumnFilterContextMenu?: boolean;
+  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
 };
 
 type TypeGenericFilterState = {
@@ -33,6 +35,7 @@ class GenericFilter extends React.Component<
   refSettings: any;
   ref: any;
   specificFilter: any;
+  unsubscribeColumnFilterVisibility?: VoidFunction;
 
   constructor(props: TypeGenericFilterProps) {
     super(props);
@@ -59,6 +62,13 @@ class GenericFilter extends React.Component<
   }
 
   setupEventListener = () => {
+    this.unsubscribeColumnFilterVisibility = this.props.props.notifyColumnFilterVisibleStateChange.onCalled(
+      (visible: boolean) => {
+        if (!visible && this.state.open) {
+          this.close();
+        }
+      }
+    );
     this.refSettings = (s: any) => {
       /**
        * https://inovua.freshdesk.com/a/tickets/221
@@ -94,6 +104,10 @@ class GenericFilter extends React.Component<
     }
     this.onSettingsClickListener = null;
     this.settings = null;
+
+    if (this.unsubscribeColumnFilterVisibility) {
+      this.unsubscribeColumnFilterVisibility();
+    }
   }
 
   onSettingsClick = (e: any) => {
@@ -115,11 +129,20 @@ class GenericFilter extends React.Component<
 
   onMenuClose = (e: any) => {
     e.preventDefault();
-    this.props.cellInstance.hideFilterContextMenu();
-    this.setState({
-      focused: false,
-      open: false,
-    });
+
+    this.close();
+  };
+
+  close = () => {
+    this.setState(
+      {
+        focused: false,
+        open: false,
+      },
+      () => {
+        this.props.cellInstance.hideFilterContextMenu();
+      }
+    );
   };
 
   setValue = (value: any) => {
