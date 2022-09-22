@@ -610,6 +610,7 @@ const GridFactory = (
       [props.i18n]
     );
     const getItemId = useCallback((item: any) => {
+      if (!item) return;
       if (item.__group && Array.isArray(item.keyPath)) {
         return item.keyPath.join(props.groupPathSeparator);
       }
@@ -703,6 +704,7 @@ const GridFactory = (
     };
 
     const getItemIdAt = (index: number) => {
+      if (index === -1) return;
       return getItemId(getItemAt(index));
     };
     const isRowExpandedById = () => false;
@@ -1620,7 +1622,7 @@ const GridFactory = (
     });
     computedProps.edition = edition;
 
-    globalThis.computedProps = computedProps;
+    // globalThis.computedProps = computedProps;
     // globalThis.bodyRef = bodyRef;
 
     return (

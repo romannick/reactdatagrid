@@ -62,6 +62,7 @@ const useActiveIndex = (
     if (activeIndex === computedProps.computedActiveIndex) {
       return;
     }
+
     doSetActiveIndex(activeIndex);
   }, []);
 

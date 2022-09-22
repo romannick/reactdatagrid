@@ -384,6 +384,8 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             return props.i18n[key] || DEFAULT_I18N[key] || defaultLabel;
         }, [props.i18n]);
         const getItemId = useCallback((item) => {
+            if (!item)
+                return;
             if (item.__group && Array.isArray(item.keyPath)) {
                 return item.keyPath.join(props.groupPathSeparator);
             }
@@ -457,6 +459,8 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             return -1;
         };
         const getItemIdAt = (index) => {
+            if (index === -1)
+                return;
             return getItemId(getItemAt(index));
         };
         const isRowExpandedById = () => false;
@@ -1075,7 +1079,7 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             configurable: true,
         });
         computedProps.edition = edition;
-        globalThis.computedProps = computedProps;
+        // globalThis.computedProps = computedProps;
         // globalThis.bodyRef = bodyRef;
         return (React.createElement("div", { style: props.style, className: className, onKeyDown: onKeyDown, onFocus: onFocus, onBlur: onBlur, ref: domRef },
             React.createElement(Provider, { value: computedProps },
