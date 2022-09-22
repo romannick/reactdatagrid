@@ -1486,7 +1486,7 @@ function InovuaDataGridCell(props: CellProps) {
         props.onGroupToggle(data.keyPath, props, event);
       }
     },
-    [props.onGroupToggle, props.data]
+    [props.onGroupToggle, props.data, getProps]
   );
 
   const cellInstance: CellInstance = {
