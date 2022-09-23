@@ -1,8 +1,11 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState } from 'react';
 import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
+
+import Button from '@inovua/reactdatagrid-community/packages/Button';
 
 import people from '../people';
 import flags from '../flags';
+import NumericInput from '@inovua/reactdatagrid-community/packages/NumericInput';
 
 const gridStyle = { minHeight: 550 };
 
@@ -48,48 +51,38 @@ const columns = [
 const App = () => {
   const [gridRef, setGridRef] = useState(null);
   const [activeIndex, setActiveIndex] = useState();
-  const [activeRowId, setActiveRowId] = useState();
-  const [activeRowExpanded, setActiveRowExpanded] = useState();
-
-  const propsRef = useRef(null);
-  propsRef.current = gridRef && gridRef.current;
-
-  const onActiveIndexChange = useCallback(
-    index => {
-      console.log(propsRef);
-      const item = propsRef.current.getItemAt(index);
-      const rowId = propsRef.current.getItemId(item);
-
-      setActiveIndex(index);
-      setActiveRowId(rowId);
-      setActiveRowExpanded(propsRef.current.isRowExpanded(item));
-    },
-    [gridRef]
-  );
-
-  const onExpandedRowsChange = useCallback(
-    ({ expandedRows }) => {
-      if (expandedRows) {
-        setActiveRowExpanded(!!expandedRows[activeRowId]);
-      }
-    },
-    [activeRowId]
-  );
+  const [index, setIndex] = useState();
 
   return (
     <div>
-      {activeIndex == null ? null : (
-        <p>
-          Active row: {activeIndex}. The row is{' '}
-          {activeRowExpanded ? 'expanded' : 'collapsed'}.
-        </p>
-      )}
+      <div style={{ marginBottom: 20 }}>
+        <NumericInput
+          style={{ width: 100 }}
+          theme="default-dark"
+          value={index}
+          onChange={setIndex}
+        />
+        <Button
+          style={{ marginLeft: 20 }}
+          onClick={() => {
+            gridRef.current.setActiveIndex(index);
+          }}
+        >
+          Set active index
+        </Button>
+      </div>
+      <Button
+        style={{ marginBottom: 20 }}
+        disabled={activeIndex === undefined}
+        onClick={() => gridRef.current.toggleRowExpand(activeIndex)}
+      >
+        Toggle expand for active row
+      </Button>
       <ReactDataGrid
         onReady={setGridRef}
         idProperty="id"
         activeIndex={activeIndex}
-        onActiveIndexChange={onActiveIndexChange}
-        onExpandedRowsChange={onExpandedRowsChange}
+        onActiveIndexChange={setActiveIndex}
         style={gridStyle}
         rowExpandHeight={400}
         renderRowDetails={renderRowDetails}
