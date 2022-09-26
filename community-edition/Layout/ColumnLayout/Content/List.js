@@ -565,7 +565,7 @@ const propTypes = Object.assign({}, virtualListPropTypes, {
         id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         render: PropTypes.func,
     })),
-    data: PropTypes.array,
+    data: PropTypes.any,
     from: PropTypes.number,
     updateLockedWrapperPositions: PropTypes.any,
     // true if there is at least one locked column, false otherwise

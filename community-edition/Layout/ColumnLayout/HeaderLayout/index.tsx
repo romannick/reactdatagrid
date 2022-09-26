@@ -46,7 +46,9 @@ const getColumnOrder = (props, filter) => {
   const doFilter = c => (!c.groupColumn && filter ? filter(c) : true);
   let order;
   if (props.computedColumnOrder) {
-    order = props.computedColumnOrder.map(id => props.columnsMap[id]);
+    order = props.computedColumnOrder
+      .map(id => props.columnsMap[id])
+      .filter(Boolean);
   } else {
     order = props.allColumns;
   }
@@ -971,7 +973,6 @@ export default class InovuaDataGridHeaderLayout extends Component {
         : null;
 
     const dragBoxNode = dragBox.getDOMNode ? dragBox.getDOMNode() : null;
-
     const dragBoxInitialRegion =
       dragBox && dragBox.getProxyRegion
         ? dragBox.getProxyRegion()
@@ -1032,10 +1033,6 @@ export default class InovuaDataGridHeaderLayout extends Component {
     } else {
       dragProxy.setLeft(dragProxyPosition.left);
     }
-
-    this.setReorderArrowVisible(
-      headerDragColumn ? headerDragColumn.draggable !== false : true
-    );
 
     const maxHeaderIndex =
       columns.length - getUndraggableSuccessiveCount([...columns].reverse());
@@ -1213,7 +1210,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
 
     const columns = this.props.visibleColumns;
     const currentLocked = columns[dragIndex].computedLocked;
-    debugger;
+
     if (
       dropIndex == dragIndex &&
       newLocked === currentLocked &&
@@ -1589,8 +1586,6 @@ export default class InovuaDataGridHeaderLayout extends Component {
     }
 
     this.dropIndex = dropIndex;
-
-    this.setReorderArrowVisible(true);
 
     this.setReorderArrowPosition(undefined, dropTarget);
     this.setReorderArrowAt(

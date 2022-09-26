@@ -214,6 +214,10 @@ export default class GroupToolbarItem extends React.Component {
   getVisibleIndex = () => {
     return this.props.column.computedVisibleIndex;
   };
+
+  getDOMNode = () => {
+    return this.domRef.current;
+  };
 }
 
 GroupToolbarItem.propTypes = {

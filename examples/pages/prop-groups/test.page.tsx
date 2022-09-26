@@ -110,6 +110,7 @@ export default () => (
     <ReactDataGrid
       idProperty="id"
       style={gridStyle}
+      defaultGroupBy={['city']}
       columnMinWidth={100}
       columns={columns}
       groups={groups}
