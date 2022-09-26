@@ -20,11 +20,13 @@ import {
   useState,
   useCallback,
   useRef,
+  useEffect,
 } from 'react';
 import useProperty from '@inovua/reactdatagrid-community/hooks/useProperty';
 import batchUpdate from '@inovua/reactdatagrid-community/utils/batchUpdate';
 import clamp from '@inovua/reactdatagrid-community/utils/clamp';
 import useActiveCell from './useActiveCell';
+import usePrevious from '@inovua/reactdatagrid-community/hooks/usePrevious';
 
 const getFirstSelectedCell = (
   cellSelection: [number, number][]
@@ -134,6 +136,17 @@ export const useCellSelection = (
     cellSelectionEnabled && props.multiSelect !== false;
 
   const cellMultiSelectionEnabled = cellMultiSelectionEnabledRef.current;
+
+  const prevMultiSelectionEnabled = usePrevious(
+    cellMultiSelectionEnabled,
+    cellMultiSelectionEnabled
+  );
+
+  useEffect(() => {
+    if (prevMultiSelectionEnabled && !cellMultiSelectionEnabled) {
+      setCellSelection({});
+    }
+  }, [cellMultiSelectionEnabled, prevMultiSelectionEnabled]);
 
   const onCellEnter = useMemo(
     () =>
@@ -383,7 +396,7 @@ export const useCellSelection = (
       return onCellSelectionDraggerMouseDown;
     }
     return null;
-  }, []);
+  }, [cellMultiSelectionEnabled]);
 
   return {
     onCellEnter,

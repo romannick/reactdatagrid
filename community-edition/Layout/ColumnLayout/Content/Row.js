@@ -1580,7 +1580,7 @@ export default React.memo(DataGridRow, (prevProps, nextProps) => {
         scrollToIndexIfNeeded: 1,
         onColumnMouseEnter: 1,
         onColumnMouseLeave: 1,
-        computedCellSelection: 1,
+        // computedCellSelection: 1,
         getCellSelectionKey: 1,
     });
     if (areEqual.result) {
