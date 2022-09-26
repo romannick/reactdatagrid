@@ -76,7 +76,7 @@ const getParentsForColumns = (columns, groups, maxDepth) => {
     });
     return parentsForColumns;
 };
-const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLength, parentsForColumns, columns, allowGroupSplitOnReorder, }) => {
+const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLength, parentsForColumns, lockedForColumns, columns, allowGroupSplitOnReorder, }) => {
     const getGroupsForColumn = parents => {
         parents = parents || [];
         const initialName = parents[0];
@@ -98,15 +98,18 @@ const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLen
     };
     const getGroupStartFor = (parents, depth, index) => {
         const initialParent = parents[index].slice(-depth - 1)[0];
+        const initialLocked = lockedForColumns[index];
         let itParents;
         let currentParent;
+        let currentLocked;
         do {
             itParents = parents[index - 1];
             if (!itParents) {
                 break;
             }
             currentParent = itParents.slice(-depth - 1)[0];
-            if (currentParent !== initialParent) {
+            currentLocked = lockedForColumns[index];
+            if (currentParent !== initialParent || currentLocked !== initialLocked) {
                 break;
             }
             index--;
@@ -115,8 +118,10 @@ const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLen
     };
     const getGroupEndFor = (parents, depth, index) => {
         const initialParent = parents[index].slice(-depth - 1)[0];
+        const initialLocked = lockedForColumns[index];
         let itParents;
         let currentParent;
+        let currentLocked;
         do {
             index++;
             itParents = parents[index];
@@ -124,7 +129,8 @@ const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLen
                 break;
             }
             currentParent = itParents.slice(-depth - 1)[0];
-            if (currentParent !== initialParent) {
+            currentLocked = lockedForColumns[index];
+            if (currentParent !== initialParent || currentLocked !== initialLocked) {
                 break;
             }
         } while (index < parents.length);
@@ -734,6 +740,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
                 dragTargetIndex,
                 dragTargetLength,
                 parentsForColumns,
+                lockedForColumns: columns.map(c => c.computedLocked),
                 columns,
                 allowGroupSplitOnReorder: this.props.allowGroupSplitOnReorder,
                 maxDepth: this.props.computedGroupsDepth + 1,
@@ -845,6 +852,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
         dragProxy.setDragging(false);
         const columns = this.props.visibleColumns;
         const currentLocked = columns[dragIndex].computedLocked;
+        debugger;
         if (dropIndex == dragIndex &&
             newLocked === currentLocked &&
             dragTarget == dropTarget) {
@@ -856,7 +864,9 @@ export default class InovuaDataGridHeaderLayout extends Component {
             }, 10);
         }
         if (dragTarget == 'headergroup') {
-            if (dropIndex == dragIndex && dragTarget == dropTarget) {
+            if (dropIndex == dragIndex &&
+                dragTarget == dropTarget &&
+                newLocked === currentLocked) {
                 return;
             }
             if (columns[dropIndex]) {

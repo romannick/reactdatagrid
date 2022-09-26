@@ -104,6 +104,7 @@ const getValidDropPositions = ({
   dragTargetIndex,
   dragTargetLength,
   parentsForColumns,
+  lockedForColumns,
   columns,
   allowGroupSplitOnReorder,
 }) => {
@@ -131,15 +132,18 @@ const getValidDropPositions = ({
 
   const getGroupStartFor = (parents, depth, index) => {
     const initialParent = parents[index].slice(-depth - 1)[0];
+    const initialLocked = lockedForColumns[index];
     let itParents;
     let currentParent;
+    let currentLocked;
     do {
       itParents = parents[index - 1];
       if (!itParents) {
         break;
       }
       currentParent = itParents.slice(-depth - 1)[0];
-      if (currentParent !== initialParent) {
+      currentLocked = lockedForColumns[index];
+      if (currentParent !== initialParent || currentLocked !== initialLocked) {
         break;
       }
       index--;
@@ -148,8 +152,10 @@ const getValidDropPositions = ({
   };
   const getGroupEndFor = (parents, depth, index) => {
     const initialParent = parents[index].slice(-depth - 1)[0];
+    const initialLocked = lockedForColumns[index];
     let itParents;
     let currentParent;
+    let currentLocked;
 
     do {
       index++;
@@ -158,7 +164,8 @@ const getValidDropPositions = ({
         break;
       }
       currentParent = itParents.slice(-depth - 1)[0];
-      if (currentParent !== initialParent) {
+      currentLocked = lockedForColumns[index];
+      if (currentParent !== initialParent || currentLocked !== initialLocked) {
         break;
       }
     } while (index < parents.length);
@@ -1052,6 +1059,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
         dragTargetIndex,
         dragTargetLength,
         parentsForColumns,
+        lockedForColumns: columns.map(c => c.computedLocked),
         columns,
         allowGroupSplitOnReorder: this.props.allowGroupSplitOnReorder,
         maxDepth: this.props.computedGroupsDepth + 1,
@@ -1205,6 +1213,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
 
     const columns = this.props.visibleColumns;
     const currentLocked = columns[dragIndex].computedLocked;
+    debugger;
     if (
       dropIndex == dragIndex &&
       newLocked === currentLocked &&
@@ -1220,7 +1229,11 @@ export default class InovuaDataGridHeaderLayout extends Component {
     }
 
     if (dragTarget == 'headergroup') {
-      if (dropIndex == dragIndex && dragTarget == dropTarget) {
+      if (
+        dropIndex == dragIndex &&
+        dragTarget == dropTarget &&
+        newLocked === currentLocked
+      ) {
         return;
       }
       if (columns[dropIndex]) {

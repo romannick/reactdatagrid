@@ -266,8 +266,11 @@ export default (props, { maxAvailableWidthForColumns, lockedColumnsState, comput
         if (computedProps == null) {
             return;
         }
-        const { setLockedColumnsState, lockedColumnsState } = computedProps;
-        setLockedColumnsState({ ...lockedColumnsState, [column.id]: locked });
+        const { setLockedColumnsState } = computedProps;
+        setLockedColumnsState(lockedColumnsState => ({
+            ...lockedColumnsState,
+            [column.id]: locked,
+        }));
     };
     const getColumnsInOrder = () => {
         const { current: computedProps } = computedPropsRef;
