@@ -85,7 +85,7 @@ const ActiveRowIndicator = (props: TypeActiveRowIndicatorProps) => {
     }
 
     const doSetOffset = (left: number | string, top: number | string) => {
-      top = parseInt(top as any, 10) || 0;
+      top = Number.parseFloat(top as any) || 0;
       setOffset(`translate3d(${left || 0}px, ${top}px, 0px)`);
     };
 

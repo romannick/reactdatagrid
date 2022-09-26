@@ -46,7 +46,7 @@ const ActiveRowIndicator = (props) => {
             return;
         }
         const doSetOffset = (left, top) => {
-            top = parseInt(top, 10) || 0;
+            top = Number.parseFloat(top) || 0;
             setOffset(`translate3d(${left || 0}px, ${top}px, 0px)`);
         };
         if (config && config.raf === false) {
