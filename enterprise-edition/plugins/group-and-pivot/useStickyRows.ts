@@ -10,7 +10,7 @@ import {
   TypeStickyRows,
   TypeDataGridProps,
 } from '../../../community-edition/types';
-import { MutableRefObject, useState, useMemo } from 'react';
+import { MutableRefObject, useState, useMemo, useEffect } from 'react';
 
 const useStickyRows = (
   props: TypeDataGridProps,
@@ -31,6 +31,12 @@ const useStickyRows = (
   } else {
     stickyRows = props.stickyGroupRows ? stickyIndexes : null;
   }
+
+  useEffect(() => {
+    if (!props.stickyTreeNodes) {
+      setStickyGroupsIndexes({});
+    }
+  }, [props.stickyTreeNodes]);
 
   const computedStickyRows = useMemo(() => {
     const result = stickyRows == null ? stickyRows : { ...stickyRows };

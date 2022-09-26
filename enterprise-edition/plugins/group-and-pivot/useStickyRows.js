@@ -4,7 +4,7 @@
  * This source code is licensed under the Commercial License found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 const useStickyRows = (props, computedProps, computedPropsRef) => {
     const [stickyIndexes, setStickyGroupsIndexes] = useState(null);
     let stickyRows;
@@ -14,6 +14,11 @@ const useStickyRows = (props, computedProps, computedPropsRef) => {
     else {
         stickyRows = props.stickyGroupRows ? stickyIndexes : null;
     }
+    useEffect(() => {
+        if (!props.stickyTreeNodes) {
+            setStickyGroupsIndexes({});
+        }
+    }, [props.stickyTreeNodes]);
     const computedStickyRows = useMemo(() => {
         const result = stickyRows == null ? stickyRows : { ...stickyRows };
         return result;

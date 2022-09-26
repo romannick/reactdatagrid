@@ -1123,6 +1123,7 @@ export default (
           : null,
         computedDataSourceCache,
         computedProps.stickyGroupRows,
+        computedProps.stickyTreeNodes,
       ],
     }
   );
