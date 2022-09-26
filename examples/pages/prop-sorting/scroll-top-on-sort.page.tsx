@@ -39,7 +39,7 @@ const App = () => {
       </div>
       <ReactDataGrid
         idProperty="id"
-        scrollTopOnSort={scrollTopOnSort}
+        scrollTopOnSort={scrollTopOnSort ? 'always' : scrollTopOnSort}
         style={gridStyle}
         columns={columns}
         dataSource={people}

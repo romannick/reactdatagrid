@@ -582,7 +582,7 @@ type TypeDataGridPropsNoI18n = {
   theme?: string;
   style?: { [key: string]: string | number };
   scrollTopOnFilter?: boolean;
-  scrollTopOnSort?: boolean;
+  scrollTopOnSort?: boolean | 'always';
   scrollTopOnGroupBy?: boolean;
 
   parentComputedProps?: TypeComputedProps;
