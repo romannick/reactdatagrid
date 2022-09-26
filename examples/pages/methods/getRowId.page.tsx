@@ -4,7 +4,7 @@ import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
 import Button from '@inovua/reactdatagrid-community/packages/Button';
 
 import people from '../people';
-import flags from '../flags';
+import flags, { FlagsType } from '../flags';
 
 const gridStyle = { minHeight: 300 };
 
@@ -21,7 +21,8 @@ const columns = [
     name: 'country',
     header: 'County',
     defaultFlex: 1,
-    render: ({ value }) => (flags[value] ? flags[value] : value),
+    render: ({ value }: { value: string }) =>
+      flags[value as keyof FlagsType] ? flags[value as keyof FlagsType] : value,
   },
   { name: 'city', header: 'City', defaultFlex: 1 },
   { name: 'age', header: 'Age', defaultFlex: 1, type: 'number' },
@@ -40,7 +41,8 @@ const App = () => {
             console.log({
               activeIndex: activeIndex,
               content:
-                'Active row id:' + gridRef!.current.getRowId(activeIndex),
+                'Active row id:' +
+                (gridRef as any).current.getRowId(activeIndex),
             });
           }}
         >

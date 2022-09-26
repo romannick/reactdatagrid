@@ -2,11 +2,11 @@ import React, { useState, useCallback, useEffect } from 'react';
 import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
 
 import people from '../people';
-import flags from '../flags';
+import flags, { FlagsType } from '../flags';
 
 const gridStyle = { minHeight: 550 };
 
-const renderRowDetails = ({ data }) => {
+const renderRowDetails = ({ data }: { data: object }) => {
   return (
     <div style={{ padding: 20 }}>
       <h3>Row details:</h3>
@@ -16,7 +16,7 @@ const renderRowDetails = ({ data }) => {
             return (
               <tr key={name}>
                 <td>{name}</td>
-                <td>{data[name]}</td>
+                <td>{data[name as keyof object]}</td>
               </tr>
             );
           })}
@@ -39,7 +39,8 @@ const columns = [
     name: 'country',
     header: 'County',
     defaultFlex: 1,
-    render: ({ value }) => (flags[value] ? flags[value] : value),
+    render: ({ value }: { value: string }) =>
+      flags[value as keyof FlagsType] ? flags[value as keyof FlagsType] : value,
   },
   { name: 'city', header: 'City', defaultFlex: 1 },
   { name: 'age', header: 'Age', defaultFlex: 1, type: 'number' },
@@ -53,20 +54,22 @@ const App = () => {
 
   const onActiveIndexChange = useCallback(
     index => {
-      const rowId = gridRef.current.getItemId(gridRef.current.getItemAt(index));
+      const rowId = (gridRef as any).current.getItemId(
+        (gridRef as any).current.getItemAt(index)
+      );
 
       setActiveIndex(index);
       setActiveRowId(rowId);
-      setActiveRowExpanded(gridRef.current.isRowExpandedById(rowId));
+      setActiveRowExpanded((gridRef as any).current.isRowExpandedById(rowId));
     },
     [gridRef]
   );
 
   const onExpandedRowsChange = useCallback(
     ({ expandedRows }) => {
-      const newActiveRow = expandedRows ? !!expandedRows[activeRowId] : -1;
+      const newActiveRow = expandedRows ? !!expandedRows[activeRowId!] : -1;
 
-      setActiveRowExpanded(newActiveRow);
+      setActiveRowExpanded(newActiveRow as any);
     },
     [activeRowId]
   );

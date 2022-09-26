@@ -2,11 +2,11 @@ import React, { useState, useCallback, useRef } from 'react';
 import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
 
 import people from '../people';
-import flags from '../flags';
+import flags, { FlagsType } from '../flags';
 
 const gridStyle = { minHeight: 550 };
 
-const renderRowDetails = ({ data }) => {
+const renderRowDetails = ({ data }: { data: object }) => {
   return (
     <div style={{ padding: 20 }}>
       <h3>Row details:</h3>
@@ -16,7 +16,7 @@ const renderRowDetails = ({ data }) => {
             return (
               <tr key={name}>
                 <td>{name}</td>
-                <td>{data[name]}</td>
+                <td>{data[name as keyof object]}</td>
               </tr>
             );
           })}
@@ -39,7 +39,8 @@ const columns = [
     name: 'country',
     header: 'County',
     defaultFlex: 1,
-    render: ({ value }) => (flags[value] ? flags[value] : value),
+    render: ({ value }: { value: string }) =>
+      flags[value as keyof FlagsType] ? flags[value as keyof FlagsType] : value,
   },
   { name: 'city', header: 'City', defaultFlex: 1 },
   { name: 'age', header: 'Age', defaultFlex: 1, type: 'number' },
@@ -51,8 +52,8 @@ const App = () => {
   const [activeRowId, setActiveRowId] = useState();
   const [activeRowExpanded, setActiveRowExpanded] = useState();
 
-  const propsRef = useRef(null);
-  propsRef.current = gridRef && gridRef.current;
+  const propsRef: any = useRef(null);
+  propsRef.current = gridRef && (gridRef as any).current;
 
   const onActiveIndexChange = useCallback(
     index => {
@@ -70,7 +71,7 @@ const App = () => {
   const onExpandedRowsChange = useCallback(
     ({ expandedRows }) => {
       if (expandedRows) {
-        setActiveRowExpanded(!!expandedRows[activeRowId]);
+        setActiveRowExpanded(!!expandedRows[activeRowId!] as any);
       }
     },
     [activeRowId]
