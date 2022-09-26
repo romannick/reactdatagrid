@@ -234,9 +234,12 @@ export default class InovuaVirtualList extends Component {
         return shouldComponentUpdate(this, nextProps, nextState);
     }
     renderSizer = scrollHeight => {
-        const { renderSizer, minRowWidth, emptyScrollOffset, rowHeightManager, showEmptyRows, } = this.props;
+        const { renderSizer, minRowWidth, emptyScrollOffset, rowHeightManager, showEmptyRows, virtualized, } = this.props;
         const SCROLLBAR_WIDTH = getScrollbarWidth();
         const offset = SCROLLBAR_WIDTH ? 0 : emptyScrollOffset || 0;
+        if (!virtualized) {
+            scrollHeight = 0;
+        }
         let minHeight = scrollHeight + offset;
         if (showEmptyRows) {
             minHeight = Math.max(minHeight, this.strictVisibleCount * rowHeightManager.getDefaultRowHeight());
