@@ -631,6 +631,7 @@ export default (props, computedProps, computedPropsRef) => {
                 : null,
             computedDataSourceCache,
             computedProps.stickyGroupRows,
+            computedProps.stickyTreeNodes,
         ],
     });
     const paginationProps = usePagination({
