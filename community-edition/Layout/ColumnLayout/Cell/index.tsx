@@ -1211,7 +1211,7 @@ function InovuaDataGridCell(props: CellProps) {
         initialDOMProps.onContextMenu(event, thisProps);
       }
     },
-    [props.onContextMenu]
+    [props.onContextMenu, getProps]
   );
 
   const onTouchStart = useCallback(

@@ -17,7 +17,12 @@ import {
   TypeColumns,
   TypeHeaderProps,
 } from './TypeColumn';
-import { MutableRefObject, ReactNode, CSSProperties } from 'react';
+import {
+  MutableRefObject,
+  ReactNode,
+  CSSProperties,
+  ReactElement,
+} from 'react';
 export { TypeSortInfo, TypeSingleSortInfo } from './TypeSortInfo';
 export { TypeGroupBy, TypeGroupTool } from './TypeGroupBy';
 export { TypeSize } from './TypeSize';
@@ -464,6 +469,27 @@ export type TypePlugin = {
     columns: TypeColumns,
     props: TypeBuildColumnsProps
   ) => TypeColumns;
+  renderColumnContextMenu?: (
+    computedProps: TypeComputedProps,
+    computedPropsRef: MutableRefObject<TypeComputedProps | null>
+  ) => void | {} | null;
+  renderRowContextMenu?: (
+    computedProps: TypeComputedProps,
+    computedPropsRef: MutableRefObject<TypeComputedProps | null>
+  ) => void | {} | null;
+  renderColumnFilterContextMenu?: (
+    computedProps: TypeComputedProps,
+    computedPropsRef: MutableRefObject<TypeComputedProps | null>
+  ) => void | {} | null;
+  renderRowResizeIndicator?: (
+    computedProps: TypeComputedProps,
+    computedPropsRef: MutableRefObject<TypeComputedProps | null>
+  ) => ReactElement;
+  renderLicenseNotice?: (
+    computedProps: TypeComputedProps,
+    computedPropsRef: MutableRefObject<TypeComputedProps | null>
+  ) => void;
+  Footer?: TypePlugin;
 };
 
 export type TypeDetailsGridInfo = {
