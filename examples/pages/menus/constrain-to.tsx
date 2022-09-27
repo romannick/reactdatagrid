@@ -33,7 +33,7 @@ const App = () => {
       <ReactDataGrid
         idProperty="id"
         style={gridStyle}
-        columnContextMenuConstrainTo={true}
+        columnContextMenuConstrainTo={false}
         columnContextMenuPosition={'fixed'}
         columns={columns}
         dataSource={people}
