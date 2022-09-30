@@ -1718,6 +1718,8 @@ const GridFactory = (
     shareSpaceOnResize: false,
 
     enableColumnFilterContextMenu: true,
+    copySpreadsheetCompatibleString: false,
+    clipboardSeparator: '\t',
 
     resizable: true,
     virtualized: true,
