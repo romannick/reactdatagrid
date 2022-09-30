@@ -331,12 +331,6 @@ export default (
     rowMultiSelectionEnabled
   );
 
-  // if (
-  //   previousRowMultiSelectionEnabled === true &&
-  //   rowMultiSelectionEnabled === false
-  // ) {
-  //   setSelected({});
-  // }
   useEffect(() => {
     if (
       previousRowMultiSelectionEnabled === true &&
