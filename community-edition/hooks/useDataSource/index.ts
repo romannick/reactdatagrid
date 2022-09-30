@@ -1012,8 +1012,9 @@ export default (
             setOriginalData(originalData);
 
             if (
-              computedProps.scrollTopOnSort &&
-              computedProps.loadDataTrigger.find(s => s == 'sortInfo')
+              (computedProps.scrollTopOnSort === true &&
+                computedProps.loadDataTrigger.find(s => s == 'sortInfo')) ||
+              computedProps.scrollTopOnSort === 'always'
             ) {
               raf(() => {
                 computedProps.setScrollTop(0);
@@ -1122,6 +1123,7 @@ export default (
           : null,
         computedDataSourceCache,
         computedProps.stickyGroupRows,
+        computedProps.stickyTreeNodes,
       ],
     }
   );

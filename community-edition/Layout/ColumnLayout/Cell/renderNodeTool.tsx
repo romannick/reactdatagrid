@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
+import { CellProps } from './CellProps';
+
+type func = (...args: any[]) => any;
 
 const DEFAULT_STYLE = {
   position: 'relative',
@@ -14,7 +17,7 @@ const DEFAULT_STYLE = {
 };
 
 // stop propagation in order not to trigger row active index change
-const stopPropagation = e => e.stopPropagation();
+const stopPropagation = (e: any) => e.stopPropagation();
 
 export default (
   {
@@ -22,7 +25,6 @@ export default (
     nodeLoading,
     nodeCollapsed,
     leafNode,
-    rtl,
     node,
     nodeProps,
     toggleNodeExpand,
@@ -31,15 +33,50 @@ export default (
     renderTreeCollapseTool,
     renderTreeExpandTool,
     renderTreeLoadingTool,
+  }: {
+    render?: func;
+    nodeLoading?: boolean;
+    nodeCollapsed?: boolean;
+    nodeExpanded?: boolean;
+    leafNode?: boolean;
+    node?: ReactNode;
+    rtl?: boolean;
+    nodeProps?: any;
+    toggleNodeExpand?: func;
+    style?: CSSProperties | ((props: CellProps) => void);
+    size?: number;
+    renderTreeCollapseTool?: ({
+      domProps,
+      size,
+    }: {
+      domProps: any;
+      size?: number;
+    }) => void;
+    renderTreeExpandTool?: ({
+      domProps,
+      size,
+    }: {
+      domProps: any;
+      size?: number;
+    }) => void;
+    renderTreeLoadingTool?: ({
+      domProps,
+      size,
+      className,
+    }: {
+      domProps: any;
+      size?: number;
+      className: string;
+    }) => void;
   },
-  cellProps
+  cellProps?: CellProps
 ) => {
   size = size || 18;
   if (!leafNode) {
-    style = style ? { ...DEFAULT_STYLE, ...style } : DEFAULT_STYLE;
+    (style as any) = style ? { ...DEFAULT_STYLE, ...style } : DEFAULT_STYLE;
   }
 
-  const domProps = {
+  const domProps: any = {
     onMouseDown: leafNode ? null : toggleNodeExpand,
     onClick: leafNode ? null : stopPropagation,
     style,
@@ -78,7 +115,13 @@ export default (
     );
   }
 
-  const renderNodeLoading = ({ domProps, size }) => {
+  const renderNodeLoading = ({
+    domProps,
+    size,
+  }: {
+    domProps: any;
+    size: number;
+  }) => {
     const className = `${domProps.className ||
       ''} InovuaReactDataGrid__cell__node-tool--loading`;
 

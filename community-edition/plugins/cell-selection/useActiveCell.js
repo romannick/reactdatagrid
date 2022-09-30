@@ -9,6 +9,7 @@ import { useLayoutEffect, useCallback } from 'react';
 import clamp from '@inovua/reactdatagrid-community/utils/clamp';
 import usePrevious from '@inovua/reactdatagrid-community/hooks/usePrevious';
 import batchUpdate from '@inovua/reactdatagrid-community/utils/batchUpdate';
+import throttle from '@inovua/reactdatagrid-community/packages/throttle';
 const useActiveCell = (props, computedPropsRef) => {
     let [computedActiveCell, doSetActiveCell] = useProperty(props, 'activeCell');
     if (!props.enableKeyboardNavigation) {
@@ -187,7 +188,15 @@ const useActiveCell = (props, computedPropsRef) => {
         }
         rowIndex = clamp(rowIndex, 0, maxRow);
         colIndex = clamp(colIndex, minCol, maxCol);
-        computedProps.setActiveCell([rowIndex, colIndex]);
+        if (computedProps.activeCellThrottle) {
+            throttle(() => computedProps.setActiveCell([rowIndex, colIndex]), computedProps.activeCellThrottle, {
+                trailing: true,
+                leading: false,
+            });
+        }
+        else {
+            computedProps.setActiveCell([rowIndex, colIndex]);
+        }
     }, []);
     return {
         getCellSelectionBetween,

@@ -74,6 +74,7 @@ import InovuaDataGridLayout from './Layout';
 import { StickyRowsContainerClassName } from './packages/react-virtual-list-pro/src/StickyRowsContainer';
 import { getGlobal } from './getGlobal';
 import useColumnHover from './hooks/useColumnHover';
+import { notifier } from './utils/notifier';
 
 let GRID_ID = 0;
 export type Props = {
@@ -384,9 +385,13 @@ const GridFactory = (
       horizontal: boolean;
     }) => {
       const onChange = () => {
-        const computedStyle = globalObject.getComputedStyle(
-          getVirtualList().getDOMNode()
-        );
+        const vl = getVirtualList();
+
+        const computedStyle =
+          vl && globalObject.getComputedStyle(vl.getDOMNode());
+        if (!computedStyle) {
+          return;
+        }
         const virtualListBorderLeft = parseInt(
           computedStyle.borderLeftWidth,
           10
@@ -605,6 +610,7 @@ const GridFactory = (
       [props.i18n]
     );
     const getItemId = useCallback((item: any) => {
+      if (!item) return;
       if (item.__group && Array.isArray(item.keyPath)) {
         return item.keyPath.join(props.groupPathSeparator);
       }
@@ -698,6 +704,7 @@ const GridFactory = (
     };
 
     const getItemIdAt = (index: number) => {
+      if (index === -1) return;
       return getItemId(getItemAt(index));
     };
     const isRowExpandedById = () => false;
@@ -1174,6 +1181,9 @@ const GridFactory = (
       gridId: useMemo(() => ++GRID_ID, []),
       isRowFullyVisible,
       bodyRef,
+      notifyColumnFilterVisibleStateChange: useMemo(() => {
+        return notifier(false);
+      }, []),
       getMenuPortalContainer: getDOMNode,
       scrollToIndexIfNeeded,
       scrollToIndex,
@@ -1612,7 +1622,7 @@ const GridFactory = (
     });
     computedProps.edition = edition;
 
-    globalThis.computedProps = computedProps;
+    // globalThis.computedProps = computedProps;
     // globalThis.bodyRef = bodyRef;
 
     return (

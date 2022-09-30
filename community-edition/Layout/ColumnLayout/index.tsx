@@ -293,7 +293,7 @@ export default class InovuaDataGridColumnLayout extends React.Component {
   };
 
   getVirtualList = () => {
-    return this.content ? this.content.virtualList : null;
+    return this.content ? this.content.getVirtualList() : null;
   };
 
   startEdit = args => {

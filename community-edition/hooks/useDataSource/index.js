@@ -533,8 +533,9 @@ export default (props, computedProps, computedPropsRef) => {
             return queue.commit(() => {
                 const computedProps = computedPropsRef.current;
                 setOriginalData(originalData);
-                if (computedProps.scrollTopOnSort &&
-                    computedProps.loadDataTrigger.find(s => s == 'sortInfo')) {
+                if ((computedProps.scrollTopOnSort === true &&
+                    computedProps.loadDataTrigger.find(s => s == 'sortInfo')) ||
+                    computedProps.scrollTopOnSort === 'always') {
                     raf(() => {
                         computedProps.setScrollTop(0);
                     });
@@ -630,6 +631,7 @@ export default (props, computedProps, computedPropsRef) => {
                 : null,
             computedDataSourceCache,
             computedProps.stickyGroupRows,
+            computedProps.stickyTreeNodes,
         ],
     });
     const paginationProps = usePagination({

@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export default className => {
-  return (element, modifier) => {
+export default (className?: string): Function => {
+  return (element: string, modifier: string): string => {
     const el = element ? `-${element}` : '';
     const mod = modifier ? `--${modifier}` : '';
 

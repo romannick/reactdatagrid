@@ -96,7 +96,7 @@ export default (computedProps, computedPropsRef) => {
                 const menuTools = Array.prototype.slice.call(computedProps.domRef.current.querySelectorAll('.InovuaReactDataGrid__column-header__menu-tool'));
                 const mainMenu = computedProps.domRef.current.querySelector('.InovuaReactDataGrid > .inovua-react-toolkit-menu');
                 const cellInstance = computedProps.columnContextMenuInstanceProps;
-                const columnIndex = cellInstance.props.computedVisibleIndex;
+                const columnIndex = cellInstance.computedVisibleIndex;
                 const alignTo = getAlignTo(selection, menuTools, columnIndex);
                 if (alignTo) {
                     computedProps.updateMainMenuPosition(alignTo);

@@ -32,6 +32,8 @@ export const MenuTool = (props: TypeProps) => {
   const _unmounted: any = useRef();
 
   useEffect(() => {
+    _unmounted.current = false;
+
     return () => {
       _unmounted.current = true;
     };

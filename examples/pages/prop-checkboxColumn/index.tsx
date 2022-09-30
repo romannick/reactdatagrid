@@ -1,3 +1,4 @@
+import CheckBox from '@inovua/reactdatagrid-community/packages/CheckBox';
 import React, { useState, useCallback } from 'react';
 
 import ReactDataGrid from '../../../enterprise-edition';
@@ -59,6 +60,7 @@ const columns = buildColumns(colsString);
 
 const App = () => {
   const [selected, setSelected] = useState();
+  const [checkboxColumn, setCheckboxColumn] = useState(true);
 
   const onSelectionChange = useCallback(({ selected }) => {
     setSelected(selected);
@@ -67,12 +69,17 @@ const App = () => {
   return (
     <div>
       <h3>Performance issues with large components</h3>
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox checked={checkboxColumn} onChange={setCheckboxColumn}>
+          checkboxColumn
+        </CheckBox>
+      </div>
       <ReactDataGrid
         idProperty="id"
         theme="default-dark"
         licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
         selected={selected}
-        checkboxColumn
+        checkboxColumn={checkboxColumn}
         onSelectionChange={onSelectionChange}
         style={gridStyle}
         columns={columns}

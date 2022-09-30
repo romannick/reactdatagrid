@@ -206,7 +206,11 @@ const useColumnsSizing = (
       const cellId = cellProps.id;
 
       if (columnId === cellId) {
-        result = cell.domRef.current;
+        result = cell.domRef
+          ? cell.domRef.current
+          : cell.getDOMNode
+          ? cell.getDOMNode()
+          : null;
       }
     });
 

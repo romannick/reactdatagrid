@@ -104,6 +104,7 @@ class FakeFlex extends Component {
         return this.node;
     }
     componentDidMount() {
+        this.unmounted = false;
         requestAnimationFrame(() => {
             this.setupObservers();
         });

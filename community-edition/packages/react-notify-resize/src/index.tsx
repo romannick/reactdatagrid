@@ -143,6 +143,8 @@ class InovuaNotifyResize extends React.Component {
   }
 
   componentDidMount() {
+    this.__willUnmount = false;
+
     const ResizeObserver =
       globalObject.ResizeObserver || this.props.ResizeObserver;
     if (this.props.useNativeIfAvailable && ResizeObserver) {

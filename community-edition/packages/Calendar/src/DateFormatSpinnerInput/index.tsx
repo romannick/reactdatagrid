@@ -28,6 +28,10 @@ export default class DateFormatSpinnerInput extends Component {
     this.input = createRef();
   }
 
+  componentDidMount() {
+    this.started = true;
+  }
+
   componentWillUnmount() {
     this.started = false;
   }

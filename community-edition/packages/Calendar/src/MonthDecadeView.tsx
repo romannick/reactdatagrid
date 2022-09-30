@@ -40,6 +40,10 @@ export default class MonthDecadeView extends Component {
     this.state = getInitialState(props);
   }
 
+  componentDidMount() {
+    this.unmounted = false;
+  }
+
   componentWillUnmount() {
     this.unmounted = true;
   }

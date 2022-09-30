@@ -39,6 +39,7 @@ import { communityFeatureWarn } from './warn';
 import { StickyRowsContainerClassName } from './packages/react-virtual-list-pro/src/StickyRowsContainer';
 import { getGlobal } from './getGlobal';
 import useColumnHover from './hooks/useColumnHover';
+import { notifier } from './utils/notifier';
 let GRID_ID = 0;
 const globalObject = getGlobal();
 const DEFAULT_I18N = {
@@ -239,7 +240,11 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
         });
         const onScrollbarsChange = (scrollbars) => {
             const onChange = () => {
-                const computedStyle = globalObject.getComputedStyle(getVirtualList().getDOMNode());
+                const vl = getVirtualList();
+                const computedStyle = vl && globalObject.getComputedStyle(vl.getDOMNode());
+                if (!computedStyle) {
+                    return;
+                }
                 const virtualListBorderLeft = parseInt(computedStyle.borderLeftWidth, 10);
                 const virtualListBorderRight = parseInt(computedStyle.borderRightWidth, 10);
                 const virtualListExtraWidth = virtualListBorderLeft + virtualListBorderRight;
@@ -379,6 +384,8 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             return props.i18n[key] || DEFAULT_I18N[key] || defaultLabel;
         }, [props.i18n]);
         const getItemId = useCallback((item) => {
+            if (!item)
+                return;
             if (item.__group && Array.isArray(item.keyPath)) {
                 return item.keyPath.join(props.groupPathSeparator);
             }
@@ -452,6 +459,8 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             return -1;
         };
         const getItemIdAt = (index) => {
+            if (index === -1)
+                return;
             return getItemId(getItemAt(index));
         };
         const isRowExpandedById = () => false;
@@ -778,6 +787,9 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             gridId: useMemo(() => ++GRID_ID, []),
             isRowFullyVisible,
             bodyRef,
+            notifyColumnFilterVisibleStateChange: useMemo(() => {
+                return notifier(false);
+            }, []),
             getMenuPortalContainer: getDOMNode,
             scrollToIndexIfNeeded,
             scrollToIndex,
@@ -1067,7 +1079,7 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             configurable: true,
         });
         computedProps.edition = edition;
-        globalThis.computedProps = computedProps;
+        // globalThis.computedProps = computedProps;
         // globalThis.bodyRef = bodyRef;
         return (React.createElement("div", { style: props.style, className: className, onKeyDown: onKeyDown, onFocus: onFocus, onBlur: onBlur, ref: domRef },
             React.createElement(Provider, { value: computedProps },

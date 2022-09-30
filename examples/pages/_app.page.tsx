@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../community-edition/style/base.scss';
 import '../../community-edition/style/theme/default-light/index.scss';
 import '../../community-edition/style/theme/default-dark/index.scss';
@@ -53,15 +53,51 @@ ComboBox.defaultProps.theme = 'default-dark';
 Menu.defaultProps.theme = 'default-dark';
 
 function MyApp({ Component, pageProps }) {
+  const [showChild, setShowChild] = useState(false);
+  const [strictMode, setStrictMode] = useState(true);
+
+  useEffect(() => {
+    setShowChild(true);
+  }, []);
+
+  if (!showChild) {
+    return null;
+  }
+
+  if (typeof window === 'undefined') {
+    return <></>;
+  }
+
   if (!(process as any).browser) {
     return null;
   }
 
+  const strictModeApp = (
+    <React.StrictMode>
+      <Component {...pageProps} />
+    </React.StrictMode>
+  );
+
+  const app = <Component {...pageProps} />;
+
   return (
-    <>
-      <React.StrictMode>
-        <Component {...pageProps} />
-      </React.StrictMode>
+    <div>
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox checked={strictMode} onChange={setStrictMode}>
+          Strict Mode
+        </CheckBox>
+      </div>
+
+      <div
+        style={{
+          background: '#9ba7b4',
+          height: 1,
+          width: '100%',
+          marginBottom: 20,
+        }}
+      ></div>
+
+      {strictMode ? strictModeApp : app}
 
       <style global jsx>
         {`
@@ -81,7 +117,7 @@ function MyApp({ Component, pageProps }) {
           }
         `}
       </style>
-    </>
+    </div>
   );
 }
 

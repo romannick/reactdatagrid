@@ -84,6 +84,8 @@ for (let i = 0; i < 1000; i++) {
   dataSource.push(Object.assign({ id: i }, result));
 }
 
+dataSource.length = 5;
+
 export default function App() {
   return (
     <Table

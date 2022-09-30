@@ -12,6 +12,7 @@ export const MenuTool = (props) => {
     const domRef = useRef();
     const _unmounted = useRef();
     useEffect(() => {
+        _unmounted.current = false;
         return () => {
             _unmounted.current = true;
         };

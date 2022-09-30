@@ -140,7 +140,7 @@ export default (
         );
 
         const cellInstance = computedProps.columnContextMenuInstanceProps;
-        const columnIndex = cellInstance.props.computedVisibleIndex;
+        const columnIndex = cellInstance.computedVisibleIndex;
 
         const alignTo = getAlignTo(selection, menuTools, columnIndex);
 

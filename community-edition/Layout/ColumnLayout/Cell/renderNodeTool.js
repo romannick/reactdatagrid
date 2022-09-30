@@ -11,8 +11,8 @@ const DEFAULT_STYLE = {
     cursor: 'pointer',
 };
 // stop propagation in order not to trigger row active index change
-const stopPropagation = e => e.stopPropagation();
-export default ({ render, nodeLoading, nodeCollapsed, leafNode, rtl, node, nodeProps, toggleNodeExpand, style, size, renderTreeCollapseTool, renderTreeExpandTool, renderTreeLoadingTool, }, cellProps) => {
+const stopPropagation = (e) => e.stopPropagation();
+export default ({ render, nodeLoading, nodeCollapsed, leafNode, node, nodeProps, toggleNodeExpand, style, size, renderTreeCollapseTool, renderTreeExpandTool, renderTreeLoadingTool, }, cellProps) => {
     size = size || 18;
     if (!leafNode) {
         style = style ? { ...DEFAULT_STYLE, ...style } : DEFAULT_STYLE;
@@ -46,7 +46,7 @@ export default ({ render, nodeLoading, nodeCollapsed, leafNode, rtl, node, nodeP
         }
         return (React.createElement("div", { ...domProps, style: { ...domProps.style, width: tools ? size : 0, height: size } }));
     }
-    const renderNodeLoading = ({ domProps, size }) => {
+    const renderNodeLoading = ({ domProps, size, }) => {
         const className = `${domProps.className ||
             ''} InovuaReactDataGrid__cell__node-tool--loading`;
         let loadingTool;

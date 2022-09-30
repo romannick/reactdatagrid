@@ -45,13 +45,13 @@ class List extends Component {
   }
 
   componentDidMount() {
+    this.componentIsMounted = true;
+
     if (!this.props.relativeToViewport) {
       setTimeout(() => {
         this.updateListPosition();
       }, 0);
     }
-
-    this.componentIsMounted = true;
 
     if (this.props.activeItemIndex != null) {
       setTimeout(() => {

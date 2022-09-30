@@ -51,6 +51,7 @@ const propTypes = {
     unlockedColumns: PropTypes.array,
     lockedEndColumns: PropTypes.array,
     deselectAll: PropTypes.func,
+    notifyColumnFilterVisibleStateChange: PropTypes.func,
     firstLockedEndIndex: PropTypes.number,
     firstLockedStartIndex: PropTypes.number,
     isMultiSort: PropTypes.bool,
@@ -444,7 +445,7 @@ export default class InovuaDataGridHeader extends React.Component {
     };
     getPropsForCells = (startIndex, endIndex = startIndex + 1) => {
         const props = this.props;
-        const { renderInPortal, columnHeaderUserSelect, columnResizeHandleWidth, columnUserSelect, data, showColumnContextMenu, showColumnFilterContextMenu, hideColumnFilterContextMenu, deselectAll, firstLockedEndIndex, firstUnlockedIndex, filterable, computedShowHeaderBorderRight, hasLockedEnd, hasLockedStart, lockedEndColumns, nativeScroll, resizeProxyStyle, rtl, i18n, scrollbarWidth, selectAll, selectedCount, filterTypes, totalCount, renderSortTool, unselectedCount, virtualizeColumns, showColumnMenuTool, showColumnMenuToolOnHover, lastUnlockedIndex, lastLockedStartIndex, lastLockedEndIndex, theme, renderMenuTool, sortedColumnsInfo, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, columnHoverClassName, enableColumnFilterContextMenu, computedEnableColumnHover, renderRowDetailsMoreIcon, hideColumnContextMenu, updateMenuPosition, filterRowHeight, } = props;
+        const { renderInPortal, columnHeaderUserSelect, columnResizeHandleWidth, columnUserSelect, data, showColumnContextMenu, showColumnFilterContextMenu, hideColumnFilterContextMenu, deselectAll, notifyColumnFilterVisibleStateChange, firstLockedEndIndex, firstUnlockedIndex, filterable, computedShowHeaderBorderRight, hasLockedEnd, hasLockedStart, lockedEndColumns, nativeScroll, resizeProxyStyle, rtl, i18n, scrollbarWidth, selectAll, selectedCount, filterTypes, totalCount, renderSortTool, unselectedCount, virtualizeColumns, showColumnMenuTool, showColumnMenuToolOnHover, lastUnlockedIndex, lastLockedStartIndex, lastLockedEndIndex, theme, renderMenuTool, sortedColumnsInfo, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, columnHoverClassName, enableColumnFilterContextMenu, computedEnableColumnHover, renderRowDetailsMoreIcon, hideColumnContextMenu, updateMenuPosition, filterRowHeight, } = props;
         let columns = props.columns;
         if (startIndex !== undefined) {
             columns = columns.slice(startIndex, endIndex);
@@ -504,6 +505,7 @@ export default class InovuaDataGridHeader extends React.Component {
                 lastUnlockedIndex,
                 lastLockedStartIndex,
                 lastLockedEndIndex,
+                notifyColumnFilterVisibleStateChange,
                 filterTypes,
                 onFilterValueChange: this.onFilterValueChange,
                 lastUnlocked: column.computedVisibleIndex === firstLockedIndex - 1,
@@ -672,7 +674,7 @@ export default class InovuaDataGridHeader extends React.Component {
         }
         result = result.map((cProps, i) => {
             const index = renderRange?.start + i;
-            return (React.createElement(Cell, { ...cProps, key: `${index}__${cProps.id}`, left: this.props.columnWidthPrefixSums[index] }));
+            return (React.createElement(Cell, { ...cProps, timestamp: Date.now(), key: `${index}__${cProps.id}`, left: this.props.columnWidthPrefixSums[index] }));
         });
         return renderCellsMaybeLocked(result, this.props, props.scrollLeft, {
             isHeader: true,
@@ -879,7 +881,7 @@ export default class InovuaDataGridHeader extends React.Component {
                 this.warn(`Column "${props.id}" references group "${props.group}", but the group is never defined in the groups prop.`);
             }
             const depth = group ? group.computedDepth + 1 : 0;
-            return React.createElement(Cell, { ...props, key: props.id, depth: depth });
+            return (React.createElement(Cell, { ...props, key: props.id, depth: depth, timestamp: Date.now() }));
         });
         return this.renderItems(items);
     };

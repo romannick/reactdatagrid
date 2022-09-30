@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { CSSProperties, MouseEventHandler, ReactNode } from 'react';
+import React, { CSSProperties, MouseEventHandler } from 'react';
 import { CellProps } from './CellProps';
 import { TypeGroupTool } from '../../../types';
 

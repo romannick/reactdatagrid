@@ -89,7 +89,7 @@ export default (props, computedProps, computedPropsRef) => {
             computedProps.setRowContextMenuProps(null);
         }
     }, []);
-    const showColumnContextMenu = useCallback((alignTo, cellProps, cellInstance, onHide) => {
+    const showColumnContextMenu = useCallback((alignTo, cellProps, { computedVisibleIndex }, onHide) => {
         const { current: computedProps } = computedPropsRef;
         if (!computedProps) {
             return;
@@ -108,7 +108,11 @@ export default (props, computedProps, computedPropsRef) => {
             computedProps.hideColumnFilterContextMenu();
         }
         computedProps.setColumnContextMenuProps(cellProps);
-        computedProps.setColumnContextMenuInstanceProps(cellInstance);
+        if (computedProps.setColumnContextMenuInstanceProps) {
+            computedProps.setColumnContextMenuInstanceProps({
+                computedVisibleIndex,
+            });
+        }
     }, []);
     const getMenuAvailableHeight = useCallback(() => {
         const { current: computedProps } = computedPropsRef;

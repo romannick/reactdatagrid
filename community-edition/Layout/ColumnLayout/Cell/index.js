@@ -4,14 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { cloneElement } from 'react';
+import React, { useState, useEffect, useCallback, useRef, cloneElement, } from 'react';
 import PropTypes from 'prop-types';
 import Region from '../../../packages/region';
 import shallowequal, { equalReturnKey } from '../../../packages/shallowequal';
-import autoBind from '../../../packages/react-class/autoBind';
 import RENDER_HEADER from './renderHeader';
-import renderGroupTool from './renderGroupTool';
-import renderNodeTool from './renderNodeTool';
+import groupTool from './renderGroupTool';
+import nodeTool from './renderNodeTool';
 import sealedObjectFactory from '../../../utils/sealedObjectFactory';
 import join from '../../../packages/join';
 import isFocusable from '../../../utils/isFocusable';
@@ -57,110 +56,124 @@ const CELL_RENDER_SECOND_OBJ = sealedObjectFactory({
     headerProps: null,
 });
 const wrapInContent = (value) => (React.createElement("div", { key: "content", className: "InovuaReactDataGrid__cell__content", children: value }));
-export default class InovuaDataGridCell extends React.Component {
-    domRef;
-    isCancelled;
-    constructor(props) {
-        super(props);
-        this.domRef = React.createRef();
-        this.state = { props };
-        autoBind(this);
-        if (props.headerCell) {
-            this.state.left = props.left || 0;
+function InovuaDataGridCell(props) {
+    const domRef = useRef(null);
+    const isCancelled = useRef(false);
+    const sortTimeoutId = useRef(null);
+    const lastEditCompleteTimestamp = useRef(0);
+    const unmounted = useRef(false);
+    const cleanupResizeObserver = useRef(null);
+    const callbackRef = useRef(undefined);
+    const [theState, setState] = useState({ props });
+    const useInitialProps = !theState.props || props.timestamp > theState.props.timestamp;
+    const state = useInitialProps
+        ? { ...theState, props, left: props.left || 0 }
+        : theState;
+    const latestPropsRef = useRef(state.props);
+    latestPropsRef.current = state.props;
+    const getProps = useCallback(() => {
+        return latestPropsRef.current;
+    }, []);
+    const updateState = useCallback((newState, callback) => {
+        callbackRef.current = callback;
+        setState(oldState => ({ ...oldState, ...newState }));
+    }, []);
+    const updateProps = useCallback((props, callback) => {
+        props.timestamp = Date.now();
+        const newState = { props };
+        requestAnimationFrame(() => {
+            updateState(newState, callback);
+        });
+    }, []);
+    const setStateProps = useCallback((stateProps) => {
+        if (unmounted.current) {
+            return;
         }
-        this.isCancelled = false;
-    }
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        this.updateProps(nextProps);
-    }
-    componentDidMount() {
-        this.node = this.getDOMNode();
-        if (this.props.onMount) {
-            this.props.onMount(this.props, this);
+        const newProps = Object.assign({}, InovuaDataGridCell.defaultProps, stateProps);
+        if (!shallowequal(newProps, getProps(), { timestamp: 1 })) {
+            updateProps(newProps);
         }
-        // if (this.props.naturalRowHeight) {
-        //   this.cleanupResizeObserver = setupResizeObserver(this.node, size => {
-        //     this.props.onResize?.({
-        //       cell: this,
-        //       props: this.getProps(),
+    }, [getProps]);
+    useEffect(() => {
+        const callback = callbackRef.current;
+        if (callback && typeof callback === 'function') {
+            callback();
+        }
+        callbackRef.current = null;
+    }, [state]);
+    useEffect(() => {
+        unmounted.current = false;
+        if (props.onMount) {
+            props.onMount(props, cellInstance);
+        }
+        props.cellRef?.(cellInstance);
+        // if (props.naturalRowHeight) {
+        //   const node = getDOMNode();
+        //   cleanupResizeObserver.current = setupResizeObserver(node, size => {
+        //     props.onResize?.({
+        //       cell: cellInstance,
+        //       props: getProps(),
         //       size,
         //     });
         //   });
         // }
-    }
-    getProps() {
-        return this.state.props;
-    }
-    setStateProps(stateProps) {
-        if (this.unmounted) {
-            return;
+        return () => {
+            if (cleanupResizeObserver.current) {
+                const cleanupResizeObserverFn = cleanupResizeObserver.current;
+                cleanupResizeObserverFn();
+            }
+            if (props.onUnmount) {
+                props.onUnmount(props, cellInstance);
+            }
+            unmounted.current = true;
+        };
+    }, []);
+    const getDOMNode = useCallback(() => {
+        return domRef.current;
+    }, []);
+    const onUpdate = useCallback(() => {
+        if (props.onUpdate) {
+            props.onUpdate(getProps(), cellInstance);
         }
-        const newProps = Object.assign({}, InovuaDataGridCell.defaultProps, stateProps);
-        if (!shallowequal(newProps, this.getProps())) {
-            this.updateProps(newProps);
+    }, [props.onUpdate]);
+    const setDragging = useCallback((dragging, callback) => {
+        const newState = { dragging };
+        if (!dragging) {
+            newState.top = 0;
+            if (props.rtl) {
+                newState.right = 0;
+            }
+            else {
+                newState.left = 0;
+            }
         }
-    }
-    updateProps(props, callback) {
-        const newState = { props };
-        this.updateState(newState, callback);
-    }
-    onUpdate() {
-        if (this.props.onUpdate) {
-            this.props.onUpdate(this.getProps(), this);
-        }
-    }
-    componentWillUnmount() {
-        if (this.cleanupResizeObserver) {
-            this.cleanupResizeObserver();
-        }
-        if (this.props.onUnmount) {
-            this.props.onUnmount(this.props, this);
-        }
-        this.unmounted = true;
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-        let areEqual = equalReturnKey(nextProps, this.props, {
-            computedActiveIndex: 1,
-            activeRowRef: 1,
-            active: 1,
-            remoteRowIndex: 1,
-            onResizeMouseDown: 1,
-            onResizeTouchStart: 1,
-            onFocus: 1,
-            onSortClick: 1,
-            onTouchStart: 1,
-            onColumnMouseEnter: 1,
-            onColumnMouseLeave: 1,
-        });
-        const equalProps = areEqual.result;
-        if (!areEqual.result) {
-            // console.log(
-            //   'UPDATE CELL',
-            //   areEqual.key,
-            //   // this.props[areEqual.key!],
-            //   // nextProps[areEqual.key!],
-            //   // diff(nextProps, this.props)
-            // );
-            return true;
-        }
-        if (equalProps && !this.updating) {
-            return false;
-        }
-        const equal = this.state
-            ? equalProps && shallowequal(nextState, this.state)
-            : equalProps;
-        return !equal;
-    }
-    prepareStyle(props) {
-        const { maxWidth, minRowHeight, computedLocked, virtualizeColumns, computedWidth, computedOffset, rowHeight, initialRowHeight, naturalRowHeight, headerCell, hidden, rtl, inTransition, inShowTransition, computedRowspan, zIndex, } = props;
+        updateState(newState, callback);
+    }, [props.rtl]);
+    const setLeft = useCallback((left) => {
+        updateState({ left });
+    }, []);
+    const setRight = useCallback((right) => {
+        updateState({ right });
+    }, []);
+    const setTop = useCallback((top) => {
+        updateState({ top });
+    }, []);
+    const setHeight = useCallback((height) => {
+        updateState({ height });
+    }, []);
+    const setWidth = useCallback((width) => {
+        updateState({ width });
+    }, []);
+    const prepareStyle = (thisProps) => {
+        const { maxWidth, minRowHeight, computedLocked, computedWidth, computedOffset, rowHeight, initialRowHeight, naturalRowHeight, headerCell, hidden, rtl, inTransition, inShowTransition, computedRowspan, zIndex, } = thisProps;
         const style = {};
-        if (typeof props.style === 'function') {
+        if (typeof thisProps.style === 'function') {
             if (!headerCell) {
-                Object.assign(style, props.style(props));
+                Object.assign(style, thisProps.style(thisProps));
             }
         }
         else {
-            Object.assign(style, props.style);
+            Object.assign(style, thisProps.style);
         }
         style.width = computedWidth;
         style.minWidth = computedWidth;
@@ -205,16 +218,16 @@ export default class InovuaDataGridCell extends React.Component {
                 }
             }
         }
-        if (this.state && this.state.dragging) {
+        if (state && state.dragging) {
             if (rtl) {
-                style.right = this.state.right || 0;
+                style.right = state.right || 0;
             }
             else {
-                style.left = this.state.left || 0;
+                style.left = state.left || 0;
             }
-            style.top = this.state.top || 0;
-            style.height = this.state.height || '';
-            if (!props.computedResizable && props.computedFilterable) {
+            style.top = state.top || 0;
+            style.height = state.height || '';
+            if (!thisProps.computedResizable && thisProps.computedFilterable) {
                 if (rtl) {
                     style.right = 0;
                 }
@@ -235,17 +248,17 @@ export default class InovuaDataGridCell extends React.Component {
         }
         if (inTransition) {
             let duration = inShowTransition
-                ? props.showTransitionDuration
-                : props.hideTransitionDuration;
-            duration = duration || props.visibilityTransitionDuration;
+                ? thisProps.showTransitionDuration
+                : thisProps.hideTransitionDuration;
+            duration = duration || thisProps.visibilityTransitionDuration;
             style.transitionDuration =
                 typeof duration == 'number' ? `${duration}ms` : duration;
         }
         return style;
-    }
-    prepareClassName(props) {
-        const { groupCell: isGroupCell, groupTitleCell, groupExpandCell, headerCell: isHeaderCell, headerCellDefaultClassName, cellDefaultClassName, computedGroupBy, depth, computedVisibleIndex, headerCell, headerEllipsis, groupProps, hidden, showBorderRight, showBorderTop, showBorderBottom, showBorderLeft, firstInSection, lastInSection, noBackground, computedLocked, computedWidth, inTransition, rowSelected, computedRowspan, cellSelected, cellActive, groupSpacerColumn, computedPivot, computedResizable, groupColumnVisible, computedFilterable, rtl, inEdit, columnIndex, columnIndexHovered, columnHoverClassName, } = props;
-        let { userSelect, headerUserSelect } = props;
+    };
+    const prepareClassName = (thisProps) => {
+        const { groupCell: isGroupCell, groupTitleCell, groupExpandCell, headerCell: isHeaderCell, headerCellDefaultClassName, cellDefaultClassName, computedGroupBy, depth, computedVisibleIndex, headerCell, headerEllipsis, groupProps, hidden, showBorderRight, showBorderTop, showBorderBottom, showBorderLeft, firstInSection, lastInSection, noBackground, computedLocked, computedWidth, inTransition, rowSelected, computedRowspan, cellSelected, cellActive, groupSpacerColumn, computedPivot, computedResizable, groupColumnVisible, computedFilterable, rtl, inEdit, columnIndex, columnIndexHovered, columnHoverClassName, } = thisProps;
+        let { userSelect, headerUserSelect } = thisProps;
         if (typeof userSelect === 'boolean') {
             userSelect = userSelect ? 'text' : 'none';
         }
@@ -260,18 +273,18 @@ export default class InovuaDataGridCell extends React.Component {
             ? headerCellDefaultClassName
             : cellDefaultClassName;
         const commonClassName = join(!computedLocked && `${baseClassName}--unlocked`, computedLocked && `${baseClassName}--locked`, computedLocked && `${baseClassName}--locked-${computedLocked}`);
-        const last = props.last ||
-            props.computedVisibleIndex == props.computedVisibleCount - 1;
-        const propsClassName = typeof props.className === 'function'
-            ? props.className(props)
-            : props.className;
-        let className = join(propsClassName, baseClassName, commonClassName, !isHeaderCell && props.cellClassName, (nested || hidden) && `${baseClassName}--no-padding`, hidden && `${baseClassName}--hidden`, `${baseClassName}--direction-${rtl ? 'rtl' : 'ltr'}`, computedRowspan > 1 && `${baseClassName}--rowspan`, inTransition && `${baseClassName}--transition`, inTransition && computedWidth && `${baseClassName}--showing`, inTransition && !computedWidth && `${baseClassName}--hiding`, computedWidth === 0 && `${baseClassName}--no-size`, nested && `${baseClassName}--stretch`, (isHeaderCell && headerUserSelect == null) || !isHeaderCell
+        const last = thisProps.last ||
+            thisProps.computedVisibleIndex == thisProps.computedVisibleCount - 1;
+        const propsClassName = typeof thisProps.className === 'function'
+            ? thisProps.className(thisProps)
+            : thisProps.className;
+        let className = join(propsClassName, baseClassName, commonClassName, !isHeaderCell && thisProps.cellClassName, (nested || hidden) && `${baseClassName}--no-padding`, hidden && `${baseClassName}--hidden`, `${baseClassName}--direction-${rtl ? 'rtl' : 'ltr'}`, computedRowspan > 1 && `${baseClassName}--rowspan`, inTransition && `${baseClassName}--transition`, inTransition && computedWidth && `${baseClassName}--showing`, inTransition && !computedWidth && `${baseClassName}--hiding`, computedWidth === 0 && `${baseClassName}--no-size`, nested && `${baseClassName}--stretch`, (isHeaderCell && headerUserSelect == null) || !isHeaderCell
             ? userSelect && `${baseClassName}--user-select-${userSelect}`
-            : null, groupExpandCell && `${baseClassName}--group-expand-cell`, groupTitleCell && `${baseClassName}--group-title-cell`, rowSelected && `${baseClassName}--selected`, groupProps && `${baseClassName}--group-cell`, computedPivot && `${baseClassName}--pivot-enabled`, groupSpacerColumn && `${baseClassName}--group-column-cell`, inEdit && `${baseClassName}--in-edit`, cellSelected && `${baseClassName}--cell-selected`, cellActive && `${baseClassName}--cell-active`, props.textAlign &&
-            (isHeaderCell ? !props.headerAlign : true) &&
-            `${baseClassName}--align-${props.textAlign}`, props.textVerticalAlign &&
-            (isHeaderCell ? !props.headerVerticalAlign : true) &&
-            `${baseClassName}--vertical-align-${props.textVerticalAlign}`, props.virtualizeColumns && `${baseClassName}--virtualize-columns`, props.computedVisibleIndex === 0 && `${baseClassName}--first`, props.rowIndexInGroup === 0 && `${baseClassName}--first-row-in-group`, last && `${baseClassName}--last`, showBorderLeft &&
+            : null, groupExpandCell && `${baseClassName}--group-expand-cell`, groupTitleCell && `${baseClassName}--group-title-cell`, rowSelected && `${baseClassName}--selected`, groupProps && `${baseClassName}--group-cell`, computedPivot && `${baseClassName}--pivot-enabled`, groupSpacerColumn && `${baseClassName}--group-column-cell`, inEdit && `${baseClassName}--in-edit`, cellSelected && `${baseClassName}--cell-selected`, cellActive && `${baseClassName}--cell-active`, thisProps.textAlign &&
+            (isHeaderCell ? !thisProps.headerAlign : true) &&
+            `${baseClassName}--align-${thisProps.textAlign}`, thisProps.textVerticalAlign &&
+            (isHeaderCell ? !thisProps.headerVerticalAlign : true) &&
+            `${baseClassName}--vertical-align-${thisProps.textVerticalAlign}`, thisProps.virtualizeColumns && `${baseClassName}--virtualize-columns`, thisProps.computedVisibleIndex === 0 && `${baseClassName}--first`, thisProps.rowIndexInGroup === 0 && `${baseClassName}--first-row-in-group`, last && `${baseClassName}--last`, showBorderLeft &&
             computedWidth !== 0 &&
             (!isHeaderCell || !(computedResizable || computedFilterable)) &&
             `${baseClassName}--show-border-${rtl ? 'right' : 'left'}`, firstInSection && `${baseClassName}--first-in-section`, lastInSection && `${baseClassName}--last-in-section`, showBorderRight &&
@@ -283,21 +296,21 @@ export default class InovuaDataGridCell extends React.Component {
                 : `${baseClassName}--over`
             : '');
         if (cellSelected) {
-            className = join(className, props.hasTopSelectedSibling &&
-                `${baseClassName}--cell-has-top-selected-sibling`, props.hasBottomSelectedSibling &&
-                `${baseClassName}--cell-has-bottom-selected-sibling`, props.hasLeftSelectedSibling &&
-                `${baseClassName}--cell-has-${rtl ? 'right' : 'left'}-selected-sibling`, props.hasRightSelectedSibling &&
+            className = join(className, thisProps.hasTopSelectedSibling &&
+                `${baseClassName}--cell-has-top-selected-sibling`, thisProps.hasBottomSelectedSibling &&
+                `${baseClassName}--cell-has-bottom-selected-sibling`, thisProps.hasLeftSelectedSibling &&
+                `${baseClassName}--cell-has-${rtl ? 'right' : 'left'}-selected-sibling`, thisProps.hasRightSelectedSibling &&
                 `${baseClassName}--cell-has-${rtl ? 'left' : 'right'}-selected-sibling`);
         }
         if (isHeaderCell) {
-            className = join(className, commonClassName, props.headerClassName, props.titleClassName, this.state && this.state.dragging && `${baseClassName}--dragging`, this.state && this.state.left && `${baseClassName}--reordered`, props.computedSortable && `${baseClassName}--sortable`, headerUserSelect && `${baseClassName}--user-select-${headerUserSelect}`, last && !headerEllipsis && `${baseClassName}--overflow-hidden`, `${baseClassName}--align-${props.headerAlign || 'start'}`, props.group
+            className = join(className, commonClassName, thisProps.headerClassName, thisProps.titleClassName, state && state.dragging && `${baseClassName}--dragging`, state && state.left && `${baseClassName}--reordered`, thisProps.computedSortable && `${baseClassName}--sortable`, headerUserSelect && `${baseClassName}--user-select-${headerUserSelect}`, last && !headerEllipsis && `${baseClassName}--overflow-hidden`, `${baseClassName}--align-${thisProps.headerAlign || 'start'}`, thisProps.group
                 ? `${baseClassName}--has-group`
-                : `${baseClassName}--has-no-group`, props.headerVerticalAlign &&
-                `${baseClassName}--vertical-align-${props.headerVerticalAlign}`, props.computedResizable
+                : `${baseClassName}--has-no-group`, thisProps.headerVerticalAlign &&
+                `${baseClassName}--vertical-align-${thisProps.headerVerticalAlign}`, thisProps.computedResizable
                 ? `${baseClassName}--resizable`
-                : `${baseClassName}--unresizable`, props.computedLockable
+                : `${baseClassName}--unresizable`, thisProps.computedLockable
                 ? `${baseClassName}--lockable`
-                : `${baseClassName}--unlockable`, props.lastInGroup && `${baseClassName}--last-in-group`);
+                : `${baseClassName}--unlockable`, thisProps.lastInGroup && `${baseClassName}--last-in-group`);
         }
         else {
             className = join(className, (groupProps
@@ -311,449 +324,261 @@ export default class InovuaDataGridCell extends React.Component {
             className = join(className, 'InovuaReactDataGrid__group-cell');
         }
         return className;
-    }
-    setDragging(dragging, callback) {
-        const newState = { dragging };
-        if (!dragging) {
-            newState.top = 0;
-            if (this.props.rtl) {
-                newState.right = 0;
-            }
-            else {
-                newState.left = 0;
-            }
-        }
-        this.updateState(newState, callback);
-    }
-    updateState(state, callback) {
-        this.updating = true;
-        this.setState(state, () => {
-            this.updating = false;
-            if (callback && typeof callback === 'function') {
-                callback();
-            }
-        });
-    }
-    setLeft(left) {
-        this.updateState({ left });
-    }
-    setRight(right) {
-        this.updateState({ right });
-    }
-    setTop(top) {
-        this.updateState({ top });
-    }
-    setHeight(height) {
-        this.updateState({ height });
-    }
-    setWidth(width) {
-        this.updateState({ width });
-    }
-    getInitialIndex() {
-        return this.props.computedVisibleIndex;
-    }
-    getcomputedVisibleIndex() {
-        return this.getProps().computedVisibleIndex;
-    }
-    render() {
-        const props = this.getProps();
-        const { cellActive, cellSelected, data, empty, groupProps, headerCell, hidden, name, onCellEnter, onRender, treeColumn, groupSpacerColumn, groupColumn, loadNodeAsync, groupColumnVisible, rowIndex, remoteRowIndex, rowSelected, rowExpanded, setRowSelected, setRowExpanded, isRowExpandable, toggleRowExpand, toggleNodeExpand, totalDataCount, computedVisibleIndex, inEdit, renderRowDetailsMoreIcon, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, } = props;
-        let { value, render: renderCell, renderSummary } = props;
-        const className = this.prepareClassName(props);
-        const style = this.prepareStyle(props);
-        const headerProps = headerCell ? props.headerProps || emptyObject : null;
-        if (!headerCell &&
-            groupSpacerColumn &&
-            groupProps &&
-            groupProps.depth == computedVisibleIndex) {
-            value = this.renderGroupTool();
-        }
-        const children = value;
-        let cellProps = Object.assign({}, props, headerCell ? headerProps : props.cellProps, {
-            instance: this,
-            value,
-            name,
-            columnIndex: computedVisibleIndex,
-            children,
-            onClick: this.onClick,
-            onDoubleClick: this.onDoubleClick,
-            onContextMenu: this.onContextMenu,
-            onMouseDown: this.onMouseDown,
-            onTouchStart: this.onTouchStart,
-            onMouseEnter: this.onCellEnter,
-            onMouseLeave: this.onCellLeave,
-        });
-        cellProps.className = headerCell
-            ? headerProps.className
-                ? `${className} ${headerProps.className}`
-                : className
-            : props.cellProps && props.cellProps.className
-                ? typeof props.cellProps.className === 'function'
-                    ? `${className} ${props.cellProps.className(cellProps)}`
-                    : `${className} ${props.cellProps.className}`
-                : className;
-        if (!headerCell) {
-            CELL_RENDER_OBJECT.empty = empty;
-            CELL_RENDER_OBJECT.value = value;
-            CELL_RENDER_OBJECT.data = data;
-            CELL_RENDER_OBJECT.cellProps = cellProps;
-            CELL_RENDER_OBJECT.columnIndex = computedVisibleIndex;
-            CELL_RENDER_OBJECT.treeColumn = treeColumn;
-            CELL_RENDER_OBJECT.rowIndex = rowIndex;
-            CELL_RENDER_OBJECT.remoteRowIndex = remoteRowIndex;
-            CELL_RENDER_OBJECT.rowIndexInGroup = props.rowIndexInGroup;
-            CELL_RENDER_OBJECT.rowSelected = rowSelected;
-            CELL_RENDER_OBJECT.rowExpanded = rowExpanded;
-            CELL_RENDER_OBJECT.nodeProps = data ? data.__nodeProps : emptyObject;
-            CELL_RENDER_OBJECT.setRowSelected = setRowSelected;
-            CELL_RENDER_OBJECT.setRowExpanded = setRowExpanded;
-            CELL_RENDER_OBJECT.toggleGroup = this.toggleGroup;
-            CELL_RENDER_OBJECT.toggleRowExpand = toggleRowExpand;
-            CELL_RENDER_OBJECT.toggleNodeExpand = toggleNodeExpand;
-            CELL_RENDER_OBJECT.loadNodeAsync = loadNodeAsync;
-            CELL_RENDER_OBJECT.isRowExpandable = isRowExpandable;
-            CELL_RENDER_OBJECT.totalDataCount = totalDataCount;
-            CELL_RENDER_OBJECT.renderRowDetailsExpandIcon = renderRowDetailsExpandIcon;
-            CELL_RENDER_OBJECT.renderRowDetailsCollapsedIcon = renderRowDetailsCollapsedIcon;
-        }
-        let rendersInlineEditor = headerCell
-            ? false
-            : cellProps.rendersInlineEditor;
-        if (rendersInlineEditor && typeof rendersInlineEditor === 'function') {
-            rendersInlineEditor = cellProps.rendersInlineEditor(CELL_RENDER_OBJECT);
-        }
-        CELL_RENDER_OBJECT.rendersInlineEditor = rendersInlineEditor;
-        cellProps.style = headerCell
-            ? headerProps.style
-                ? Object.assign({}, style, headerProps.style)
-                : style
-            : props.cellProps && props.cellProps.style
-                ? typeof props.cellProps.style === 'function'
-                    ? Object.assign({}, style, props.cellProps.style(cellProps))
-                    : Object.assign({}, style, props.cellProps.style)
-                : style;
-        if (inEdit || rendersInlineEditor) {
-            cellProps.editProps = {
-                inEdit,
-                startEdit: this.startEdit,
-                value: props.editValue,
-                onClick: this.onEditorClick,
-                onChange: this.onEditValueChange,
-                onComplete: this.onEditorComplete,
-                onCancel: this.onEditorCancel,
-                onEnterNavigation: this.onEditorEnterNavigation,
-                onTabNavigation: this.onEditorTabNavigation,
-                gotoNext: this.gotoNextEditor,
-                gotoPrev: this.gotoPrevEditor,
-            };
-        }
-        if (headerCell) {
-            cellProps.onFocus = this.onHeaderCellFocus;
-        }
-        if (headerCell) {
-            CELL_RENDER_OBJECT.renderRowDetailsMoreIcon = renderRowDetailsMoreIcon;
-        }
-        if (headerCell) {
-            cellProps = this.prepareHeaderCellProps(cellProps);
-        }
-        else {
-            if (data &&
-                (data.__summary || (data.__group && data.groupColumnSummary)) &&
-                renderSummary) {
-                renderCell = renderSummary;
-            }
-            if (renderCell) {
-                // reuse the same sealed object in order to have better perf
-                CELL_RENDER_SECOND_OBJ.cellProps = cellProps;
-                CELL_RENDER_SECOND_OBJ.column = cellProps;
-                CELL_RENDER_SECOND_OBJ.headerProps = null;
-                if (data && (!data.__group || groupColumnVisible)) {
-                    // group rendering is handled in renderGroupTitle (see adjustCellProps)
-                    cellProps.children = renderCell(CELL_RENDER_OBJECT, CELL_RENDER_SECOND_OBJ);
-                }
-            }
-            if (!hidden &&
-                cellProps.children != null &&
-                cellProps.textEllipsis !== false) {
-                cellProps.children = wrapInContent(cellProps.children);
-            }
-            if (onRender) {
-                onRender(cellProps, CELL_RENDER_OBJECT);
-            }
-            if (cellSelected || cellActive || inEdit || rendersInlineEditor) {
-                cellProps.children = [
-                    cellProps.children,
-                    this.renderSelectionBox(cellProps),
-                    inEdit && !rendersInlineEditor ? this.renderEditor(cellProps) : null,
-                ];
-            }
-            if (treeColumn) {
-                if (Array.isArray(cellProps.children)) {
-                    cellProps.children = [
-                        this.renderNodeTool(props),
-                        ...cellProps.children,
-                    ];
-                }
-                else {
-                    cellProps.children = [this.renderNodeTool(props), cellProps.children];
-                }
-            }
-        }
-        const initialDOMProps = this.getInitialDOMProps();
-        const domProps = Object.assign({}, initialDOMProps, {
-            onFocus: cellProps.onFocus || initialDOMProps.onFocus,
-            onClick: cellProps.onClick || initialDOMProps.onClick,
-            onContextMenu: cellProps.onContextMenu || initialDOMProps.onContextMenu,
-            onDoubleClick: cellProps.onDoubleClick || initialDOMProps.onDoubleClick,
-            onMouseDown: cellProps.onMouseDown || initialDOMProps.onMouseDown,
-            onTouchStart: cellProps.onTouchStart || initialDOMProps.onTouchStart,
-            onMouseEnter: cellProps.onMouseEnter || initialDOMProps.onMouseEnter,
-            onMouseLeave: cellProps.onMouseLeave || initialDOMProps.onMouseLeave,
-            style: initialDOMProps.style
-                ? Object.assign({}, initialDOMProps.style, cellProps.style)
-                : cellProps.style,
-            className: join(initialDOMProps.className, cellProps.className),
-        });
-        domProps.ref = this.domRef;
-        return headerCell ? (RENDER_HEADER(cellProps, domProps, this, this.state)) : (React.createElement("div", { ...domProps, children: cellProps.children, id: null, name: null, value: null, title: null, data: null }));
-    }
-    renderNodeTool(props) {
-        const { data, renderTreeCollapseTool, renderTreeExpandTool, renderTreeLoadingTool, } = props;
+    };
+    const getInitialIndex = useCallback(() => {
+        return props.computedVisibleIndex;
+    }, [props.computedVisibleIndex]);
+    const getcomputedVisibleIndex = useCallback(() => {
+        return getProps().computedVisibleIndex;
+    }, []);
+    const renderNodeTool = (thisProps) => {
+        const { data, renderTreeCollapseTool, renderTreeExpandTool, renderTreeLoadingTool, } = thisProps;
         const nodeProps = data.__nodeProps || emptyObject;
         const leafNode = nodeProps.leafNode;
         const loading = nodeProps.loading;
         const expanded = nodeProps.expanded;
         const collapsed = !expanded;
         const style = {
-            [this.props.rtl ? 'marginRight' : 'marginLeft']: (nodeProps.depth || 0) * props.treeNestingSize,
+            [props.rtl ? 'marginRight' : 'marginLeft']: (nodeProps.depth || 0) * thisProps.treeNestingSize,
         };
-        if (this.props.rtl && collapsed) {
+        if (props.rtl && collapsed) {
             style.transform = 'rotate(180deg)';
         }
-        const element = renderNodeTool({
-            render: props.renderNodeTool,
+        const element = nodeTool({
+            render: thisProps.renderNodeTool,
             nodeExpanded: expanded,
             nodeCollapsed: collapsed,
             nodeLoading: loading,
             leafNode: leafNode,
             nodeProps,
             node: data,
-            rtl: this.props.rtl,
+            rtl: props.rtl,
             size: 20,
             style,
-            toggleNodeExpand: props.toggleNodeExpand,
+            toggleNodeExpand: thisProps.toggleNodeExpand,
             renderTreeCollapseTool,
             renderTreeExpandTool,
             renderTreeLoadingTool,
-        }, props);
+        }, thisProps);
         if (!element) {
             return;
         }
         return cloneElement(element, { key: 'nodeTool' });
-    }
-    getInitialDOMProps() {
-        const props = this.getProps();
-        let domProps = props.domProps;
-        let specificDomProps = props.headerCell
-            ? props.headerDOMProps
-            : props.cellDOMProps;
+    };
+    const getInitialDOMProps = useCallback(() => {
+        const thisProps = getProps();
+        let domProps = thisProps.domProps;
+        let specificDomProps = thisProps.headerCell
+            ? thisProps.headerDOMProps
+            : thisProps.cellDOMProps;
         if (typeof domProps == 'function') {
-            domProps = domProps(props);
+            domProps = domProps(thisProps);
         }
         if (typeof specificDomProps == 'function') {
-            specificDomProps = specificDomProps(props);
+            specificDomProps = specificDomProps(thisProps);
         }
         return Object.assign({}, domProps, specificDomProps);
-    }
-    renderEditor() {
-        const props = this.getProps();
+    }, [
+        getProps,
+        props.domProps,
+        props.headerCell,
+        props.headerDOMProps,
+        props.cellDOMProps,
+    ]);
+    const renderEditor = (_props) => {
+        const thisProps = getProps();
         const editorProps = {
-            nativeScroll: props.nativeScroll,
-            ...props.editorProps,
-            editorProps: props.editorProps,
-            cell: this,
-            cellProps: props,
-            value: props.editValue,
-            theme: props.theme,
-            rtl: props.rtl,
+            nativeScroll: thisProps.nativeScroll,
+            ...thisProps.editorProps,
+            editorProps: thisProps.editorProps,
+            cell: cellInstance,
+            cellProps: thisProps,
+            value: thisProps.editValue,
+            theme: thisProps.theme,
+            rtl: thisProps.rtl,
             autoFocus: true,
-            onChange: this.onEditValueChange,
-            onComplete: this.onEditorComplete,
-            onCancel: this.onEditorCancel,
-            onEnterNavigation: this.onEditorEnterNavigation,
-            onTabNavigation: this.onEditorTabNavigation,
-            gotoNext: this.gotoNextEditor,
-            gotoPrev: this.gotoPrevEditor,
+            onChange: onEditValueChange,
+            onComplete: onEditorComplete,
+            onCancel: onEditorCancel,
+            onEnterNavigation: onEditorEnterNavigation,
+            onTabNavigation: onEditorTabNavigation,
+            gotoNext: gotoNextEditor,
+            gotoPrev: gotoPrevEditor,
             key: 'editor',
-            onClick: this.onEditorClick,
+            onClick: onEditorClick,
         };
-        const Editor = props.editor;
+        const Editor = thisProps.editor;
         if (Editor) {
             return React.createElement(Editor, { ...editorProps });
         }
-        if (props.renderEditor) {
-            return props.renderEditor(editorProps, editorProps.cellProps, this);
+        if (thisProps.renderEditor) {
+            return thisProps.renderEditor(editorProps, editorProps.cellProps, cellInstance);
         }
         return React.createElement(TextEditor, { ...editorProps });
-    }
-    isInEdit() {
-        return this.getProps().inEdit;
-    }
-    getEditable(editValue, props = this.getProps()) {
-        if (props.groupSpacerColumn || props.groupProps) {
+    };
+    const isInEdit = useCallback(() => {
+        return getProps().inEdit;
+    }, [props.inEdit]);
+    const getEditable = useCallback((editValue, thisProps = getProps()) => {
+        if (thisProps.groupSpacerColumn || thisProps.groupProps) {
             return Promise.resolve(false);
         }
-        const { computedEditable: editable } = props;
+        const { computedEditable: editable } = thisProps;
         if (typeof editable === 'function') {
-            return Promise.resolve(editable(editValue, props));
+            return Promise.resolve(editable(editValue, thisProps));
         }
         return Promise.resolve(editable);
-    }
-    onEditorTabLeave(direction) { }
-    gotoNextEditor() {
-        this.props.tryRowCellEdit(this.getProps().computedVisibleIndex + 1, +1);
-    }
-    gotoPrevEditor() {
-        this.props.tryRowCellEdit(this.getProps().computedVisibleIndex - 1, -1);
-    }
-    onEditorEnterNavigation(complete, dir) {
-        const props = this.getProps();
+    }, [props.groupSpacerColumn, props.groupProps, props.computedEditable]);
+    const onEditorTabLeave = (_direction) => { };
+    const gotoNextEditor = useCallback(() => {
+        return (props.tryRowCellEdit &&
+            props.tryRowCellEdit(getProps().computedVisibleIndex + 1, +1));
+    }, [props.tryRowCellEdit, props.computedVisibleIndex]);
+    const gotoPrevEditor = useCallback(() => {
+        props.tryRowCellEdit &&
+            props.tryRowCellEdit(getProps().computedVisibleIndex - 1, -1);
+    }, [props.tryRowCellEdit, props.computedVisibleIndex]);
+    const onEditorEnterNavigation = useCallback((complete, dir) => {
+        const thisProps = getProps();
         if (typeof dir !== 'number') {
             dir = 0;
         }
         const newIndex = props.rowIndex + dir;
         if (!complete) {
-            this.stopEdit();
+            stopEdit();
             if (newIndex != props.rowIndex) {
-                this.props.tryNextRowEdit(dir, props.columnIndex, true);
+                props.tryNextRowEdit &&
+                    props.tryNextRowEdit(dir, props.columnIndex, true);
             }
         }
         else {
-            this.onEditorComplete();
-            if (newIndex != props.rowIndex) {
-                this.props.tryNextRowEdit(dir, props.columnIndex, true);
+            onEditorComplete();
+            if (newIndex != thisProps.rowIndex) {
+                props.tryNextRowEdit &&
+                    props.tryNextRowEdit(dir, thisProps.columnIndex, true);
             }
         }
-    }
-    onEditorTabNavigation(complete, dir) {
-        const props = this.getProps();
+    }, [props.tryNextRowEdit, props.rowIndex, props.columnIndex]);
+    const onEditorTabNavigation = useCallback((complete, dir) => {
+        const thisProps = getProps();
         if (typeof dir !== 'number') {
             dir = 0;
         }
-        const newIndex = props.computedVisibleIndex + dir;
+        const newIndex = thisProps.computedVisibleIndex + dir;
         if (!complete) {
-            this.stopEdit();
-            if (newIndex != props.computedVisibleIndex) {
-                this.props.tryRowCellEdit(newIndex, dir);
+            stopEdit();
+            if (newIndex != thisProps.computedVisibleIndex) {
+                props.tryRowCellEdit && props.tryRowCellEdit(newIndex, dir);
             }
         }
         else {
-            this.onEditorComplete();
-            if (newIndex != props.computedVisibleIndex) {
-                this.props.tryRowCellEdit(newIndex, dir);
+            onEditorComplete();
+            if (newIndex != thisProps.computedVisibleIndex) {
+                props.tryRowCellEdit && props.tryRowCellEdit(newIndex, dir);
             }
         }
-    }
-    onEditorClick(event) {
+    }, [props.computedVisibleIndex]);
+    const onEditorClick = useCallback((event) => {
         event.stopPropagation();
-    }
-    onEditorCancel() {
-        this.cancelEdit();
-    }
-    startEdit(editValue, errBack) {
-        const props = this.getProps();
-        this.isCancelled = false;
+    }, []);
+    const onEditorCancel = useCallback(() => {
+        cancelEdit();
+    }, []);
+    const startEdit = useCallback((editValue, errBack) => {
+        const thisProps = getProps();
+        isCancelled.current = false;
         const editValuePromise = editValue === undefined
-            ? this.getEditStartValue(props)
+            ? getEditStartValue(thisProps)
             : Promise.resolve(editValue);
         return (editValuePromise
             .then(editValue => {
-            return this.getEditable(editValue, props).then(editable => {
+            return getEditable(editValue, thisProps).then(editable => {
                 if (!editable) {
                     return Promise.reject(editable);
                 }
-                if (props.onEditStart) {
-                    props.onEditStart(editValue, props);
+                if (thisProps.onEditStart) {
+                    thisProps.onEditStart(editValue, thisProps);
                 }
-                if (props.onEditStartForRow) {
-                    props.onEditStartForRow(editValue, props);
+                if (thisProps.onEditStartForRow) {
+                    thisProps.onEditStartForRow(editValue, thisProps);
                 }
                 return editValue;
             });
         })
             // in order to not show console.error message in console
-            .catch(errBack || (err => { })));
-    }
-    stopEdit(editValue = this.getCurrentEditValue()) {
-        const props = this.getProps();
-        if (this.props.onEditStop) {
-            this.props.onEditStop(editValue, props);
+            .catch(errBack || (_err => { })));
+    }, [props.onEditStart, props.onEditStartForRow]);
+    const stopEdit = useCallback((editValue = getCurrentEditValue()) => {
+        const thisProps = getProps();
+        if (props.onEditStop) {
+            props.onEditStop(editValue, thisProps);
         }
-        if (this.props.onEditStopForRow) {
-            this.props.onEditStopForRow(editValue, props);
+        if (props.onEditStopForRow) {
+            props.onEditStopForRow(editValue, thisProps);
         }
-    }
-    cancelEdit() {
-        this.isCancelled = true;
-        this.stopEdit();
-        const props = this.getProps();
-        if (this.props.onEditCancel) {
-            this.props.onEditCancel(props);
+    }, [props.onEditStop, props.onEditStopForRow]);
+    const cancelEdit = useCallback(() => {
+        isCancelled.current = true;
+        stopEdit();
+        const thisProps = getProps();
+        if (props.onEditCancel) {
+            props.onEditCancel(thisProps);
         }
-        if (this.props.onEditCancelForRow) {
-            this.props.onEditCancelForRow(props);
+        if (props.onEditCancelForRow) {
+            props.onEditCancelForRow(thisProps);
         }
-    }
-    onEditorComplete() {
+    }, [props.onEditCancel, props.onEditCancelForRow]);
+    const onEditorComplete = useCallback(() => {
         const now = Date.now();
-        if (this.lastEditCompleteTimestamp &&
-            now - this.lastEditCompleteTimestamp < 50) {
+        if (lastEditCompleteTimestamp.current &&
+            now - lastEditCompleteTimestamp.current < 50) {
             return;
         }
-        this.lastEditCompleteTimestamp = now;
-        if (!this.isCancelled) {
-            this.completeEdit();
+        lastEditCompleteTimestamp.current = now;
+        if (!isCancelled.current) {
+            completeEdit();
         }
-        this.isCancelled = false;
-    }
-    completeEdit(completeValue = this.getEditCompleteValue()) {
-        const props = this.getProps();
-        this.stopEdit();
-        if (this.props.onEditComplete) {
-            this.props.onEditComplete(completeValue, props);
-        }
-        if (this.props.onEditCompleteForRow) {
-            this.props.onEditCompleteForRow(completeValue, props);
-        }
-    }
-    getCurrentEditValue() {
-        return this.getProps().editValue;
-    }
-    getEditCompleteValue(value = this.getCurrentEditValue()) {
-        if (this.props.getEditCompleteValue) {
-            return this.props.getEditCompleteValue(value, this.getProps());
+        isCancelled.current = false;
+    }, []);
+    const getEditCompleteValue = useCallback((value = getCurrentEditValue()) => {
+        if (props.getEditCompleteValue) {
+            return props.getEditCompleteValue(value, getProps());
         }
         return value;
-    }
-    onFilterValueChange(filterValue) {
-        const props = this.getProps();
-        if (props.onFilterValueChange) {
-            props.onFilterValueChange(filterValue, props);
+    }, [props.getEditCompleteValue, props.editValue]);
+    const completeEdit = useCallback((completeValue = getEditCompleteValue()) => {
+        const thisProps = getProps();
+        stopEdit();
+        if (props.onEditComplete) {
+            props.onEditComplete(completeValue, thisProps);
         }
-    }
-    onEditValueChange(e) {
+        if (props.onEditCompleteForRow) {
+            props.onEditCompleteForRow(completeValue, thisProps);
+        }
+    }, [props.onEditComplete, props.onEditCompleteForRow, getEditCompleteValue]);
+    const getCurrentEditValue = () => {
+        const editValue = getProps().editValue;
+        return editValue;
+    };
+    const onFilterValueChange = useCallback((filterValue) => {
+        const thisProps = getProps();
+        if (thisProps.onFilterValueChange) {
+            thisProps.onFilterValueChange(filterValue, thisProps);
+        }
+    }, [props.onFilterValueChange]);
+    const onEditValueChange = useCallback((e) => {
         const value = e && e.target ? e.target.value : e;
-        const props = this.getProps();
-        if (this.props.onEditValueChange) {
-            this.props.onEditValueChange(value, props);
+        const thisProps = getProps();
+        if (props.onEditValueChange) {
+            props.onEditValueChange(value, thisProps);
         }
-        if (this.props.onEditValueChangeForRow) {
-            this.props.onEditValueChangeForRow(value, props);
+        if (props.onEditValueChangeForRow) {
+            props.onEditValueChangeForRow(value, thisProps);
         }
-    }
-    renderSelectionBox() {
-        const props = this.getProps();
-        const { inTransition, inShowTransition, cellSelected, cellActive } = props;
+    }, [props.onEditValueChange, props.onEditValueChangeForRow]);
+    const renderSelectionBox = useCallback((_props) => {
+        const thisProps = getProps();
+        const { inTransition, inShowTransition, cellSelected, cellActive, } = thisProps;
         if (!cellSelected && !cellActive) {
             return null;
         }
@@ -766,82 +591,104 @@ export default class InovuaDataGridCell extends React.Component {
             style.transitionDuration =
                 typeof duration == 'number' ? `${duration}ms` : duration;
         }
-        return (React.createElement("div", { key: "selectionBox", style: style, className: "InovuaReactDataGrid__cell__selection" }, this.props.lastInRange &&
-            this.props.computedCellMultiSelectionEnabled && (React.createElement("div", { className: `InovuaReactDataGrid__cell__selection-dragger InovuaReactDataGrid__cell__selection-dragger--direction-${this.props.rtl ? 'rtl' : 'ltr'}`, onMouseDown: this.onCellSelectionDraggerMouseDown }))));
-    }
-    onHeaderCellFocus(event) {
-        const props = this.getProps();
-        if (props.onFocus) {
-            props.onFocus(event, props);
+        return (React.createElement("div", { key: "selectionBox", style: style, className: "InovuaReactDataGrid__cell__selection" }, props.lastInRange && props.computedCellMultiSelectionEnabled && (React.createElement("div", { className: `InovuaReactDataGrid__cell__selection-dragger InovuaReactDataGrid__cell__selection-dragger--direction-${props.rtl ? 'rtl' : 'ltr'}`, onMouseDown: onCellSelectionDraggerMouseDown }))));
+    }, [
+        props.computedCellMultiSelectionEnabled,
+        props.lastInRange,
+        props.rtl,
+        props.inTransition,
+        props.inShowTransition,
+        props.cellSelected,
+        props.cellActive,
+        props.showTransitionDuration,
+        props.hideTransitionDuration,
+        props.visibilityTransitionDuration,
+    ]);
+    const onHeaderCellFocus = useCallback((event) => {
+        const thisProps = getProps();
+        if (thisProps.onFocus) {
+            thisProps.onFocus(event, thisProps);
         }
-        const initialProps = this.getInitialDOMProps();
+        const initialProps = getInitialDOMProps();
         if (initialProps.onFocus) {
-            initialProps.onFocus(event, props);
+            initialProps.onFocus(event, thisProps);
         }
-    }
-    onColumnHoverMouseEnter = (props) => {
-        if (props.groupProps ||
-            props.groupSpacerColumn ||
-            props.isRowDetailsCell ||
-            props.isCheckboxColumn) {
+    }, [props.onFocus, getInitialDOMProps]);
+    const onColumnHoverMouseEnter = useCallback((thisProps) => {
+        if (thisProps.groupProps ||
+            thisProps.groupSpacerColumn ||
+            thisProps.isRowDetailsCell ||
+            thisProps.isCheckboxColumn) {
             return;
         }
-        if (props.onColumnMouseEnter) {
-            props.onColumnMouseEnter(props);
+        if (thisProps.onColumnMouseEnter) {
+            thisProps.onColumnMouseEnter(thisProps);
         }
-    };
-    onColumnHoverMouseLeave = (props) => {
-        if (props.groupProps ||
-            props.groupSpacerColumn ||
-            props.isRowDetailsCell ||
-            props.isCheckboxColumn) {
+    }, [
+        props.groupProps,
+        props.groupSpacerColumn,
+        props.isRowDetailsCell,
+        props.isCheckboxColumn,
+        props.onColumnMouseEnter,
+    ]);
+    const onColumnHoverMouseLeave = useCallback((thisProps) => {
+        if (thisProps.groupProps ||
+            thisProps.groupSpacerColumn ||
+            thisProps.isRowDetailsCell ||
+            thisProps.isCheckboxColumn) {
             return;
         }
-        if (props.onColumnMouseLeave) {
-            props.onColumnMouseLeave(props);
+        if (thisProps.onColumnMouseLeave) {
+            thisProps.onColumnMouseLeave(thisProps);
         }
-    };
-    onCellEnter(event) {
-        const props = this.getProps();
-        const initialProps = this.getInitialDOMProps();
-        if (props.onCellEnter) {
-            props.onCellEnter(event, props);
+    }, [
+        props.groupProps,
+        props.groupSpacerColumn,
+        props.isRowDetailsCell,
+        props.isCheckboxColumn,
+        props.onColumnMouseLeave,
+    ]);
+    const onCellEnterHandle = useCallback((event) => {
+        const thisProps = getProps();
+        const initialProps = getInitialDOMProps();
+        if (thisProps.onCellEnter) {
+            thisProps.onCellEnter(event, thisProps);
         }
-        if (props.computedEnableColumnHover) {
-            this.onColumnHoverMouseEnter(props);
+        if (thisProps.computedEnableColumnHover) {
+            onColumnHoverMouseEnter(thisProps);
         }
         if (initialProps.onMouseEnter) {
-            initialProps.onMouseEnter(event, props);
+            initialProps.onMouseEnter(event, thisProps);
         }
-    }
-    onCellLeave(event) {
-        const props = this.getProps();
-        const initialProps = this.getInitialDOMProps();
-        if (props.onCellLeave) {
-            props.onCellLeave(event, props);
+    }, [props.onCellEnter, props.computedEnableColumnHover, getInitialDOMProps]);
+    const onCellLeave = useCallback((event) => {
+        const thisProps = getProps();
+        const initialProps = getInitialDOMProps();
+        if (thisProps.onCellLeave) {
+            thisProps.onCellLeave(event, thisProps);
         }
-        if (props.computedEnableColumnHover) {
-            this.onColumnHoverMouseLeave(props);
+        if (thisProps.computedEnableColumnHover) {
+            onColumnHoverMouseLeave(thisProps);
         }
         if (initialProps.onMouseLeave) {
-            initialProps.onMouseLeave(event, props);
+            initialProps.onMouseLeave(event, thisProps);
         }
-    }
-    onCellSelectionDraggerMouseDown(event) {
+    }, [props.onCellLeave, props.computedEnableColumnHover, getInitialDOMProps]);
+    const onCellSelectionDraggerMouseDown = useCallback((event) => {
         event.preventDefault();
         event.stopPropagation();
         // in order for onCellMouseDown not to be triggered
         // as well since the dragger has a bit different behavior
-        if (this.props.onCellSelectionDraggerMouseDown) {
-            this.props.onCellSelectionDraggerMouseDown(event, this.getProps());
+        if (props.onCellSelectionDraggerMouseDown) {
+            props.onCellSelectionDraggerMouseDown(event, getProps());
         }
-    }
-    prepareHeaderCellProps(cellProps) {
-        const props = this.getProps();
+    }, [props.onCellSelectionDraggerMouseDown]);
+    const prepareHeaderCellProps = useCallback((cellProps) => {
+        const thisProps = getProps();
         const { children, computedSortInfo } = cellProps;
-        const { computedSortable } = props;
+        const { computedSortable } = thisProps;
         const sortTools = computedSortable
-            ? this.getSortTools(computedSortInfo ? computedSortInfo.dir : null, cellProps)
+            ? getSortTools(computedSortInfo ? computedSortInfo.dir : null, cellProps)
             : null;
         if (sortTools) {
             cellProps.children = [
@@ -850,8 +697,8 @@ export default class InovuaDataGridCell extends React.Component {
                     : children,
                 sortTools,
             ];
-            if (props.headerAlign === 'end' ||
-                (!props.headerAlign && props.textAlign == 'end')) {
+            if (thisProps.headerAlign === 'end' ||
+                (!thisProps.headerAlign && thisProps.textAlign == 'end')) {
                 // make sort tool come first
                 cellProps.children.reverse();
             }
@@ -864,224 +711,464 @@ export default class InovuaDataGridCell extends React.Component {
         }
         if (computedSortInfo && computedSortInfo.dir) {
             const dirName = computedSortInfo.dir === 1 ? 'asc' : 'desc';
-            cellProps.className = join(cellProps.className, `${props.headerCellDefaultClassName}--sort-${dirName}`);
+            cellProps.className = join(cellProps.className, `${thisProps.headerCellDefaultClassName}--sort-${dirName}`);
         }
-        cellProps.onResizeMouseDown = this.onResizeMouseDown.bind(this, cellProps);
-        cellProps.onResizeTouchStart = this.onResizeTouchStart.bind(this, cellProps);
+        cellProps.onResizeMouseDown = onResizeMouseDown.bind(cellInstance, cellProps);
+        cellProps.onResizeTouchStart = onResizeTouchStart.bind(cellInstance, cellProps);
         return cellProps;
-    }
-    onMouseDown(event) {
-        const props = this.getProps();
-        const initialDOMProps = this.getInitialDOMProps();
+    }, [
+        props.computedSortable,
+        props.headerAlign,
+        props.textAlign,
+        props.headerCellDefaultClassName,
+    ]);
+    const onMouseDown = useCallback((event) => {
+        const thisProps = getProps();
+        const initialDOMProps = getInitialDOMProps();
         if (event.button === 2) {
             return;
         }
-        if (props.onMouseDown) {
-            props.onMouseDown(props, event);
+        if (thisProps.onMouseDown) {
+            thisProps.onMouseDown(thisProps, event);
         }
         if (initialDOMProps.onMouseDown) {
-            initialDOMProps.onMouseDown(event, props);
+            initialDOMProps.onMouseDown(event, thisProps);
         }
-        if (props.onCellMouseDown) {
-            props.onCellMouseDown(event, props);
+        if (thisProps.onCellMouseDown) {
+            thisProps.onCellMouseDown(event, thisProps);
         }
-        if (props.onDragRowMouseDown && props.id === REORDER_COLUMN_ID) {
-            props.onDragRowMouseDown(event, props.rowIndex, this.domRef);
+        if (thisProps.onDragRowMouseDown && thisProps.id === REORDER_COLUMN_ID) {
+            thisProps.onDragRowMouseDown(event, thisProps.rowIndex, domRef);
         }
         // event.preventDefault() // DO NOT prevent default,
         // since this makes keyboard navigation unusable because
         // the grid does not get focus any more
         // event.stopPropagation();
-    }
-    onContextMenu(event) {
-        const props = this.getProps();
-        const initialDOMProps = this.getInitialDOMProps();
+    }, [
+        props.onMouseDown,
+        props.onCellMouseDown,
+        props.onDragRowMouseDown,
+        props.id,
+        props.rowIndex,
+    ]);
+    const onContextMenu = useCallback((event) => {
+        const thisProps = getProps();
+        const initialDOMProps = getInitialDOMProps();
         if (event.nativeEvent) {
-            event.nativeEvent.__cellProps = props;
+            event.nativeEvent.__cellProps = thisProps;
         }
-        if (props.onContextMenu) {
-            props.onContextMenu(event, props);
+        if (thisProps.onContextMenu) {
+            thisProps.onContextMenu(event, thisProps);
         }
         if (initialDOMProps.onContextMenu) {
-            initialDOMProps.onContextMenu(event, props);
+            initialDOMProps.onContextMenu(event, thisProps);
         }
-    }
-    onTouchStart(event) {
-        const props = this.getProps();
-        const initialDOMProps = this.getInitialDOMProps();
-        if (props.onTouchStart) {
-            props.onTouchStart(props, event);
+    }, [props.onContextMenu, getProps]);
+    const onTouchStart = useCallback((event) => {
+        const thisProps = getProps();
+        const initialDOMProps = getInitialDOMProps();
+        if (thisProps.onTouchStart) {
+            thisProps.onTouchStart(thisProps, event);
         }
         if (initialDOMProps.onTouchStart) {
-            initialDOMProps.onTouchStart(event, props);
+            initialDOMProps.onTouchStart(event, thisProps);
         }
-        if (props.onCellTouchStart) {
-            props.onCellTouchStart(event, props);
+        if (thisProps.onCellTouchStart) {
+            thisProps.onCellTouchStart(event, thisProps);
         }
-        if (props.onDragRowMouseDown && props.id === REORDER_COLUMN_ID) {
-            props.onDragRowMouseDown(event, props.rowIndex, this.domRef);
+        if (thisProps.onDragRowMouseDown && thisProps.id === REORDER_COLUMN_ID) {
+            thisProps.onDragRowMouseDown(event, thisProps.rowIndex, domRef);
         }
         // event.preventDefault() // DO NOT prevent default,
         // since this makes keyboard navigation unusable because
         // the grid does not get focus any more
         event.stopPropagation();
-    }
-    onResizeMouseDown(cellProps, event) {
-        const props = this.getProps();
-        this.hideFilterContextMenu();
-        if (props.hideColumnContextMenu) {
-            props.hideColumnContextMenu();
+    }, [
+        props.onTouchStart,
+        props.onCellTouchStart,
+        props.onDragRowMouseDown,
+        props.id,
+        props.rowIndex,
+    ]);
+    const onResizeMouseDown = useCallback((cellProps, event) => {
+        const thisProps = getProps();
+        hideFilterContextMenu();
+        if (thisProps.hideColumnContextMenu) {
+            thisProps.hideColumnContextMenu();
         }
-        if (props.onResizeMouseDown) {
-            const node = this.getDOMNode();
-            props.onResizeMouseDown(cellProps, {
+        if (thisProps.onResizeMouseDown) {
+            const node = getDOMNode();
+            thisProps.onResizeMouseDown(cellProps, {
                 colHeaderNode: node,
                 event,
             });
         }
-    }
-    onResizeTouchStart(cellProps, event) {
-        const props = this.getProps();
-        if (props.onResizeTouchStart) {
-            props.onResizeTouchStart(cellProps, {
-                colHeaderNode: this.getDOMNode(),
+    }, [props.hideColumnContextMenu, props.onResizeMouseDown]);
+    const onResizeTouchStart = useCallback((cellProps, event) => {
+        const thisProps = getProps();
+        if (thisProps.onResizeTouchStart) {
+            thisProps.onResizeTouchStart(cellProps, {
+                colHeaderNode: getDOMNode(),
                 event,
             });
         }
-    }
-    getDOMNode() {
-        return this.domRef.current;
-    }
-    onClick(event) {
-        const props = this.getProps();
-        const initialDOMProps = this.getInitialDOMProps();
-        if (props.onClick) {
-            props.onClick(event, props);
+    }, [props.onResizeTouchStart]);
+    const onClick = useCallback((event) => {
+        const thisProps = getProps();
+        const initialDOMProps = getInitialDOMProps();
+        if (thisProps.onClick) {
+            thisProps.onClick(event, thisProps);
         }
         if (initialDOMProps.onClick) {
-            initialDOMProps.onClick(event, props);
+            initialDOMProps.onClick(event, thisProps);
         }
-        if (!this.props.headerCell && props.onCellClick) {
-            props.onCellClick(event, props);
+        if (!thisProps.headerCell && thisProps.onCellClick) {
+            thisProps.onCellClick(event, thisProps);
         }
-        if (!this.props.headerCell) {
-            if (props.computedEditable &&
-                !props.inEdit &&
-                (props.editStartEvent === 'onClick' || props.editStartEvent === 'click')) {
-                this.startEdit();
+        if (!thisProps.headerCell) {
+            if (thisProps.computedEditable &&
+                !thisProps.inEdit &&
+                (thisProps.editStartEvent === 'onClick' ||
+                    thisProps.editStartEvent === 'click')) {
+                startEdit();
             }
             return;
         }
-        if (this.props.preventSortOnClick) {
-            if (this.props.preventSortOnClick(event, props) === true) {
+        if (thisProps.preventSortOnClick) {
+            if (thisProps.preventSortOnClick(event, thisProps) === true) {
                 return;
             }
         }
-        if (!props.sortDelay || props.sortDelay < 1) {
-            return this.onSortClick();
+        if (!thisProps.sortDelay || thisProps.sortDelay < 1) {
+            return onSortClick();
         }
-        if (this.sortTimeoutId) {
-            clearTimeout(this.sortTimeoutId);
-            this.sortTimeoutId = null;
+        if (sortTimeoutId.current) {
+            clearTimeout(sortTimeoutId.current);
+            sortTimeoutId.current = null;
         }
-        this.sortTimeoutId = setTimeout(() => {
-            this.onSortClick();
-            this.sortTimeoutId = null;
-        }, parseInt(props.sortDelay, 10));
+        sortTimeoutId.current = setTimeout(() => {
+            onSortClick();
+            sortTimeoutId.current = null;
+        }, parseInt(thisProps.sortDelay, 10));
         return undefined;
-    }
-    onDoubleClick(event) {
-        const props = this.getProps();
-        const initialDOMProps = this.getInitialDOMProps();
-        if (props.onDoubleClick) {
-            props.onDoubleClick(event, props);
+    }, [
+        props.onClick,
+        props.onCellClick,
+        props.headerCell,
+        props.computedEditable,
+        props.inEdit,
+        props.editStartEvent,
+        props.preventSortOnClick,
+        props.sortDelay,
+    ]);
+    const onDoubleClick = (event) => {
+        const thisProps = getProps();
+        const initialDOMProps = getInitialDOMProps();
+        if (thisProps.onDoubleClick) {
+            thisProps.onDoubleClick(event, thisProps);
         }
         if (initialDOMProps.onDoubleClick) {
-            initialDOMProps.onDoubleClick(event, props);
+            initialDOMProps.onDoubleClick(event, thisProps);
         }
-        const { headerProps, headerCell } = props;
+        const { headerProps, headerCell } = thisProps;
         if (!headerCell) {
-            if (props.computedEditable &&
-                !props.inEdit &&
-                (props.editStartEvent === 'onDoubleClick' ||
-                    props.editStartEvent === 'dblclick' ||
-                    props.editStartEvent === 'doubleclick')) {
-                this.startEdit();
+            if (thisProps.computedEditable &&
+                !thisProps.inEdit &&
+                (thisProps.editStartEvent === 'onDoubleClick' ||
+                    thisProps.editStartEvent === 'dblclick' ||
+                    thisProps.editStartEvent === 'doubleclick')) {
+                startEdit();
             }
             return;
         }
         if (headerProps && headerProps.onDoubleClick) {
-            headerProps.onDoubleClick(event, props);
+            headerProps.onDoubleClick(event, thisProps);
         }
-        if (this.sortTimeoutId) {
-            clearTimeout(this.sortTimeoutId);
-            this.sortTimeoutId = null;
+        if (sortTimeoutId.current) {
+            clearTimeout(sortTimeoutId.current);
+            sortTimeoutId.current = null;
         }
-    }
-    getEditStartValue(props = this.getProps()) {
-        if (typeof props.getEditStartValue == 'function') {
-            return Promise.resolve(props.getEditStartValue(props.value, props));
+    };
+    const getEditStartValue = (thisProps = getProps()) => {
+        if (typeof thisProps.getEditStartValue == 'function') {
+            return Promise.resolve(thisProps.getEditStartValue(thisProps.value, thisProps));
         }
-        return Promise.resolve(props.value);
-    }
-    onSortClick() {
-        const props = this.getProps();
-        if (props.headerCell && props.computedSortable) {
-            if (props.onSortClick) {
-                props.onSortClick(props);
+        return Promise.resolve(thisProps.value);
+    };
+    const onSortClick = () => {
+        const thisProps = getProps();
+        if (thisProps.headerCell && thisProps.computedSortable) {
+            if (thisProps.onSortClick) {
+                thisProps.onSortClick(thisProps);
             }
         }
-    }
+    };
     // direction can be 1, -1 or null
-    getSortTools(direction = null, cellProps) {
-        const { computedSortable, renderSortTool: render } = this.getProps();
+    const getSortTools = useCallback((direction = null, cellProps) => {
+        const { computedSortable, renderSortTool: render } = getProps();
         return renderSortTool({ sortable: computedSortable, direction, renderSortTool: render }, cellProps);
-    }
-    showFilterContextMenu(node) {
-        if (this.props.showColumnFilterContextMenu) {
-            this.props.showColumnFilterContextMenu(node, this.getProps());
+    }, [props.computedSortable, props.renderSortTool]);
+    const showFilterContextMenu = useCallback((node) => {
+        if (props.showColumnFilterContextMenu) {
+            props.showColumnFilterContextMenu(node, getProps());
         }
-    }
-    hideFilterContextMenu() {
-        if (this.props.hideColumnFilterContextMenu) {
-            this.props.hideColumnFilterContextMenu();
+    }, [props.showColumnFilterContextMenu]);
+    const hideFilterContextMenu = useCallback(() => {
+        if (props.hideColumnFilterContextMenu) {
+            props.hideColumnFilterContextMenu();
         }
-    }
-    showContextMenu(domRef, onHide) {
-        if (this.props.showColumnContextMenu) {
-            this.props.showColumnContextMenu(domRef ? domRef : null, this.getProps(), this, onHide);
+    }, [props.hideColumnFilterContextMenu]);
+    const showContextMenu = useCallback((domRef, onHide) => {
+        if (props.showColumnContextMenu) {
+            props.showColumnContextMenu(domRef ? domRef : null, getProps(), { computedVisibleIndex: props.computedVisibleIndex }, onHide);
         }
-    }
-    getProxyRegion() {
-        const node = this.getDOMNode();
-        const { computedResizable, computedFilterable } = this.getProps();
+    }, [props.showColumnContextMenu]);
+    const getProxyRegion = useCallback(() => {
+        const node = getDOMNode();
+        const { computedResizable, computedFilterable } = getProps();
         return computedFilterable
             ? Region.from(node.firstChild)
             : Region.from(computedResizable ? node.firstChild : node);
-    }
-    renderGroupTool() {
-        const props = this.getProps();
-        const { rtl, collapsed, groupProps, renderGroupCollapseTool, renderGroupExpandTool, } = props;
-        return renderGroupTool({
-            render: groupProps.renderGroupTool,
+    }, [props.computedResizable, props.computedFilterable]);
+    const renderGroupTool = useCallback(() => {
+        const thisProps = getProps();
+        const { rtl, collapsed, groupProps, renderGroupCollapseTool, renderGroupExpandTool, } = thisProps;
+        return groupTool({
+            render: groupProps?.renderGroupTool,
             collapsed,
             rtl,
             size: 20,
-            toggleGroup: this.toggleGroup,
             renderGroupCollapseTool,
             renderGroupExpandTool,
+            toggleGroup: toggleGroup,
         });
-    }
-    toggleGroup = event => {
+    }, [props.rtl, props.collapsed, props.groupProps]);
+    const toggleGroup = useCallback((event) => {
         if (event && event.preventDefault) {
             event.preventDefault();
         }
-        const props = this.getProps();
+        const props = getProps();
         if (typeof props.onGroupToggle === 'function') {
             const { data } = props;
             props.onGroupToggle(data.keyPath, props, event);
         }
+    }, [props.onGroupToggle, props.data, getProps]);
+    const cellInstance = {
+        showContextMenu,
+        getProps,
+        setLeft,
+        setRight,
+        setTop,
+        setHeight,
+        setWidth,
+        setDragging,
+        setStateProps,
+        updateState,
+        updateProps,
+        getDOMNode,
+        onUpdate,
+        getInitialIndex,
+        getcomputedVisibleIndex,
+        getInitialDOMProps,
+        isInEdit,
+        getEditable,
+        onEditorTabLeave,
+        gotoNextEditor,
+        gotoPrevEditor,
+        onEditorEnterNavigation,
+        onEditorTabNavigation,
+        onEditorClick,
+        onEditorCancel,
+        startEdit,
+        stopEdit,
+        cancelEdit,
+        onEditorComplete,
+        getEditCompleteValue,
+        completeEdit,
+        getCurrentEditValue,
+        onFilterValueChange,
+        onEditValueChange,
+        onHeaderCellFocus,
+        onColumnHoverMouseEnter,
+        onColumnHoverMouseLeave,
+        onCellEnterHandle,
+        onCellLeave,
+        onCellSelectionDraggerMouseDown,
+        prepareHeaderCellProps,
+        onMouseDown,
+        onContextMenu,
+        onTouchStart,
+        onResizeMouseDown,
+        onResizeTouchStart,
+        onClick,
+        onDoubleClick,
+        getEditStartValue,
+        onSortClick,
+        getSortTools,
+        showFilterContextMenu,
+        hideFilterContextMenu,
+        getProxyRegion,
+        renderGroupTool,
+        toggleGroup,
+        domRef: getDOMNode(),
+        props,
     };
+    const thisProps = getProps();
+    const { cellActive, cellSelected, data, empty, groupProps, headerCell, hidden, name, onRender, treeColumn, groupSpacerColumn, loadNodeAsync, groupColumnVisible, rowIndex, remoteRowIndex, rowSelected, rowExpanded, setRowSelected, setRowExpanded, isRowExpandable, toggleRowExpand, toggleNodeExpand, totalDataCount, computedVisibleIndex, inEdit, renderRowDetailsMoreIcon, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, notifyColumnFilterVisibleStateChange, } = thisProps;
+    let { value, render: renderCell, renderSummary } = thisProps;
+    const className = prepareClassName(thisProps);
+    const style = prepareStyle(thisProps);
+    const headerProps = headerCell ? thisProps.headerProps || emptyObject : null;
+    if (!headerCell &&
+        groupSpacerColumn &&
+        groupProps &&
+        groupProps.depth == computedVisibleIndex) {
+        value = renderGroupTool();
+    }
+    const children = value;
+    let cellProps = Object.assign({}, thisProps, headerCell ? headerProps : thisProps.cellProps, {
+        instance: cellInstance,
+        value,
+        name,
+        notifyColumnFilterVisibleStateChange,
+        columnIndex: computedVisibleIndex,
+        children,
+        onClick: onClick,
+        onDoubleClick: onDoubleClick,
+        onContextMenu: onContextMenu,
+        onMouseDown: onMouseDown,
+        onTouchStart: onTouchStart,
+        onMouseEnter: onCellEnterHandle,
+        onMouseLeave: onCellLeave,
+    });
+    cellProps.className = headerCell
+        ? headerProps.className
+            ? `${className} ${headerProps.className}`
+            : className
+        : thisProps.cellProps && thisProps.cellProps.className
+            ? typeof thisProps.cellProps.className === 'function'
+                ? `${className} ${thisProps.cellProps.className(cellProps)}`
+                : `${className} ${thisProps.cellProps.className}`
+            : className;
+    if (!headerCell) {
+        CELL_RENDER_OBJECT.empty = empty;
+        CELL_RENDER_OBJECT.value = value;
+        CELL_RENDER_OBJECT.data = data;
+        CELL_RENDER_OBJECT.cellProps = cellProps;
+        CELL_RENDER_OBJECT.columnIndex = computedVisibleIndex;
+        CELL_RENDER_OBJECT.treeColumn = treeColumn;
+        CELL_RENDER_OBJECT.rowIndex = rowIndex;
+        CELL_RENDER_OBJECT.remoteRowIndex = remoteRowIndex;
+        CELL_RENDER_OBJECT.rowIndexInGroup = thisProps.rowIndexInGroup;
+        CELL_RENDER_OBJECT.rowSelected = rowSelected;
+        CELL_RENDER_OBJECT.rowExpanded = rowExpanded;
+        CELL_RENDER_OBJECT.nodeProps = data ? data.__nodeProps : emptyObject;
+        CELL_RENDER_OBJECT.setRowSelected = setRowSelected;
+        CELL_RENDER_OBJECT.setRowExpanded = setRowExpanded;
+        CELL_RENDER_OBJECT.toggleGroup = toggleGroup;
+        CELL_RENDER_OBJECT.toggleRowExpand = toggleRowExpand;
+        CELL_RENDER_OBJECT.toggleNodeExpand = toggleNodeExpand;
+        CELL_RENDER_OBJECT.loadNodeAsync = loadNodeAsync;
+        CELL_RENDER_OBJECT.isRowExpandable = isRowExpandable;
+        CELL_RENDER_OBJECT.totalDataCount = totalDataCount;
+        CELL_RENDER_OBJECT.renderRowDetailsExpandIcon = renderRowDetailsExpandIcon;
+        CELL_RENDER_OBJECT.renderRowDetailsCollapsedIcon = renderRowDetailsCollapsedIcon;
+    }
+    let rendersInlineEditor = headerCell ? false : cellProps.rendersInlineEditor;
+    if (rendersInlineEditor && typeof rendersInlineEditor === 'function') {
+        rendersInlineEditor = cellProps.rendersInlineEditor(CELL_RENDER_OBJECT);
+    }
+    CELL_RENDER_OBJECT.rendersInlineEditor = rendersInlineEditor;
+    cellProps.style = headerCell
+        ? headerProps.style
+            ? Object.assign({}, style, headerProps.style)
+            : style
+        : thisProps.cellProps && thisProps.cellProps.style
+            ? typeof thisProps.cellProps.style === 'function'
+                ? Object.assign({}, style, thisProps.cellProps.style(cellProps))
+                : Object.assign({}, style, thisProps.cellProps.style)
+            : style;
+    if (inEdit || rendersInlineEditor) {
+        cellProps.editProps = {
+            inEdit,
+            startEdit: startEdit,
+            value: thisProps.editValue,
+            onClick: onEditorClick,
+            onChange: onEditValueChange,
+            onComplete: onEditorComplete,
+            onCancel: onEditorCancel,
+            onEnterNavigation: onEditorEnterNavigation,
+            onTabNavigation: onEditorTabNavigation,
+            gotoNext: gotoNextEditor,
+            gotoPrev: gotoPrevEditor,
+        };
+    }
+    if (headerCell) {
+        cellProps.onFocus = onHeaderCellFocus;
+    }
+    if (headerCell) {
+        CELL_RENDER_OBJECT.renderRowDetailsMoreIcon = renderRowDetailsMoreIcon;
+    }
+    if (headerCell) {
+        cellProps = prepareHeaderCellProps(cellProps);
+    }
+    else {
+        if (data &&
+            (data.__summary || (data.__group && data.groupColumnSummary)) &&
+            renderSummary) {
+            renderCell = renderSummary;
+        }
+        if (renderCell) {
+            // reuse the same sealed object in order to have better perf
+            CELL_RENDER_SECOND_OBJ.cellProps = cellProps;
+            CELL_RENDER_SECOND_OBJ.column = cellProps;
+            CELL_RENDER_SECOND_OBJ.headerProps = null;
+            if (data && (!data.__group || groupColumnVisible)) {
+                // group rendering is handled in renderGroupTitle (see adjustCellProps)
+                cellProps.children = renderCell(CELL_RENDER_OBJECT, CELL_RENDER_SECOND_OBJ);
+            }
+        }
+        if (!hidden &&
+            cellProps.children != null &&
+            cellProps.textEllipsis !== false) {
+            cellProps.children = wrapInContent(cellProps.children);
+        }
+        if (onRender) {
+            onRender(cellProps, CELL_RENDER_OBJECT);
+        }
+        if (cellSelected || cellActive || inEdit || rendersInlineEditor) {
+            cellProps.children = [
+                cellProps.children,
+                renderSelectionBox(cellProps),
+                inEdit && !rendersInlineEditor ? renderEditor(cellProps) : null,
+            ];
+        }
+        if (treeColumn) {
+            if (Array.isArray(cellProps.children)) {
+                cellProps.children = [renderNodeTool(thisProps), ...cellProps.children];
+            }
+            else {
+                cellProps.children = [renderNodeTool(thisProps), cellProps.children];
+            }
+        }
+    }
+    const initialDOMProps = getInitialDOMProps();
+    const domProps = Object.assign({}, initialDOMProps, {
+        onFocus: cellProps.onFocus || initialDOMProps.onFocus,
+        onClick: cellProps.onClick || initialDOMProps.onClick,
+        onContextMenu: cellProps.onContextMenu || initialDOMProps.onContextMenu,
+        onDoubleClick: cellProps.onDoubleClick || initialDOMProps.onDoubleClick,
+        onMouseDown: cellProps.onMouseDown || initialDOMProps.onMouseDown,
+        onTouchStart: cellProps.onTouchStart || initialDOMProps.onTouchStart,
+        onMouseEnter: cellProps.onMouseEnter || initialDOMProps.onMouseEnter,
+        onMouseLeave: cellProps.onMouseLeave || initialDOMProps.onMouseLeave,
+        style: initialDOMProps.style
+            ? Object.assign({}, initialDOMProps.style, cellProps.style)
+            : cellProps.style,
+        className: join(initialDOMProps.className, cellProps.className),
+    });
+    domProps.ref = domRef;
+    return headerCell ? (RENDER_HEADER(cellProps, domProps, cellInstance, state)) : (React.createElement("div", { ...domProps, children: cellProps.children, "data-props-id": props.id, "data-state-props-id": getProps().id, id: null, name: null, value: null, title: null, data: null }));
 }
 InovuaDataGridCell.defaultProps = {
     cellDefaultClassName: cellBem(),
@@ -1091,7 +1178,7 @@ InovuaDataGridCell.defaultProps = {
     treeNestingSize: 10,
     checkboxTabIndex: null,
     onSortClick: emptyFn,
-    preventSortOnClick: event => {
+    preventSortOnClick: (event) => {
         const target = event.target;
         return isFocusable(target);
     },
@@ -1308,3 +1395,39 @@ InovuaDataGridCell.propTypes = {
     renderRowDetailsExpandIcon: PropTypes.func,
     renderRowDetailsCollapsedIcon: PropTypes.func,
 };
+export default React.memo(InovuaDataGridCell, (prevProps, nextProps) => {
+    let areEqual = equalReturnKey(nextProps, prevProps, {
+        computedActiveIndex: 1,
+        activeRowRef: 1,
+        active: 1,
+        timestamp: 1,
+        remoteRowIndex: 1,
+        onResizeMouseDown: 1,
+        onResizeTouchStart: 1,
+        onFocus: 1,
+        onSortClick: 1,
+        onTouchStart: 1,
+        onColumnMouseEnter: 1,
+        onColumnMouseLeave: 1,
+    });
+    const equalProps = areEqual.result;
+    if (!equalProps) {
+        // console.log(
+        //   'UPDATE CELL',
+        //   areEqual.key,
+        //   // prevProps[areEqual.key!],
+        //   // nextProps[areEqual.key!],
+        //   prevProps.columnIndex,
+        //   nextProps.columnIndex,
+        //   diff(prevProps, nextProps)
+        // );
+        return false;
+    }
+    // if (equalProps) {
+    //   return true;
+    // }
+    // const equal = this.state
+    //   ? equalProps && shallowequal(nextState, this.state)
+    //   : equalProps;
+    return true;
+});

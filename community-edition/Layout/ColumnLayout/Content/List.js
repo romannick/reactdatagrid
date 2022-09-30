@@ -31,11 +31,10 @@ export default class InovuaDataGridList extends Component {
     scrollingDirection;
     lastScrollTimestamp = 0;
     scrollLeft;
+    virtualListRef;
     constructor(props) {
         super(props);
-        this.refVirtualList = vl => {
-            this.virtualList = vl;
-        };
+        this.virtualListRef = createRef();
         this._scrollLeft = 0;
         this._scrollTop = 0;
         this.startIndex = 0;
@@ -55,11 +54,14 @@ export default class InovuaDataGridList extends Component {
         }
         return !equal(nextState, this.state);
     }
+    componentDidMount() {
+        this.__willUnmount = false;
+    }
     componentWillUnmount() {
         this.__willUnmount = true;
     }
     isRowFullyVisible = index => {
-        return this.virtualList.isRowVisible(index);
+        return this.getVirtualList().isRowVisible(index);
     };
     computeRows = (props, { from, to, rowHeight, renderIndex, empty, setRowSpan, sticky, } = EMPTY_OBJECT) => {
         const { columnRenderCount } = props;
@@ -84,6 +86,10 @@ export default class InovuaDataGridList extends Component {
             editColumnId: this.editColumnId,
             memorizedScrollLeft: this.scrollLeft.current,
         }, props);
+    };
+    getVirtualList = () => {
+        const vl = this.virtualListRef.current;
+        return vl;
     };
     tryRowEdit = (nextEditRowIndex, dir, columnIndex, isEnterNavigation) => {
         const columnEditIndex = columnIndex;
@@ -160,7 +166,9 @@ export default class InovuaDataGridList extends Component {
             // we do some short-circuiting around the virtual list
             // so only the rendeRow for the specific row gets called
             // so only the editing row is being re-rendered by the update
-            this.virtualList.getRows().forEach(r => {
+            this.getVirtualList()
+                .getRows()
+                .forEach(r => {
                 const row = r.getInstance();
                 if (row && row.props.rowIndex === rowIndex) {
                     r.update();
@@ -206,7 +214,7 @@ export default class InovuaDataGridList extends Component {
             this.__minRowWidth = minRowWidth;
             this.__data = thisProps.data;
         }
-        return (React.createElement(VirtualList, { rowHeight: null, extraRows: naturalRowHeight ? 1 : 0, style: thisProps.style, theme: this.props.theme, checkResizeDelay: thisProps.checkResizeDelay, rowContain: thisProps.rowContain, contain: thisProps.contain, rtl: thisProps.rtl, stickyOffset: thisProps.rtlOffset, stickyRows: thisProps.computedStickyRows, onStickyRowUpdate: this.onStickyRowUpdate, enableRowSpan: thisProps.computedEnableRowspan, recycleCoveredRows: false, className: VirtualListClassName, renderRowContainer: this.renderRowContainer, ...maybeProps, overscrollBehavior: "auto", rowHeightManager: thisProps.rowHeightManager, before: thisProps.before, after: thisProps.after, showEmptyRows: thisProps.computedShowEmptyRows, scrollProps: scrollProps, emptyScrollOffset: this.getEmptyScrollOffset(), nativeScroll: thisProps.nativeScroll, onResize: this.onResize, virtualized: thisProps.virtualized, minRowWidth: minRowWidth, naturalRowHeight: naturalRowHeight, renderScroller: this.renderScroller, renderScrollerSpacer: this.renderScrollerSpacer, renderSizer: this.renderSizer, renderView: this.renderView, useTransformRowPosition: this.props.useTransformRowPosition, useTransformPosition: this.props.useTransformPosition, shouldComponentUpdate: shouldUpdate, ref: this.refVirtualList, count: thisProps.data.length || 0, pureRows: pureRows, renderRow: renderRow, onContainerScrollHorizontal: this.onScrollHorizontal, onContainerScroll: this.onContainerScroll, onScrollbarsChange: this.onScrollbarsChange, onContainerScrollVertical: this.props.onContainerScrollVertical, onScrollStop: this.onScrollStop, shouldFocusNextRow: this.shouldFocusNextRow }));
+        return (React.createElement(VirtualList, { rowHeight: null, extraRows: naturalRowHeight ? 1 : 0, style: thisProps.style, theme: this.props.theme, checkResizeDelay: thisProps.checkResizeDelay, rowContain: thisProps.rowContain, contain: thisProps.contain, rtl: thisProps.rtl, stickyOffset: thisProps.rtlOffset, stickyRows: thisProps.computedStickyRows, onStickyRowUpdate: this.onStickyRowUpdate, enableRowSpan: thisProps.computedEnableRowspan, recycleCoveredRows: false, className: VirtualListClassName, renderRowContainer: this.renderRowContainer, ...maybeProps, overscrollBehavior: "auto", rowHeightManager: thisProps.rowHeightManager, before: thisProps.before, after: thisProps.after, showEmptyRows: thisProps.computedShowEmptyRows, scrollProps: scrollProps, emptyScrollOffset: this.getEmptyScrollOffset(), nativeScroll: thisProps.nativeScroll, onResize: this.onResize, virtualized: thisProps.virtualized, minRowWidth: minRowWidth, naturalRowHeight: naturalRowHeight, renderScroller: this.renderScroller, renderScrollerSpacer: this.renderScrollerSpacer, renderSizer: this.renderSizer, renderView: this.renderView, useTransformRowPosition: this.props.useTransformRowPosition, useTransformPosition: this.props.useTransformPosition, shouldComponentUpdate: shouldUpdate, ref: this.virtualListRef, count: thisProps.data.length || 0, pureRows: pureRows, renderRow: renderRow, onContainerScrollHorizontal: this.onScrollHorizontal, onContainerScroll: this.onContainerScroll, onScrollbarsChange: this.onScrollbarsChange, onContainerScrollVertical: this.props.onContainerScrollVertical, onScrollStop: this.onScrollStop, shouldFocusNextRow: this.shouldFocusNextRow }));
     }
     onStickyRowUpdate = () => {
         this.updateOnScrollLeft(undefined, true);
@@ -427,14 +435,14 @@ export default class InovuaDataGridList extends Component {
         if (columnRenderStartIndex === this.columnRenderStartIndex && !force) {
             return;
         }
-        if (!this.virtualList) {
+        if (!this.getVirtualList()) {
             return;
         }
         if (this.props.onColumnRenderStartIndexChange) {
             this.props.onColumnRenderStartIndexChange(columnRenderStartIndex);
         }
         this.columnRenderStartIndex = columnRenderStartIndex;
-        const rows = this.virtualList.getRows();
+        const rows = this.getVirtualList().getRows();
         rows.forEach(row => {
             const rowInstance = row.getInstance();
             if (rowInstance) {
@@ -445,13 +453,14 @@ export default class InovuaDataGridList extends Component {
         });
     };
     getRows = () => {
-        if (!this.virtualList) {
+        const virtualList = this.getVirtualList();
+        if (!virtualList) {
             return [];
         }
-        return this.virtualList.getRows().map(row => row.getInstance());
+        return virtualList.getRows().map(row => row.getInstance());
     };
     getScrollLeftMax() {
-        return this.virtualList ? this.virtualList.scrollLeftMax : 0;
+        return this.getVirtualList() ? this.getVirtualList().scrollLeftMax : 0;
     }
     onScrollbarsChange = scrollbars => {
         this.scrollbars = scrollbars;
@@ -462,7 +471,9 @@ export default class InovuaDataGridList extends Component {
             });
         }
         if (this.props.onScrollbarsChange) {
-            this.props.onScrollbarsChange(scrollbars);
+            raf(() => {
+                this.props.onScrollbarsChange(scrollbars);
+            });
         }
         if (this.props.scrollProps && this.props.scrollProps.onScrollbarsChange) {
             this.props.scrollProps.onScrollbarsChange(scrollbars);
@@ -524,7 +535,7 @@ export default class InovuaDataGridList extends Component {
         }
     };
     getDOMNode = () => {
-        return this.node || (this.node = this.virtualList.getDOMNode());
+        return this.node || (this.node = this.getVirtualList().getDOMNode());
     };
     renderRow = args => {
         const { rowHeight, index, renderIndex, empty, sticky } = args;
@@ -543,7 +554,7 @@ export default class InovuaDataGridList extends Component {
         return result;
     };
     getVisibleCount = () => {
-        return this.virtualList ? this.virtualList.getVisibleCount() : -1;
+        return this.getVirtualList() ? this.getVirtualList().getVisibleCount() : -1;
     };
 }
 const propTypes = Object.assign({}, virtualListPropTypes, {
@@ -554,7 +565,7 @@ const propTypes = Object.assign({}, virtualListPropTypes, {
         id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         render: PropTypes.func,
     })),
-    data: PropTypes.array,
+    data: PropTypes.any,
     from: PropTypes.number,
     updateLockedWrapperPositions: PropTypes.any,
     // true if there is at least one locked column, false otherwise

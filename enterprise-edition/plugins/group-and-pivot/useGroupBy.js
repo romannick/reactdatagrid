@@ -146,6 +146,14 @@ const useGroupBy = (props, computedProps, computedPropsRef) => {
                     newExpandedGroups[stringPath] = true;
                 }
             }
+            else {
+                if (newCollapsedGroups[stringPath]) {
+                    delete newCollapsedGroups[stringPath];
+                }
+                else {
+                    newCollapsedGroups[stringPath] = true;
+                }
+            }
         }
         setCollapsedAndExpanded({
             collapsedGroups: newCollapsedGroups,

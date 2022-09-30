@@ -41,6 +41,7 @@ type TypeVirtualListRow = {
   naturalRowHeight?: boolean;
   virtualized?: boolean;
   contain?: boolean | string;
+  index: number;
 };
 export default class InovuaVirtualListRow extends React.Component<
   TypeVirtualListRow
@@ -63,6 +64,8 @@ export default class InovuaVirtualListRow extends React.Component<
     this.ref = r => {
       this.row = r;
     };
+
+    this.mounted = true;
   }
 
   getInstance() {
@@ -81,6 +84,12 @@ export default class InovuaVirtualListRow extends React.Component<
   }
 
   componentDidMount() {
+    this.mounted = true;
+
+    if (this.props.onMount) {
+      this.props.onMount(this);
+    }
+
     const { naturalRowHeight } = this.props;
     this.fetchNode();
     if (naturalRowHeight && this.node) {
@@ -343,7 +352,7 @@ export default class InovuaVirtualListRow extends React.Component<
 
   setIndex(
     index: number,
-    callback: () => void | undefined,
+    callback?: () => void | undefined,
     useRaf: boolean = false,
     force?: boolean
   ) {
@@ -425,15 +434,15 @@ export default class InovuaVirtualListRow extends React.Component<
     }
   }
 
-  getIndex() {
+  getIndex(): number {
     return this.index === undefined ? this.props.index : this.index;
   }
 
-  getRowSpan() {
+  getRowSpan = (): any => {
     return this.rowSpan;
-  }
+  };
 
-  getInfo(updateHeight) {
+  getInfo(updateHeight?: boolean) {
     if (this.mounted === false) {
       return this.info;
     }

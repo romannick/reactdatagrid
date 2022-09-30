@@ -33,7 +33,9 @@ const getColumnOrder = (props, filter) => {
     const doFilter = c => (!c.groupColumn && filter ? filter(c) : true);
     let order;
     if (props.computedColumnOrder) {
-        order = props.computedColumnOrder.map(id => props.columnsMap[id]);
+        order = props.computedColumnOrder
+            .map(id => props.columnsMap[id])
+            .filter(Boolean);
     }
     else {
         order = props.allColumns;
@@ -76,7 +78,7 @@ const getParentsForColumns = (columns, groups, maxDepth) => {
     });
     return parentsForColumns;
 };
-const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLength, parentsForColumns, columns, allowGroupSplitOnReorder, }) => {
+const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLength, parentsForColumns, lockedForColumns, columns, allowGroupSplitOnReorder, }) => {
     const getGroupsForColumn = parents => {
         parents = parents || [];
         const initialName = parents[0];
@@ -98,15 +100,18 @@ const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLen
     };
     const getGroupStartFor = (parents, depth, index) => {
         const initialParent = parents[index].slice(-depth - 1)[0];
+        const initialLocked = lockedForColumns[index];
         let itParents;
         let currentParent;
+        let currentLocked;
         do {
             itParents = parents[index - 1];
             if (!itParents) {
                 break;
             }
             currentParent = itParents.slice(-depth - 1)[0];
-            if (currentParent !== initialParent) {
+            currentLocked = lockedForColumns[index];
+            if (currentParent !== initialParent || currentLocked !== initialLocked) {
                 break;
             }
             index--;
@@ -115,8 +120,10 @@ const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLen
     };
     const getGroupEndFor = (parents, depth, index) => {
         const initialParent = parents[index].slice(-depth - 1)[0];
+        const initialLocked = lockedForColumns[index];
         let itParents;
         let currentParent;
+        let currentLocked;
         do {
             index++;
             itParents = parents[index];
@@ -124,7 +131,8 @@ const getValidDropPositions = ({ dragTargetDepth, dragTargetIndex, dragTargetLen
                 break;
             }
             currentParent = itParents.slice(-depth - 1)[0];
-            if (currentParent !== initialParent) {
+            currentLocked = lockedForColumns[index];
+            if (currentParent !== initialParent || currentLocked !== initialLocked) {
                 break;
             }
         } while (index < parents.length);
@@ -665,7 +673,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
             : dragTarget == 'group'
                 ? dragColumn.id
                 : null;
-        const dragBoxNode = dragBox.domRef ? dragBox.domRef.current : null;
+        const dragBoxNode = dragBox.getDOMNode ? dragBox.getDOMNode() : null;
         const dragBoxInitialRegion = dragBox && dragBox.getProxyRegion
             ? dragBox.getProxyRegion()
             : Region.from(dragBoxNode);
@@ -717,7 +725,6 @@ export default class InovuaDataGridHeaderLayout extends Component {
         else {
             dragProxy.setLeft(dragProxyPosition.left);
         }
-        this.setReorderArrowVisible(headerDragColumn ? headerDragColumn.draggable !== false : true);
         const maxHeaderIndex = columns.length - getUndraggableSuccessiveCount([...columns].reverse());
         const minHeaderIndex = getUndraggableSuccessiveCount(columns);
         // make all drop positions valid
@@ -734,6 +741,7 @@ export default class InovuaDataGridHeaderLayout extends Component {
                 dragTargetIndex,
                 dragTargetLength,
                 parentsForColumns,
+                lockedForColumns: columns.map(c => c.computedLocked),
                 columns,
                 allowGroupSplitOnReorder: this.props.allowGroupSplitOnReorder,
                 maxDepth: this.props.computedGroupsDepth + 1,
@@ -856,7 +864,9 @@ export default class InovuaDataGridHeaderLayout extends Component {
             }, 10);
         }
         if (dragTarget == 'headergroup') {
-            if (dropIndex == dragIndex && dragTarget == dropTarget) {
+            if (dropIndex == dragIndex &&
+                dragTarget == dropTarget &&
+                newLocked === currentLocked) {
                 return;
             }
             if (columns[dropIndex]) {
@@ -1105,7 +1115,6 @@ export default class InovuaDataGridHeaderLayout extends Component {
             visible = true;
         }
         this.dropIndex = dropIndex;
-        this.setReorderArrowVisible(true);
         this.setReorderArrowPosition(undefined, dropTarget);
         this.setReorderArrowAt(dropIndex, compareRanges, dropTarget, offset, visible);
     }

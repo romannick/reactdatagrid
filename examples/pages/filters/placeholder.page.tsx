@@ -14,7 +14,7 @@ import flags from '../flags';
 import moment from 'moment';
 import { CellProps, TypeFilter } from '@inovua/reactdatagrid-community/types';
 
-const gridStyle = { minHeight: 400 };
+const gridStyle = { minHeight: 600 };
 
 const filterIcon = (className: string) => {
   return (
@@ -174,6 +174,16 @@ const App = () => {
     setDataSource(data);
   }, []);
 
+  const onEditComplete = useCallback(
+    ({ value, columnId, rowIndex }) => {
+      const data = [...dataSource];
+      data[rowIndex][columnId] = value;
+
+      setDataSource(data);
+    },
+    [dataSource]
+  );
+
   const filteredRowsCount = useCallback((filteredRows: number) => {
     // console.log('filteredRows', filteredRows);
   }, []);
@@ -189,6 +199,8 @@ const App = () => {
         columns={columns}
         dataSource={dataSource}
         filteredRowsCount={filteredRowsCount}
+        onEditComplete={onEditComplete}
+        editable={true}
         groups={groups}
         defaultGroupBy={[]}
         pagination

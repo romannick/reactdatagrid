@@ -68,6 +68,7 @@ import {
   TypeRowUnselected,
 } from './TypeSelected';
 import Renderable from './TypeRenderable';
+import { FunctionNotifier } from '../utils/notifier';
 
 export type TypeBuildColumnsProps = {
   groups: any;
@@ -154,6 +155,8 @@ export type EnumRowDetailsWidth =
 type TypeGridPublicAPI = any;
 
 type TypeDataGridPropsNoI18n = {
+  activeCellThrottle?: number;
+  activeIndexThrottle?: number;
   scrollThreshold?: number | string;
   rowContextMenuAlignPositions?: string[];
   rowContextMenuPosition?: 'fixed' | 'absolute';
@@ -579,7 +582,7 @@ type TypeDataGridPropsNoI18n = {
   theme?: string;
   style?: { [key: string]: string | number };
   scrollTopOnFilter?: boolean;
-  scrollTopOnSort?: boolean;
+  scrollTopOnSort?: boolean | 'always';
   scrollTopOnGroupBy?: boolean;
 
   parentComputedProps?: TypeComputedProps;
@@ -761,6 +764,7 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   rowReorderAutoScroll?: boolean;
   rowReorderArrowStyle?: CSSProperties;
   rowReorderAutoScrollSpeed?: number;
+  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
   computedPivotUniqueValuesPerColumn: TypePivotUniqueValuesDescriptor;
   computedLicenseValid?: boolean;
   initialProps: TypeDataGridProps;

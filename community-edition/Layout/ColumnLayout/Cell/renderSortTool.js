@@ -7,7 +7,7 @@
 import React from 'react';
 import join from '../../../packages/join';
 const DEFAULT_SIZE = 10;
-export default ({ sortable, size, direction, renderSortTool }, extraProps) => {
+export default ({ sortable, size, direction, renderSortTool, }, extraProps) => {
     if (!sortable) {
         return null;
     }

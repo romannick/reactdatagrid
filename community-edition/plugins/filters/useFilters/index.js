@@ -322,10 +322,13 @@ const useFilters = (props, computedProps, computedPropsRef) => {
             computedProps.hideColumnContextMenu();
         }
         setColumnFilterContextMenuProps(cellProps);
+        computedProps.notifyColumnFilterVisibleStateChange(true);
     }, [setColumnFilterContextMenuProps]);
     const hideColumnFilterContextMenu = useCallback(() => {
-        if (columnFilterContextMenuProps) {
+        const { current: computedProps } = computedPropsRef;
+        if (columnFilterContextMenuProps && computedProps) {
             setColumnFilterContextMenuProps(null);
+            computedProps.notifyColumnFilterVisibleStateChange(false);
         }
     }, [columnFilterContextMenuProps]);
     const shouldShowFilteringMenuItems = useCallback(() => {

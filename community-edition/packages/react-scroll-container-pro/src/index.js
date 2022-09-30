@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React, { Component, createElement } from 'react';
+import React, { Component, createElement, createRef, } from 'react';
 import PropTypes from 'prop-types';
 import debounce from '../../../packages/debounce';
 import autoBind from '../../../packages/react-class/autoBind';
@@ -46,6 +46,8 @@ const OTHER_ORIENTATION = {
 export default class InovuaScrollContainer extends Component {
     scrollerScrollSize;
     scrollerClientSize;
+    refScroller;
+    scrollerNode;
     constructor(props) {
         super(props);
         autoBind(this, {
@@ -109,17 +111,17 @@ export default class InovuaScrollContainer extends Component {
         this.refView = v => {
             this.viewNode = v;
         };
-        this.refScroller = c => {
-            if (props.usePassiveScroll) {
-                if (c) {
-                    this.setupPassiveScrollListener(c);
-                }
-                else {
-                    this.removePassiveScrollListener(this.scrollerNode);
-                }
-            }
-            this.scrollerNode = c;
-        };
+        this.refScroller = createRef();
+        // this.refScroller = c => {
+        //   if (props.usePassiveScroll) {
+        //     if (c) {
+        //       this.setupPassiveScrollListener(c);
+        //     } else {
+        //       this.removePassiveScrollListener(this.scrollerNode);
+        //     }
+        //   }
+        //   this.scrollerNode = c;
+        // };
     }
     // ADJUST WRAPPER ON SCROLL INTO VIEW!!!
     onWrapperScroll(event) {
@@ -158,7 +160,7 @@ export default class InovuaScrollContainer extends Component {
             passive: true,
         });
     }
-    removePassiveScrollListener(node = this.scrollerNode) {
+    removePassiveScrollListener(node = this.getScrollerNode()) {
         if (node) {
             node.removeEventListener('scroll', this.onScroll, {
                 passive: true,
@@ -172,6 +174,22 @@ export default class InovuaScrollContainer extends Component {
         }
         if (typeof this.props.onWillUnmount === 'function') {
             this.props.onWillUnmount(this);
+        }
+    }
+    componentDidMount() {
+        this.unmounted = false;
+        this.scrollerNode = this.refScroller.current;
+        const scrollerNode = this.getScrollerNode();
+        if (this.props.usePassiveScroll) {
+            if (scrollerNode) {
+                this.setupPassiveScrollListener(scrollerNode);
+            }
+            else {
+                this.removePassiveScrollListener(scrollerNode);
+            }
+        }
+        if (typeof this.props.onDidMount === 'function') {
+            this.props.onDidMount(this, this.getDOMNode(), this._scrollerResizer);
         }
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -374,11 +392,6 @@ export default class InovuaScrollContainer extends Component {
             }
         }
     }
-    componentDidMount() {
-        if (typeof this.props.onDidMount === 'function') {
-            this.props.onDidMount(this, this.getDOMNode(), this._scrollerResizer);
-        }
-    }
     getDOMNode() {
         return this.domNode;
     }
@@ -545,7 +558,9 @@ export default class InovuaScrollContainer extends Component {
     }
     getScrollerNode() {
         this.scrollerNode =
-            this.scrollerNode || this.getDOMNode().firstChild.firstChild;
+            this.scrollerNode ||
+                this.refScroller.current ||
+                this.getDOMNode().firstChild.firstChild;
         return this.scrollerNode;
     }
     getScrollerChild() {
@@ -691,7 +706,8 @@ export default class InovuaScrollContainer extends Component {
         if (this.props.onScroll) {
             this.props.onScroll(event);
         }
-        if (eventTarget != this.scrollerNode) {
+        const scrollerNode = this.getScrollerNode();
+        if (eventTarget != scrollerNode) {
             return;
         }
         this.onScrollDebounce(eventTarget);
@@ -827,7 +843,7 @@ export default class InovuaScrollContainer extends Component {
         }
     }
     applyCSSContainOnScrollUpdate = bool => {
-        const scrollerNode = this.scrollerNode;
+        const scrollerNode = this.getScrollerNode();
         if (scrollerNode) {
             scrollerNode.style.contain = bool ? 'strict' : '';
         }

@@ -21,6 +21,7 @@ export default ({
   onRowHeightChange,
   onKeyDown,
   onFocus,
+  onMount,
   onUnmount,
   rowContain,
   naturalRowHeight,
@@ -29,7 +30,7 @@ export default ({
   from = 0,
   to = count,
   virtualized,
-}) => {
+}: any) => {
   const rows = [];
   for (let i = from; i < to; i++) {
     rows.push(
@@ -50,6 +51,7 @@ export default ({
         showEmptyRows={showEmptyRows}
         onKeyDown={onKeyDown}
         onFocus={onFocus}
+        onMount={onMount}
         onUnmount={onUnmount}
         virtualized={virtualized}
         naturalRowHeight={naturalRowHeight}

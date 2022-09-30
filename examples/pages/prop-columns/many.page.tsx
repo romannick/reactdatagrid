@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import React from 'react';
 import Button from '@inovua/reactdatagrid-community/packages/Button';
 import CheckBox from '@inovua/reactdatagrid-community/packages/CheckBox';
-import React from 'react';
+import NumericInput from '@inovua/reactdatagrid-community/packages/NumericInput';
 
 import DataGrid from '../../../enterprise-edition';
 import { getGlobal } from '@inovua/reactdatagrid-community/getGlobal';
@@ -16,9 +17,11 @@ const globalObject = getGlobal();
 
 import people from '../people';
 
-const gridStyle = { minHeight: '80vh' };
+let Btn = Button as any;
 
-const times = (arr, n, fn?) => {
+const gridStyle = { minHeight: '50vh' };
+
+const times = (arr: any[], n: number, fn?: (x: any, i: number) => void) => {
   const result = [];
 
   for (var i = 0; i < n; i++) {
@@ -41,39 +44,40 @@ const defaultGroupBy = ['country'];
 
 const defaultCellSelection = { '0-4,id': true, '0-4,desc': true };
 class App extends React.Component<any, any> {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
-    const COLS = 20;
-    let columns = times([{ name: 'id' }], COLS, (_, i) => {
+
+    (this as any).COLS = 100;
+
+    let columns = times([{ name: 'id' }], (this as any).COLS, (_, i) => {
       return {
-        name: i ? `id-${i}` : 'id',
-        id: i ? `id-${i}` : 'id',
-        // defaultLocked: i < 2 ? 'start' : i > COLS - 2 ? 'end' : false,
-        // colspan: () => 1,
-        // render: ({ value, rowIndex }) => {
-        //   // console.log(`render ${rowIndex} - ${i}`);
-        //   return value;
-        // },
+        name: `id-${i}`,
+        id: `id-${i}`,
+        header: `ID--${i}`,
+        defaultWidth: 120,
+        render: ({ value, rowIndex }: { value: string; rowIndex: number }) => {
+          return `${rowIndex} - ${value}`;
+        },
       };
     });
 
     this.state = {
-      rtl: false,
+      rtl: true,
       columns,
-
+      rows: 1050,
       dataSource: [],
+      checkboxColumn: true,
     };
   }
 
   componentDidMount(): void {
-    this.loadDataSource(10);
+    this.loadDataSource(this.state.rows);
   }
 
-  loadDataSource = n => {
-    const COLS = 20;
+  loadDataSource = (n: number) => {
     const data = times(
       [
-        [...new Array(COLS)].reduce(
+        [...new Array((this as any).COLS)].reduce(
           (acc, _, i) => {
             acc[`id-${i}`] = i;
             return acc;
@@ -87,48 +91,79 @@ class App extends React.Component<any, any> {
     this.setState({ dataSource: data });
   };
 
+  onRowsChange = (rows: any) => {
+    this.setState({ rows });
+  };
+
   render() {
     if (!process.browser) {
       return null;
     }
+
+    const numericProps = {
+      theme: 'default-dark',
+      style: { minWidth: 150 },
+      value: this.state.rows,
+      onChange: this.onRowsChange,
+    };
+
     return (
       <div>
         <div style={{ marginBottom: 20 }}>
           <CheckBox
             checked={this.state.rtl}
-            onChange={value => this.setState({ rtl: value })}
+            onChange={(value: boolean) => this.setState({ rtl: value })}
           >
             RTL
           </CheckBox>
         </div>
         <div style={{ marginBottom: 20 }}>
-          <Button
-            onClick={() => {
-              this.loadDataSource(1);
-            }}
-          >
-            Set 1 row
-          </Button>
+          <NumericInput {...numericProps} />
         </div>
         <div style={{ marginBottom: 20 }}>
-          <Button
+          <Btn
+            style={{ minWidth: 150 }}
             onClick={() => {
-              this.loadDataSource(100);
+              this.loadDataSource(this.state.rows);
             }}
           >
-            Set 100 rows
-          </Button>
+            Set rows
+          </Btn>
         </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <CheckBox
+            checked={this.state.checkboxColumn}
+            onChange={() => {
+              this.setState({ checkboxColumn: !this.state.checkboxColumn });
+            }}
+          >
+            Checkbox column
+          </CheckBox>
+        </div>
+
         <DataGrid
           idProperty="id"
           style={gridStyle}
           handle={x => {
             (globalObject as any).x = x;
           }}
+          showHeader={true}
+          // rowIndexColumn
           columns={this.state.columns}
           dataSource={this.state.dataSource}
-          rtl={this.state.rtl}
+          virtualizeColumnsThreshold={3}
+          pagination={false}
+          // onRowReorder={this.state.checkboxColumn}
+          // checkboxColumn={this.state.checkboxColumn}
+          // nativeScroll={true}
+          // virtualizeColumns={false}
+
           // virtualizeColumnsThreshold={10}
+
+          // activeCellThrottle={200}
+          // activeIndexThrottle={1000}
+          // defaultActiveCell={[1, 0]}
         />
       </div>
     );

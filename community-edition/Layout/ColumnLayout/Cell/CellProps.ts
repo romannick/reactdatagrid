@@ -5,35 +5,42 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { FunctionNotifier } from '../../../utils/notifier';
+import { ReactNode, CSSProperties } from 'react';
+import { TypeGroupTool } from '../../../types';
+
 type func = (...args: any[]) => any;
 export type CellProps = {
+  timestamp: number;
   onTransitionEnd?: (e: any) => void;
   inEdit?: boolean;
   cellRef?: any;
+  left?: number;
   colspan?: any;
   rowspan?: any;
   computedColspanToStart?: boolean;
   computedColspanedBy?: any;
   computedAbsoluteIndex?: number;
-  checkboxTabIndex?: number;
+  checkboxTabIndex?: number | null;
   expandColumnIndex?: number;
-  expandColumn: boolean;
-  cellActive: boolean;
+  expandColumn?: boolean;
+  cellActive?: boolean;
   cellClassName?: string;
   cellDefaultClassName?: string;
   cellDOMProps?: object | ((...args: any[]) => any);
   computedCellMultiSelectionEnabled?: boolean;
-  cellSelectable: boolean;
-  cellSelected: boolean;
+  cellSelectable?: boolean;
+  cellSelected?: boolean;
   checkboxColumn?: any;
   collapsed?: boolean;
   computedColspan?: number;
   computedRowspan?: number;
-  columnIndex: number;
+  columnIndex?: number;
   columnResizeHandleWidth?: number | string;
   computedLocked?: false | 'start' | 'end';
-  computedWidth: number;
-  data: any | any[];
+  computedWidth?: number;
+  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
+  data?: any | any[];
   defaultWidth?: number | string;
   depth?: number;
   deselectAll?: func;
@@ -49,9 +56,19 @@ export type CellProps = {
   groupSpacerColumn?: boolean;
   groupNestingSize?: number;
   groupProps?: {
-    depth: number;
+    depth?: number;
     collapsed?: boolean;
+    renderGroupTool?: {
+      render: any;
+      rtl: boolean | undefined;
+      collapsed: boolean | undefined;
+      toggleGroup: (event: any) => void;
+      style?: any;
+      size: number;
+    };
   };
+  renderGroupCollapseTool?: TypeGroupTool;
+  renderGroupExpandTool?: TypeGroupTool;
   hasBottomSelectedSibling?: boolean;
   hasLeftSelectedSibling?: boolean;
   hasLockedStart?: boolean;
@@ -59,7 +76,7 @@ export type CellProps = {
   hasTopSelectedSibling?: boolean;
   header?: any;
   headerAlign?: 'start' | 'center' | 'end';
-  headerCell: boolean;
+  headerCell?: boolean;
   headerCellDefaultClassName?: string;
   headerClassName?: string;
   headerDOMProps?: object;
@@ -79,7 +96,7 @@ export type CellProps = {
   hideIntermediateState?: boolean;
   hideTransitionDuration?: number;
   hiding?: boolean;
-  id: number | string;
+  id?: number | string;
   inHideTransition?: boolean;
   inShowTransition?: boolean;
   inTransition?: boolean | number;
@@ -119,14 +136,14 @@ export type CellProps = {
   renderCheckbox?: func;
   renderGroupTitle?: func;
   renderHeader?: func;
-  renderSortTool?: func;
+  renderSortTool?: (direction: -1 | null | 1, extraProps: CellProps) => void;
   computedResizable?: boolean;
   lockable?: boolean;
   resizeProxyStyle?: object;
   rowActive?: boolean;
   rowHeight?: number;
   initialRowHeight?: number;
-  rowIndex: number;
+  rowIndex?: number;
   rowIndexInGroup?: number;
   rowRenderIndex?: number;
   rowSelected?: boolean;
@@ -165,12 +182,12 @@ export type CellProps = {
   totalDataCount?: number;
   unselectedCount?: number;
   userSelect?: true | false | 'text' | 'none';
-  value: any;
-  virtualizeColumns: boolean;
+  value?: any;
+  virtualizeColumns?: boolean;
   visibilityTransitionDuration?: boolean | number;
-  computedVisible: boolean;
-  computedVisibleCount: number;
-  computedVisibleIndex: number;
+  computedVisible?: boolean;
+  computedVisibleCount?: number;
+  computedVisibleIndex?: number;
   indexInColumns?: number;
   width?: number | string;
 
@@ -225,8 +242,8 @@ export type CellProps = {
   getEditCompleteValue?: func;
   editStartEvent?: string;
   onDragRowMouseDown?: func;
-  theme: string;
-  onContextMenu?: () => void;
+  theme?: string;
+  onContextMenu?: (event: MouseEvent, props: CellProps) => void;
   showContextMenu?: (menuTool: any, onHide: any) => void;
   setActiveIndex?: func;
   renderColumnReorderProxy?: (props: any) => void;
@@ -239,32 +256,103 @@ export type CellProps = {
   isCheckboxColumn?: boolean;
   onColumnMouseEnter?: (props: CellProps) => void;
   onColumnMouseLeave?: (props: CellProps) => void;
+  showColumnFilterContextMenu?: (node: ReactNode, props: CellProps) => void;
+  hideColumnFilterContextMenu?: () => void;
+  onDoubleClick?: (event: MouseEvent, props: CellProps) => void;
+  onFocus?: (event: MouseEvent, props: CellProps) => void;
+  editor?: any;
+  tryNextRowEdit?: (
+    dir: number,
+    columnIndex: number,
+    isEnterNavigation?: boolean
+  ) => void;
+  style?: CSSProperties | ((props: CellProps) => void);
+  computedPivot?: boolean;
+  columnIndexHovered?: number;
+  className?: string | ((props: CellProps) => void);
+  computedLockable?: boolean;
+  lastInGroup?: boolean;
+  onCellLeave?: (event: MouseEvent, props: CellProps) => void;
+  onMouseEnter?: (event: MouseEvent) => void;
+  onMouseLeave?: (event: MouseEvent) => void;
+  onMouseDown?: (props: CellProps, event: MouseEvent) => void;
+  onTouchStart?: (props: CellProps, event: TouchEvent) => void;
+  onCellTouchStart?: (event: TouchEvent, props: CellProps) => void;
+  children?: any;
+  hideColumnContextMenu?: () => void;
+  onClick?: (event: MouseEvent, props: CellProps) => void;
+  loadNodeAsync?: () => void;
+  remoteRowIndex?: number;
+  rowExpanded?: boolean;
+  renderSummary?: any;
+  cellProps?: CellProps;
+  nodeLoading?: boolean;
+  nodeCollapsed?: boolean;
+  leafNode?: boolean;
+  renderTreeCollapseTool?: ({
+    domProps,
+    size,
+  }: {
+    domProps: any;
+    size?: number;
+  }) => void;
+  renderTreeExpandTool?: ({
+    domProps,
+    size,
+  }: {
+    domProps: any;
+    size?: number;
+  }) => void;
+  renderTreeLoadingTool?: ({
+    domProps,
+    size,
+    className,
+  }: {
+    domProps: any;
+    size?: number;
+    className: string;
+  }) => void;
+  size?: number;
+  node?: ReactNode;
+  nodeProps?: any;
+  treeNestingSize?: number;
+  nodeExpanded?: boolean;
+  onUpdate?: (props: CellProps, instance?: any) => void;
+  startEdit?: (
+    editValue?: string,
+    errBack?: (...args: any[]) => any
+  ) => Promise<void> | Promise<boolean | undefined>;
 };
 
 export type EnhancedCellProps = CellProps & {
   editProps?: {
-    inEdit: boolean;
+    inEdit?: boolean;
     startEdit: func;
     value: any;
     gotoNext: () => void;
     gotoPrev: () => void;
-    onTabNavigation: () => void;
+    onTabNavigation: (complete: boolean, dir: number) => void;
+    onClick?: (event: MouseEvent, props: CellProps) => void;
+    onChange?: (event: MouseEvent) => void;
+    onComplete?: () => void;
+    onCancel?: () => void;
+    onEnterNavigation?: (complete: boolean, dir: number) => void;
   };
   className?: string;
 };
 
 export type CellRenderObject = {
-  empty: boolean;
+  empty?: boolean;
   value: any;
   data: any;
   cellProps: EnhancedCellProps;
-  columnIndex: number;
-  treeColumn: boolean;
-  rowIndex: number;
-  remoteRowIndex: number;
-  rowIndexInGroup: number;
-  rowSelected: boolean;
-  rowExpanded: boolean;
+  columnIndex?: number;
+  treeColumn?: boolean;
+  rowIndex?: number;
+  remoteRowIndex?: number;
+  rowIndexInGroup?: number;
+  rowSelected?: boolean;
+  rowExpanded?: boolean;
   nodeProps: any;
   setRowSelected: any;
   setRowExpanded: any;
@@ -272,14 +360,96 @@ export type CellRenderObject = {
   toggleRowExpand: any;
   toggleNodeExpand: any;
   loadNodeAsync?: () => void;
-  isRowExpandable: (rowInfo: {
+  isRowExpandable?: (rowInfo: {
     id: string | number;
     data: object;
     rowIndex: number;
   }) => boolean;
-  totalDataCount: number;
-  rendersInlineEditor: boolean;
-  renderRowDetailsExpandIcon: () => void;
-  renderRowDetailsCollapsedIcon: () => void;
-  renderRowDetailsMoreIcon: () => void;
+  totalDataCount?: number;
+  rendersInlineEditor?:
+    | boolean
+    | ((cellRenderObject: CellRenderObject) => boolean);
+  renderRowDetailsExpandIcon?: () => void;
+  renderRowDetailsCollapsedIcon?: () => void;
+  renderRowDetailsMoreIcon?: () => void;
+};
+
+export type TypeState = {
+  right?: number;
+  left?: number;
+  top?: number;
+  props?: CellProps;
+  dragging?: boolean;
+  height?: number;
+  width?: number;
+};
+
+export type CellInstance = {
+  showContextMenu: (domRef: ReactNode, onHide: () => void) => void;
+  getProps: () => CellProps;
+  setLeft: (left: number) => void;
+  setRight: (right: number) => void;
+  setTop: (top: number) => void;
+  setHeight: (height: number) => void;
+  setWidth: (width: number) => void;
+  setDragging: (dragging: boolean, callback?: Function) => void;
+  setStateProps: (stateProps: CellProps) => void;
+  updateState: (newState: TypeState, callback?: Function) => void;
+  updateProps: (props: CellProps, callback?: any) => void;
+  getDOMNode: () => void;
+  onUpdate: () => void;
+  getInitialIndex: () => void;
+  getcomputedVisibleIndex: () => void;
+  getInitialDOMProps: () => void;
+  isInEdit: () => void;
+  getEditable: (
+    editValue: string,
+    thisProps?: CellProps
+  ) => Promise<void> | Promise<boolean | undefined>;
+  onEditorTabLeave: (direction: -1 | null | 1) => void;
+  gotoNextEditor: () => void;
+  gotoPrevEditor: () => void;
+  onEditorEnterNavigation: (complete: boolean, dir: number) => void;
+  onEditorTabNavigation: (complete: boolean, dir: number) => void;
+  onEditorClick: (event: MouseEvent) => void;
+  onEditorCancel: () => void;
+  startEdit: (
+    editValue?: any,
+    errBack?: (...args: any[]) => any
+  ) => Promise<void> | Promise<boolean | undefined>;
+  stopEdit: () => void;
+  cancelEdit: () => void;
+  onEditorComplete: () => void;
+  getEditCompleteValue: () => void;
+  completeEdit: () => void;
+  getCurrentEditValue: () => void;
+  onFilterValueChange: (filterValue: string) => void;
+  onEditValueChange: (event: MouseEvent) => void;
+  onHeaderCellFocus: (event: MouseEvent) => void;
+  onColumnHoverMouseEnter: (props: CellProps) => void;
+  onColumnHoverMouseLeave: (props: CellProps) => void;
+  onCellEnterHandle: (event: MouseEvent) => void;
+  onCellLeave: (event: MouseEvent) => void;
+  onCellSelectionDraggerMouseDown: (event: MouseEvent) => void;
+  prepareHeaderCellProps: (props: EnhancedCellProps) => void;
+  onMouseDown: (event: MouseEvent) => void;
+  onContextMenu: (event: MouseEvent & { nativeEvent: any }) => void;
+  onTouchStart: (event: TouchEvent) => void;
+  onResizeMouseDown: (cellProps: EnhancedCellProps, event: MouseEvent) => void;
+  onResizeTouchStart: (cellProps: EnhancedCellProps, event: TouchEvent) => void;
+  onClick: (event: MouseEvent) => void;
+  onDoubleClick: (event: MouseEvent) => void;
+  getEditStartValue: () => void;
+  onSortClick: () => void;
+  getSortTools: (
+    direction: 1 | -1 | null | undefined,
+    cellProps: EnhancedCellProps
+  ) => void | JSX.Element | null;
+  showFilterContextMenu: (node: ReactNode) => void;
+  hideFilterContextMenu: () => void;
+  getProxyRegion: () => void;
+  renderGroupTool: () => void;
+  toggleGroup: (event: any) => void;
+  domRef: any;
+  props: CellProps;
 };

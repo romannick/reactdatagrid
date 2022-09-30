@@ -6,11 +6,25 @@
  */
 
 import React from 'react';
+import { CellProps } from './CellProps';
 import join from '../../../packages/join';
 
 const DEFAULT_SIZE = 10;
 
-export default ({ sortable, size, direction, renderSortTool }, extraProps) => {
+export default (
+  {
+    sortable,
+    size,
+    direction,
+    renderSortTool,
+  }: {
+    sortable: boolean | undefined;
+    size?: number;
+    direction: -1 | null | 1;
+    renderSortTool?: (direction: -1 | null | 1, extraProps: CellProps) => void;
+  },
+  extraProps: CellProps
+) => {
   if (!sortable) {
     return null;
   }

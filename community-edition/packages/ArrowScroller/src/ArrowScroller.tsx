@@ -108,6 +108,8 @@ class InovuaArrowScroller extends Component {
   }
 
   componentDidMount() {
+    this.componentIsMounted = true;
+
     raf(() => {
       const name = this.getOffsetSizeName();
 
@@ -118,7 +120,6 @@ class InovuaArrowScroller extends Component {
       };
 
       this.syncScroll({ force: true });
-      this.componentIsMounted = true;
 
       this.inertialManager = new InertialManager({
         arrowSelector: `.${this.props.rootClassName}__arrow`,

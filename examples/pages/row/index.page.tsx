@@ -3,7 +3,7 @@ import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
 import Button from '@inovua/reactdatagrid-community/packages/Button';
 
 const App = () => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
   const columns = React.useMemo(
     () => [

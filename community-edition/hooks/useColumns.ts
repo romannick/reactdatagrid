@@ -478,9 +478,12 @@ export default (
       return;
     }
 
-    const { setLockedColumnsState, lockedColumnsState } = computedProps;
+    const { setLockedColumnsState } = computedProps;
 
-    setLockedColumnsState({ ...lockedColumnsState, [column.id]: locked });
+    setLockedColumnsState(lockedColumnsState => ({
+      ...lockedColumnsState,
+      [column.id]: locked,
+    }));
   };
 
   const getColumnsInOrder = (): TypeComputedColumn[] => {

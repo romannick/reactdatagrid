@@ -20,6 +20,7 @@ import renderCellsMaybeLocked from '../../Content/renderCellsMaybeLocked';
 
 import join from '../../../../packages/join';
 import getCellHeader from './getCellHeader';
+import { FunctionNotifier } from '../../../../utils/notifier';
 
 const emptyFn = () => {};
 
@@ -68,6 +69,7 @@ const propTypes = {
   unlockedColumns: PropTypes.array,
   lockedEndColumns: PropTypes.array,
   deselectAll: PropTypes.func,
+  notifyColumnFilterVisibleStateChange: PropTypes.func,
   firstLockedEndIndex: PropTypes.number,
   firstLockedStartIndex: PropTypes.number,
   isMultiSort: PropTypes.bool,
@@ -145,7 +147,11 @@ const propTypes = {
   filterRowHeight: PropTypes.number,
 };
 
-type TypeHeaderProps = {} | any;
+type TypeHeaderProps =
+  | {
+      notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
+    }
+  | any;
 
 type TypeHeaderState = {
   children?: any[];
@@ -623,6 +629,7 @@ export default class InovuaDataGridHeader extends React.Component<
       showColumnFilterContextMenu,
       hideColumnFilterContextMenu,
       deselectAll,
+      notifyColumnFilterVisibleStateChange,
       firstLockedEndIndex,
       firstUnlockedIndex,
       filterable,
@@ -734,6 +741,7 @@ export default class InovuaDataGridHeader extends React.Component<
         lastUnlockedIndex,
         lastLockedStartIndex,
         lastLockedEndIndex,
+        notifyColumnFilterVisibleStateChange,
         filterTypes,
         onFilterValueChange: this.onFilterValueChange,
         lastUnlocked: column.computedVisibleIndex === firstLockedIndex - 1,
@@ -970,6 +978,7 @@ export default class InovuaDataGridHeader extends React.Component<
       return (
         <Cell
           {...cProps}
+          timestamp={Date.now()}
           key={`${index}__${cProps.id}`}
           left={this.props.columnWidthPrefixSums[index]}
         />
@@ -1302,7 +1311,9 @@ export default class InovuaDataGridHeader extends React.Component<
       }
       const depth = group ? group.computedDepth + 1 : 0;
 
-      return <Cell {...props} key={props.id} depth={depth} />;
+      return (
+        <Cell {...props} key={props.id} depth={depth} timestamp={Date.now()} />
+      );
     });
 
     return this.renderItems(items);

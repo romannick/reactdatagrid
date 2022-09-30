@@ -47,6 +47,9 @@ export default function (REGION) {
             return REGION.fromDOM(document.documentElement);
         },
         from: function (reg) {
+            if (!reg) {
+                return;
+            }
             if (reg.__IS_REGION) {
                 return reg;
             }

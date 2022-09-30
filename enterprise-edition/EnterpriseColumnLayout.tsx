@@ -664,6 +664,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
 
               parentNodes[i] = itemWithExtraProps;
               iterate = false;
+              props.reload();
               break;
             }
           }

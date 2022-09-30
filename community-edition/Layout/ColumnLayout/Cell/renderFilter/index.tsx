@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { FunctionNotifier } from '../../../../utils/notifier';
 import React, { ReactNode } from 'react';
 
 import StringFilter from '../../../../StringFilter/StringFilter';
@@ -17,6 +18,7 @@ type TypeGenericFilterProps = {
   props?: any;
   rtl?: boolean;
   enableColumnFilterContextMenu?: boolean;
+  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
 };
 
 type TypeGenericFilterState = {
@@ -33,6 +35,7 @@ class GenericFilter extends React.Component<
   refSettings: any;
   ref: any;
   specificFilter: any;
+  unsubscribeColumnFilterVisibility?: VoidFunction;
 
   constructor(props: TypeGenericFilterProps) {
     super(props);
@@ -40,6 +43,32 @@ class GenericFilter extends React.Component<
     this.onSettingsClick = this.onSettingsClick.bind(this);
     this.onSettingsClickListener = null;
 
+    this.ref = (specificFilter: any) => {
+      this.specificFilter = specificFilter;
+    };
+
+    this.state = {
+      focused: false,
+      open: false,
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.cellInstance) {
+      this.props.cellInstance.filter = this;
+    }
+
+    this.setupEventListener();
+  }
+
+  setupEventListener = () => {
+    this.unsubscribeColumnFilterVisibility = this.props.props.notifyColumnFilterVisibleStateChange.onCalled(
+      (visible: boolean) => {
+        if (!visible && this.state.open) {
+          this.close();
+        }
+      }
+    );
     this.refSettings = (s: any) => {
       /**
        * https://inovua.freshdesk.com/a/tickets/221
@@ -64,24 +93,30 @@ class GenericFilter extends React.Component<
       }
       this.settings = s;
     };
+  };
 
-    this.ref = (specificFilter: any) => {
-      this.specificFilter = specificFilter;
-    };
+  componentWillUnmount() {
+    if (this.props.cellInstance) {
+      this.props.cellInstance.filter = null;
+    }
+    if (this.settings && this.onSettingsClickListener) {
+      this.settings.removeEventListener(this.onSettingsClickListener);
+    }
+    this.onSettingsClickListener = null;
+    this.settings = null;
 
-    this.state = {
-      focused: false,
-      open: false,
-    };
+    if (this.unsubscribeColumnFilterVisibility) {
+      this.unsubscribeColumnFilterVisibility();
+    }
   }
 
-  onSettingsClick(e: any) {
+  onSettingsClick = (e: any) => {
     if (!this.state.open) {
       this.onMenuOpen(e);
     } else {
       this.onMenuClose(e);
     }
-  }
+  };
 
   onMenuOpen = (e: any) => {
     e.preventDefault();
@@ -94,35 +129,27 @@ class GenericFilter extends React.Component<
 
   onMenuClose = (e: any) => {
     e.preventDefault();
-    this.props.cellInstance.hideFilterContextMenu();
-    this.setState({
-      focused: false,
-      open: false,
-    });
+
+    this.close();
   };
 
-  componentDidMount() {
-    if (this.props.cellInstance) {
-      this.props.cellInstance.filter = this;
-    }
-  }
+  close = () => {
+    this.setState(
+      {
+        focused: false,
+        open: false,
+      },
+      () => {
+        this.props.cellInstance.hideFilterContextMenu();
+      }
+    );
+  };
 
-  setValue(value: any) {
+  setValue = (value: any) => {
     if (this.specificFilter.setValue) {
       this.specificFilter.setValue(value);
     }
-  }
-
-  componentWillUnmount() {
-    if (this.props.cellInstance) {
-      this.props.cellInstance.filter = null;
-    }
-    if (this.settings && this.onSettingsClickListener) {
-      this.settings.removeEventListener(this.onSettingsClickListener);
-    }
-    this.onSettingsClickListener = null;
-    this.settings = null;
-  }
+  };
 
   render() {
     const { props, cellInstance } = this.props;

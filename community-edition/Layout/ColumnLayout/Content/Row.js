@@ -16,12 +16,13 @@ import Cell from '../Cell';
 import renderCellsMaybeLocked from './renderCellsMaybeLocked';
 import adjustCellProps from './adjustCellProps';
 import usePrevious from '../../../hooks/usePrevious';
+// import diff from '../../../packages/shallow-changes';
 const CLASS_NAME = 'InovuaReactDataGrid__row';
-const rowClean = (p) => {
-    const result = { ...p };
-    delete result.activeRowRef;
-    return result;
-};
+// const rowClean = (p: any) => {
+//   const result = { ...p };
+//   delete result.activeRowRef;
+//   return result;
+// };
 const skipSelect = (event) => {
     event.nativeEvent.skipSelect = true;
 };
@@ -54,7 +55,12 @@ const getValueForPivotColumnSummary = (item, { pivotSummaryPath: path, }) => {
 };
 const DataGridRow = React.forwardRef((props, ref) => {
     const cells = useRef([]);
-    const cellRef = useRef();
+    const cellRef = useCallback((c) => {
+        if (!c) {
+            return;
+        }
+        cells.current.push(c);
+    }, []);
     const domRef = useRef(null);
     const columnRenderStartIndex = useRef(0);
     const hasBorderTop = useRef(false);
@@ -62,13 +68,6 @@ const DataGridRow = React.forwardRef((props, ref) => {
     const maxRowspan = useRef(1);
     const scrollingInProgress = useRef(false);
     const scrollingDirection = useRef('vertical');
-    const initCells = () => {
-        cellRef.current = (c) => {
-            if (!c)
-                return;
-            cells.current.push(c);
-        };
-    };
     const cleanupCells = useCallback(() => {
         cells.current = cells.current.filter(Boolean);
         return cells.current;
@@ -79,12 +78,12 @@ const DataGridRow = React.forwardRef((props, ref) => {
     const prevColumnRenderCount = usePrevious(props.columnRenderCount, props.columnRenderCount);
     if (props.columnRenderCount < prevColumnRenderCount) {
         cleanupCells();
-        getCells().forEach((cell) => {
-            if (cell.getProps().computedLocked) {
-                return;
-            }
-            cell.setStateProps(null);
-        });
+        // getCells().forEach((cell: any) => {
+        //   if (cell.getProps().computedLocked) {
+        //     return;
+        //   }
+        //   // cell.setStateProps(null);
+        // });
     }
     const getDOMNode = useCallback(() => {
         return domRef.current;
@@ -103,7 +102,6 @@ const DataGridRow = React.forwardRef((props, ref) => {
         setActiveRowRef();
     }
     useEffect(() => {
-        initCells();
         if (props.columnRenderStartIndex) {
             setColumnRenderStartIndex(props.columnRenderStartIndex);
         }
@@ -138,7 +136,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
     const orderCells = useCallback(() => {
         const cells = cleanupCells();
         const sortedProps = cells
-            .map(c => c.getProps())
+            .map((c) => c.getProps())
             .sort((p1, p2) => p1.index - p2.index);
         cells.sort((cell1, cell2) => cell1.props.renderIndex - cell2.props.renderIndex);
         cells.forEach((c, i) => {
@@ -564,7 +562,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
                 enableColumnAutosize ||
                 props.editable ||
                 cellProps.computedEditable) {
-                cellProps.cellRef = cellRef.current;
+                cellProps.cellRef = cellRef;
                 cellProps.onUnmount = onCellUnmount;
             }
             const { computedLocked, colspan } = cellProps;
@@ -928,10 +926,11 @@ const DataGridRow = React.forwardRef((props, ref) => {
                         return;
                     }
                     setTimeout(() => {
-                        return cell
-                            .startEdit(undefined, errBack)
-                            .then(resolve)
-                            .catch(errBack);
+                        return (cell.startEdit &&
+                            cell
+                                .startEdit(undefined, errBack)
+                                .then(resolve)
+                                .catch(errBack));
                     }, 0);
                 })
                     .catch((error) => reject(error));
@@ -1099,7 +1098,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
                 cell = props.cellFactory(cProps);
             }
             if (cell === undefined) {
-                cell = (React.createElement(Cell, { ...cProps, ref: cProps.cellRef ? cProps.cellRef : null, key: key }));
+                cell = (React.createElement(Cell, { ...cProps, timestamp: Date.now(), cellRef: cProps.cellRef ? cProps.cellRef : null, key: key }));
             }
             return cell;
         });
@@ -1581,7 +1580,7 @@ export default React.memo(DataGridRow, (prevProps, nextProps) => {
         scrollToIndexIfNeeded: 1,
         onColumnMouseEnter: 1,
         onColumnMouseLeave: 1,
-        computedCellSelection: 1,
+        // computedCellSelection: 1,
         getCellSelectionKey: 1,
     });
     if (areEqual.result) {

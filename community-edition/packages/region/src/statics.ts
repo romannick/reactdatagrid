@@ -62,6 +62,10 @@ export default function(REGION) {
     },
 
     from: function(reg) {
+      if (!reg) {
+        return;
+      }
+
       if (reg.__IS_REGION) {
         return reg;
       }
