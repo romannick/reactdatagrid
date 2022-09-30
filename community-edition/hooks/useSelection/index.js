@@ -129,12 +129,6 @@ const useSelected = (props, computedProps, computedPropsRef) => {
 export default (props, computedProps, computedPropsRef) => {
     const { selected: computedSelected, setSelected, rowMultiSelectionEnabled, rowSelectionEnabled, } = useSelected(props, computedProps, computedPropsRef);
     const previousRowMultiSelectionEnabled = usePrevious(rowMultiSelectionEnabled, rowMultiSelectionEnabled);
-    // if (
-    //   previousRowMultiSelectionEnabled === true &&
-    //   rowMultiSelectionEnabled === false
-    // ) {
-    //   setSelected({});
-    // }
     useEffect(() => {
         if (previousRowMultiSelectionEnabled === true &&
             rowMultiSelectionEnabled === false) {
