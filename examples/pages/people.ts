@@ -5,7 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export default [
+export type PeopleType = {
+  id: number | string;
+  firstName: string;
+  name: string;
+  student: boolean;
+  age: number;
+  city: string;
+  country: string;
+  email: string;
+  birthDate: string;
+};
+
+const people = [
   {
     id: 0,
     firstName: 'Bill',
@@ -151,3 +163,5 @@ export default [
     birthDate: '1981-12-11T00:00:00Z',
   },
 ];
+
+export default people;

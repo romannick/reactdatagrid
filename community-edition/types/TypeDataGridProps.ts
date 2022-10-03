@@ -1375,6 +1375,8 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   availableWidth?: number;
   computedEnableColumnHover?: boolean;
   preventBlurOnContextMenuOpen?: MutableRefObject<boolean>;
+  copySelectedRowsToClipboard?: () => void;
+  pasteSelectedRowsFromClipboard?: () => void;
   copySelectedCellsToClipboard?: () => void;
   copyActiveRowToClipboard?: () => void;
   pasteSelectedCellsFromClipboard?: () => void;

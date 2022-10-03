@@ -37,7 +37,7 @@ const App = () => {
   const [skipHeader, setSkipHeader] = useState(true);
   const [enableRowReorder, setEnableRowReorder] = useState(false);
   const [rowDetails, setRowDetails] = useState(false);
-  const [enableCheckboxColumn, setEnableCheckboxColumn] = useState(false);
+  const [enableCheckboxColumn, setEnableCheckboxColumn] = useState(true);
 
   const setItemsAt = () => {
     gridRef.current.setItemsAt(

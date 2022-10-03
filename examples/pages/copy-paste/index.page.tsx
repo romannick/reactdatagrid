@@ -21,7 +21,14 @@ const App = () => {
   const [
     copySpreadsheetCompatibleString,
     setCopySpreadsheetCompatibleString,
-  ] = useState(true);
+  ] = useState<boolean>(true);
+  const [checkboxColumn, setCheckboxColumn] = useState<boolean>(false);
+  const [checkboxOnlyRowSelect, setCheckboxOnlyRowSelect] = useState<boolean>(
+    false
+  );
+  const [enableCellSelection, setEnableCellSelection] = useState<boolean>(
+    false
+  );
 
   return (
     <div>
@@ -33,18 +40,46 @@ const App = () => {
           copySpreadsheetCompatibleString
         </Checkbox>
       </div>
+      <div style={{ marginBottom: 20 }}>
+        <Checkbox checked={checkboxColumn} onChange={setCheckboxColumn}>
+          checkboxColumn
+        </Checkbox>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <Checkbox
+          checked={checkboxOnlyRowSelect}
+          onChange={setCheckboxOnlyRowSelect}
+        >
+          checkboxOnlyRowSelect
+        </Checkbox>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <Checkbox
+          checked={enableCellSelection}
+          onChange={setEnableCellSelection}
+        >
+          enableCellSelection
+        </Checkbox>
+      </div>
 
       <ReactDataGrid
         onCopySelectedCellsChange={(cells: any) => {
-          console.log(cells);
+          console.log('cells', cells);
         }}
-        defaultCellSelection={{}}
+        onCopyActiveRowChange={(rows: any) => {
+          console.log('rows', rows);
+        }}
+        defaultCellSelection={enableCellSelection ? {} : undefined}
         enableClipboard
+        enableSelection
+        multiSelect
         idProperty="id"
         columns={columns}
         dataSource={dataSource}
         style={gridStyle}
         clipboardSeparator="\n"
+        checkboxColumn={checkboxColumn}
+        checkboxOnlyRowSelect={checkboxOnlyRowSelect}
         copySpreadsheetCompatibleString={copySpreadsheetCompatibleString}
       />
     </div>

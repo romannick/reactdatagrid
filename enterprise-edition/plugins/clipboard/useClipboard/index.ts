@@ -110,6 +110,8 @@ const useClipboard = (
   pasteActiveRowFromClipboard: () => void;
   copySelectedCellsToClipboard: () => void;
   pasteSelectedCellsFromClipboard: () => void;
+  copySelectedRowsToClipboard: () => void;
+  pasteSelectedRowsFromClipboard: () => void;
   clipboard: MutableRefObject<boolean>;
   preventBlurOnContextMenuOpen: MutableRefObject<boolean>;
 } | null => {
@@ -119,6 +121,59 @@ const useClipboard = (
   if (!computedProps.enableClipboard) {
     return null;
   }
+
+  const copySelectedRowsToClipboard = () => {
+    const { current: computedProps } = computedPropsRef;
+    if (!computedProps) return null;
+    if (computedProps.checkboxColumn || computedProps.computedSelected) {
+      const selectedRows = computedProps.computedSelected;
+
+      if (selectedRows) {
+        const rows = Object.keys(selectedRows).map(row => {
+          return selectedRows[row as keyof object];
+        });
+        const clonedRows = Object.assign({}, rows);
+
+        const parsedSelectedRows = JSON.stringify(rows);
+
+        navigator.clipboard
+          .writeText(parsedSelectedRows)
+          .then(() => {
+            if (Object.keys(clonedRows).length > 0) {
+              clipboard.current = true;
+            }
+          })
+          .catch(e => console.warn(e));
+      }
+    }
+  };
+
+  const pasteSelectedRowsFromClipboard = () => {
+    const { current: computedProps } = computedPropsRef;
+    if (!computedProps) {
+      return null;
+    }
+
+    if (computedProps.checkboxColumn || computedProps.computedSelected) {
+      if (navigator.clipboard) {
+        navigator.clipboard.readText().then(data => {
+          const parsedData = JSON.parse(data);
+          if (!Array.isArray(parsedData)) return;
+          const activeIndex = computedProps.computedActiveIndex;
+
+          const newData = parsedData.map((item: object, index: number) => {
+            const newItem = computedProps.getItemAt(activeIndex + index);
+            const itemId = computedProps.getItemId(newItem);
+            return { ...item, id: itemId };
+          }, []);
+
+          if (activeIndex != null) {
+            computedProps.setItemsAt(newData, { replace: false });
+          }
+        });
+      }
+    }
+  };
 
   const copyActiveRowToClipboard = () => {
     const { current: computedProps } = computedPropsRef;
@@ -301,6 +356,8 @@ const useClipboard = (
     pasteActiveRowFromClipboard,
     copySelectedCellsToClipboard,
     pasteSelectedCellsFromClipboard,
+    copySelectedRowsToClipboard,
+    pasteSelectedRowsFromClipboard,
     clipboard,
     preventBlurOnContextMenuOpen,
   };

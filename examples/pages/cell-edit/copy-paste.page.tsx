@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 
 import ReactDataGrid from '../../../enterprise-edition';
 import CheckBox from '@inovua/reactdatagrid-community/packages/CheckBox';
-import people from '../people';
+import people, { PeopleType } from '../people';
 
 const gridStyle = { minHeight: 550 };
 
@@ -34,13 +34,15 @@ const columns = [
     name: 'student',
     header: 'Student',
     defaultFlex: 1,
-    render: ({ value }) => (value === true ? 'Yes' : 'No'),
+    render: ({ value }: { value: boolean }) => (value === true ? 'Yes' : 'No'),
   },
 ];
 
 const App = () => {
-  const [dataSource, setDataSource] = useState(people);
-  const [cellSelection, setCellSelection] = useState({
+  const [dataSource, setDataSource] = useState<PeopleType[]>(people);
+  const [cellSelection, setCellSelection] = useState<{
+    [key: string]: boolean;
+  }>({
     '2,name': true,
     '2,city': true,
     '2,age': true,
@@ -48,12 +50,16 @@ const App = () => {
     '3,city': true,
     '3,age': true,
   });
-  const [enableClipboard, setEnableClipboard] = useState(false);
+  const [enableClipboard, setEnableClipboard] = useState<boolean>(true);
+  const [enableCellSelection, setEnableCellSelection] = useState<boolean>(
+    false
+  );
+  const [checkboxColumn, setCheckboxColumn] = useState<boolean>(true);
 
   const onEditComplete = useCallback(
     ({ value, columnId, rowIndex }) => {
       const data = [...dataSource];
-      data[rowIndex][columnId] = value;
+      (data as any[])[rowIndex][columnId] = value;
 
       setDataSource(data);
     },
@@ -66,19 +72,19 @@ const App = () => {
     setCellSelection(value);
   };
 
-  const onCopySelectedCellsChange = cells => {
+  const onCopySelectedCellsChange = (cells: { [key: string]: boolean }) => {
     console.log('copy cells: ', cells);
   };
 
-  const onPasteSelectedCellsChange = cells => {
+  const onPasteSelectedCellsChange = (cells: { [key: string]: boolean }) => {
     console.log('paste cells: ', cells);
   };
 
-  const onCopyActiveRowChange = row => {
+  const onCopyActiveRowChange = (row: object) => {
     console.log('copy active row: ', row);
   };
 
-  const onPasteActiveRowChange = row => {
+  const onPasteActiveRowChange = (row: object) => {
     console.log('paste active row', row);
   };
 
@@ -94,9 +100,19 @@ const App = () => {
     ];
   }, []);
 
-  const checkboxProps = {
+  const enableClipboardProps = {
     checked: enableClipboard,
     onChange: setEnableClipboard,
+  };
+
+  const cellSelectionProps = {
+    checked: enableCellSelection,
+    onChange: setEnableCellSelection,
+  };
+
+  const checkboxColumnProps = {
+    checked: checkboxColumn,
+    onChange: setCheckboxColumn,
   };
 
   return (
@@ -104,26 +120,41 @@ const App = () => {
       <h3>Grid with inline edit</h3>
 
       <div style={{ marginBottom: 20 }}>
-        <CheckBox {...checkboxProps}>Enable clipboard</CheckBox>
+        <CheckBox {...enableClipboardProps}>Enable clipboard</CheckBox>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox {...cellSelectionProps}>Enable cell selection</CheckBox>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox {...checkboxColumnProps}>Checkbox column</CheckBox>
       </div>
       <input className="cell-edit__copy-paste__input" type="text" />
-      <p>
-        Selected cells:{' '}
-        {Object.keys(cellSelection).length === 0
-          ? 'none'
-          : JSON.stringify(cellSelection, null, 2)}
-        .
-      </p>
+      {enableCellSelection && (
+        <p>
+          Selected cells:{' '}
+          {Object.keys(cellSelection).length === 0
+            ? 'none'
+            : JSON.stringify(cellSelection, null, 2)}
+          .
+        </p>
+      )}
 
       <ReactDataGrid
         idProperty="id"
-        // cellSelection={cellSelection}
-        // onCellSelectionChange={onCellSelectionChange}
+        cellSelection={enableCellSelection ? cellSelection : undefined}
+        onCellSelectionChange={
+          enableCellSelection ? onCellSelectionChange : undefined
+        }
         enableClipboard={enableClipboard}
         onCopyActiveRowChange={onCopyActiveRowChange}
         onPasteActiveRowChange={onPasteActiveRowChange}
-        // onCopySelectedCellsChange={onCopySelectedCellsChange}
-        // onPasteSelectedCellsChange={onPasteSelectedCellsChange}
+        onCopySelectedCellsChange={
+          enableCellSelection ? onCopySelectedCellsChange : undefined
+        }
+        onPasteSelectedCellsChange={
+          enableCellSelection ? onPasteSelectedCellsChange : undefined
+        }
+        checkboxColumn={checkboxColumn}
         // defaultGroupBy={[]}
         style={gridStyle}
         // onEditComplete={onEditComplete}
