@@ -699,6 +699,8 @@ type TypeDataGridPropsNoI18n = {
   onPasteSelectedCellsChange?: (cells: any) => void;
   onCopyActiveRowChange?: (row: any) => void;
   onPasteActiveRowChange?: (row: any) => void;
+  onCopySelectedRowsChange?: (rows: any[]) => void;
+  onPasteSelectedRowsChange?: (rows: any[]) => void;
   pageSizes?: number[];
   onCellClick?: (event: MouseEvent, cellProps: TypeCellProps) => void;
   enableTreeRowReorder?: boolean;

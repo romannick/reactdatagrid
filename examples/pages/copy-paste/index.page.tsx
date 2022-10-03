@@ -17,6 +17,27 @@ const dataSource = [
   { id: 5, name: 'Billary Konwik', age: 18 },
 ];
 
+const renderClipboardContextMenu = (
+  menuProps: any,
+  { computedProps }: { computedProps: any }
+) => {
+  if (!computedProps) {
+    return;
+  }
+
+  menuProps.autoDismiss = true;
+  menuProps.items = [
+    {
+      label: 'Copy to clipboard',
+      onClick: () => computedProps.copySelectedRowsToClipboard(),
+    },
+    {
+      label: 'Paste from clipboard',
+      onClick: () => computedProps.pasteSelectedRowsFromClipboard(),
+    },
+  ];
+};
+
 const App = () => {
   const [
     copySpreadsheetCompatibleString,
@@ -69,6 +90,7 @@ const App = () => {
         onCopyActiveRowChange={(rows: any) => {
           console.log('rows', rows);
         }}
+        key={`checkbox_${checkboxColumn}`}
         defaultCellSelection={enableCellSelection ? {} : undefined}
         enableClipboard
         enableSelection
@@ -81,6 +103,9 @@ const App = () => {
         checkboxColumn={checkboxColumn}
         checkboxOnlyRowSelect={checkboxOnlyRowSelect}
         copySpreadsheetCompatibleString={copySpreadsheetCompatibleString}
+        renderClipboardContextMenu={renderClipboardContextMenu}
+        onCopySelectedRowsChange={(rows: any) => console.log('copy', rows)}
+        onPasteSelectedRowsChange={(rows: any) => console.log('paste', rows)}
       />
     </div>
   );

@@ -10,7 +10,13 @@ const onCopyClickHandle = (computedProps: any) => {
     return;
   }
 
-  if (computedProps.computedCellSelection) {
+  const cellSelection = !!computedProps.computedCellSelection;
+  const checkboxColumn = !!computedProps.checkboxColumn;
+  const selected = !!computedProps.computedSelected;
+
+  if (checkboxColumn || selected) {
+    computedProps.copySelectedRowsToClipboard();
+  } else if (cellSelection) {
     computedProps.copySelectedCellsToClipboard();
   } else {
     computedProps.copyActiveRowToClipboard();
@@ -22,7 +28,13 @@ const onPasteClickHandle = (computedProps: any) => {
     return;
   }
 
-  if (computedProps.computedCellSelection) {
+  const cellSelection = !!computedProps.computedCellSelection;
+  const checkboxColumn = !!computedProps.checkboxColumn;
+  const selected = !!computedProps.computedSelected;
+
+  if (checkboxColumn || selected) {
+    computedProps.pasteSelectedRowsFromClipboard();
+  } else if (cellSelection) {
     computedProps.pasteSelectedCellsFromClipboard();
   } else {
     computedProps.pasteActiveRowFromClipboard();

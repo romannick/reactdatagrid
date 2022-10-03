@@ -88,6 +88,9 @@ const useClipboard = (_props, computedProps, computedPropsRef) => {
                     return selectedRows[row];
                 });
                 const clonedRows = Object.assign({}, rows);
+                if (computedProps.onCopySelectedRowsChange) {
+                    computedProps.onCopySelectedRowsChange(clonedRows);
+                }
                 const parsedSelectedRows = JSON.stringify(rows);
                 navigator.clipboard
                     .writeText(parsedSelectedRows)
@@ -117,6 +120,9 @@ const useClipboard = (_props, computedProps, computedPropsRef) => {
                         const itemId = computedProps.getItemId(newItem);
                         return { ...item, id: itemId };
                     }, []);
+                    if (computedProps.onPasteSelectedRowsChange) {
+                        computedProps.onPasteSelectedRowsChange(newData);
+                    }
                     if (activeIndex != null) {
                         computedProps.setItemsAt(newData, { replace: false });
                     }
