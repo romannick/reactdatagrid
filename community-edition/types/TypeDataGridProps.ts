@@ -603,6 +603,7 @@ type TypeDataGridPropsNoI18n = {
 
   sortInfo?: TypeSortInfo;
   defaultSortInfo?: TypeSortInfo;
+  defaultSortingDirection?: 'desc' | 'asc';
 
   groupBy?: TypeGroupBy;
   defaultGroupBy?: TypeGroupBy;

@@ -131,6 +131,11 @@ const useSortInfo = (props, _, computedPropsRef) => {
         const sortInfo = computedProps.computedSortInfo === undefined
             ? null
             : computedProps.computedSortInfo;
+        const sortingDirection = computedProps.defaultSortingDirection !== undefined
+            ? computedProps.defaultSortingDirection === 'asc'
+                ? 1
+                : -1
+            : undefined;
         const computedIsMultiSort = computedProps.computedIsMultiSort;
         const nextSortInfo = computedIsMultiSort
             ? getNextMultipleSortInfo(computedColumn, sortInfo, {
@@ -140,6 +145,7 @@ const useSortInfo = (props, _, computedPropsRef) => {
             : getNextSingleSortInfo(computedColumn, sortInfo, {
                 allowUnsort,
                 multiSort: false,
+                forceDir: sortingDirection,
                 sortFunctions: computedProps.sortFunctions,
             });
         setSortInfo(nextSortInfo);
