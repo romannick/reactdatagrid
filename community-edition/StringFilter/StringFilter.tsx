@@ -75,7 +75,7 @@ class StringFilter extends React.Component<
       )
     ) {
       if (this.props.filterValue) {
-        this.setValue(this.props.filterValue.value);
+        this.onChange(this.props.filterValue.value);
       }
     }
   };
@@ -130,6 +130,7 @@ class StringFilter extends React.Component<
       disabled,
       theme,
       rtl,
+      value: this.state.value,
       placeholder,
       style: {
         minWidth: 0,

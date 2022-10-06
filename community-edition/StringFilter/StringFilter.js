@@ -26,7 +26,7 @@ class StringFilter extends React.Component {
     componentDidUpdate = ({ filterValue: { value } }) => {
         if (String(value).localeCompare(String(this.props.filterValue && this.props.filterValue.value))) {
             if (this.props.filterValue) {
-                this.setValue(this.props.filterValue.value);
+                this.onChange(this.props.filterValue.value);
             }
         }
     };
@@ -57,6 +57,7 @@ class StringFilter extends React.Component {
             disabled,
             theme,
             rtl,
+            value: this.state.value,
             placeholder,
             style: {
                 minWidth: 0,

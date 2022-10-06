@@ -14,6 +14,7 @@ const InovuaFlex = forwardRef((props, ref) => {
     const allProps = { ...props };
     cleanup(allProps);
     allProps.className = className;
+    delete allProps.livePagination;
     if (props.factory) {
         return props.factory(allProps);
     }

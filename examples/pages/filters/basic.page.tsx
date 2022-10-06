@@ -10,29 +10,39 @@ import moment from 'moment';
 import people from '../people';
 import flags from '../flags';
 
-const gridStyle = { minHeight: 600 };
+const gridStyle = {
+  minHeight: 200,
+  position: 'absolute',
+  bottom: 20,
+  left: 20,
+  width: 'calc(100% - 40px)',
+};
 
-const COUNTRIES = {
+type CountriesType = { [key: string]: string };
+
+const COUNTRIES: CountriesType = {
   ca: 'Canada',
   uk: 'United Kingdom',
   usa: 'United States of America',
+  es: 'Spain',
+  nd: 'Netherlands',
+  fr: 'France',
+  it: 'Italy',
 };
 
-const countries = people.reduce((countries, p) => {
-  if (countries.filter(c => c.id == p.country).length) {
-    return countries;
-  }
-  countries.push({
-    id: p.country,
-    label: COUNTRIES[p.country] || p.country,
-  });
+const countries = Object.keys(COUNTRIES).map(country => {
+  const newCountry = {
+    id: country,
+    label: COUNTRIES[country as keyof CountriesType],
+  };
+  return newCountry;
+});
 
-  return countries;
-}, []);
+console.log(countries);
 
 const filterValue = [
   { name: 'name', operator: 'startsWith', type: 'string', value: '' },
-  { name: 'age', operator: 'gte', type: 'number', value: 21 },
+  { name: 'age', operator: 'gte', type: 'number', value: null },
   { name: 'city', operator: 'startsWith', type: 'string', value: '' },
   {
     name: 'birthDate',
@@ -40,7 +50,7 @@ const filterValue = [
     type: 'date',
     value: '',
   },
-  { name: 'country', operator: 'eq', type: 'select', value: 'ca' },
+  { name: 'country', operator: 'eq', type: 'select', value: null },
 ];
 
 const columns = [
@@ -63,6 +73,7 @@ const columns = [
     name: 'country',
     header: 'Country',
     defaultFlex: 1,
+    minWidth: 200,
     filterEditor: SelectFilter,
     filterEditorProps: {
       placeholder: 'All',
@@ -93,21 +104,24 @@ const columns = [
   { name: 'city', header: 'City', defaultFlex: 1 },
 ];
 
+const divStyle = {
+  position: 'relative',
+  height: '90vh',
+};
+
 const App = () => {
   return (
     <div>
       <h3>Grid with default filter value</h3>
-      <ReactDataGrid
-        idProperty="id"
-        style={gridStyle}
-        defaultFilterValue={filterValue}
-        columns={columns}
-        dataSource={people}
-      />
-      <p>
-        Delete the filters if you want to show all data. You can click the
-        configure icon and then "Clear All"
-      </p>
+      <div style={divStyle}>
+        <ReactDataGrid
+          idProperty="id"
+          style={gridStyle}
+          defaultFilterValue={filterValue}
+          columns={columns}
+          dataSource={people}
+        />
+      </div>
     </div>
   );
 };
