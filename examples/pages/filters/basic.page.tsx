@@ -78,6 +78,7 @@ const columns = [
     filterEditorProps: {
       placeholder: 'All',
       dataSource: countries,
+      constrainTo: '.InovuaReactDataGrid__body',
     },
     render: ({ value }) => (flags[value] ? flags[value] : value),
   },
