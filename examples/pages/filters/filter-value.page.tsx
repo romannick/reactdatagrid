@@ -45,7 +45,6 @@ const App = () => {
   const [filterValue, setFilterValue] = useState(defaultFilterValue);
 
   const onFilterValueChange = useCallback(filterValue => {
-    debugger;
     const data = filter(people, filterValue);
 
     setFilterValue(filterValue);
