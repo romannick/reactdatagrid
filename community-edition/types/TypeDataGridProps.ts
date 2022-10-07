@@ -719,9 +719,11 @@ type TypeDataGridPropsNoI18n = {
   setColumnsSizesAuto?: ({
     columnIds,
     skipHeader,
+    skipSortTool,
   }: {
     columnIds?: string[];
     skipHeader?: boolean;
+    skipSortTool?: boolean;
   }) => void;
   setColumnSizesToFit?: () => void;
   setColumnSizeAuto?: (id: string, skipHeader?: boolean) => void;

@@ -5,6 +5,7 @@ import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
 import people from '../people';
 import flags, { FlagsType } from '../flags';
 import Button from '@inovua/reactdatagrid-community/packages/Button';
+import CheckBox from '@inovua/reactdatagrid-community/packages/CheckBox';
 import {
   IColumn,
   TypeComputedProps,
@@ -35,12 +36,15 @@ const columns: IColumn = [
 
 const App = () => {
   const [gridRef, setGridRef] = useState<RefObject<TypeComputedProps>>();
+  const [skipSortTool, setSkipSortTool] = useState<boolean>(true);
+  const [sortable, setSortable] = useState<boolean>(true);
 
   const setColumnsSizesAuto = useCallback(
-    (skipHeader: boolean): void => {
+    (skipHeader: boolean, skipSortTool: boolean): void => {
       if (gridRef!.current!.setColumnsSizesAuto) {
         gridRef!.current!.setColumnsSizesAuto({
           skipHeader,
+          skipSortTool,
         });
       }
     },
@@ -50,6 +54,17 @@ const App = () => {
   return (
     <div>
       <h3>Grid with auto size</h3>
+
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox checked={skipSortTool} onChange={setSkipSortTool}>
+          Skip sort tool
+        </CheckBox>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <CheckBox checked={sortable} onChange={setSortable}>
+          Sortable
+        </CheckBox>
+      </div>
 
       <div style={{ marginBottom: 20 }}>
         <Button
@@ -76,13 +91,13 @@ const App = () => {
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        <Button onClick={() => setColumnsSizesAuto(false)}>
+        <Button onClick={() => setColumnsSizesAuto(false, skipSortTool)}>
           Set column sizes auto
         </Button>
       </div>
 
       <div style={{ marginBottom: 20 }}>
-        <Button onClick={() => setColumnsSizesAuto(true)}>
+        <Button onClick={() => setColumnsSizesAuto(true, skipSortTool)}>
           Set column sizes auto (skipHeader)
         </Button>
       </div>
@@ -95,6 +110,10 @@ const App = () => {
         dataSource={people}
         enableColumnAutosize
         defaultGroupBy={[]}
+        sortable={sortable}
+        renderSortTool={() => (
+          <div style={{ position: 'absolute', width: 0, height: 0 }}></div>
+        )}
       />
     </div>
   );

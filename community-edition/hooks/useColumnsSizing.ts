@@ -236,7 +236,11 @@ const useColumnsSizing = (
     return result;
   };
 
-  const cloneIntoDummyContainer = (cell: any, dummyContainer: any) => {
+  const cloneIntoDummyContainer = (
+    cell: any,
+    dummyContainer: any,
+    skipSortTool?: boolean
+  ) => {
     const cellClone = cell && cell.cloneNode(true);
 
     if (!cellClone) {
@@ -252,6 +256,7 @@ const useColumnsSizing = (
     const rowClassName = 'InovuaReactDataGrid__row';
     const headerClassName = 'InovuaReactDataGrid__header';
     const headerCellClassName = 'InovuaReactDataGrid__column-header';
+    const sortToolClassName = 'InovuaReactDataGrid__sort-icon-wrapper';
     const isHeader = cellClone.classList.contains(headerCellClassName);
 
     let cellContent;
@@ -262,6 +267,13 @@ const useColumnsSizing = (
 
       return cell.classList.contains(className);
     });
+
+    if (isHeader && skipSortTool) {
+      const sortTool = cellContent.querySelector(`.${sortToolClassName}`);
+      if (sortTool) {
+        cellContent = cellContent.removeChild(sortTool);
+      }
+    }
 
     if (cellContent) {
       cellContent.style.width = 'fit-content';
@@ -304,7 +316,8 @@ const useColumnsSizing = (
 
   const computeOptimizedWidth = (
     column: TypeComputedColumn | any,
-    skipHeader: boolean
+    skipHeader: boolean,
+    skipSortTool?: boolean
   ): number => {
     const { current: computedProps } = computedPropsRef;
     if (!computedProps) {
@@ -342,10 +355,14 @@ const useColumnsSizing = (
       cells.push(headerCell);
     }
 
-    return addCellsToContainer(cells, skipHeader);
+    return addCellsToContainer(cells, skipHeader, skipSortTool);
   };
 
-  const addCellsToContainer = (cells: any[], skipHeader: boolean): number => {
+  const addCellsToContainer = (
+    cells: any[],
+    skipHeader: boolean,
+    skipSortTool?: boolean
+  ): number => {
     const { current: computedProps } = computedPropsRef;
     if (!computedProps) {
       return -1;
@@ -358,7 +375,9 @@ const useColumnsSizing = (
     const container = vl.getContainerNode();
     container.appendChild(dummyContainer);
 
-    cells!.forEach(cell => cloneIntoDummyContainer(cell, dummyContainer));
+    [...cells!].map(cell =>
+      cloneIntoDummyContainer(cell, dummyContainer, skipSortTool)
+    );
 
     let dummyContainerWidth = dummyContainer.offsetWidth;
     if (!skipHeader) {
@@ -408,9 +427,11 @@ const useColumnsSizing = (
   const setColumnsSizesAuto = ({
     columnIds,
     skipHeader,
+    skipSortTool,
   }: {
     columnIds?: string[];
     skipHeader?: boolean;
+    skipSortTool?: boolean;
   } = EMPTY_OBJECT) => {
     const { current: computedProps } = computedPropsRef;
     if (!computedProps) {
@@ -426,6 +447,8 @@ const useColumnsSizing = (
 
     const shouldSkipHeader: boolean =
       skipHeader != null ? skipHeader : computedProps.skipHeaderOnAutoSize!;
+    const shouldSkipSortTool: boolean =
+      skipSortTool != null ? skipSortTool : false;
 
     let allIds: string[] = [];
     let columns: TypeComputedColumn[] = [];
@@ -461,7 +484,11 @@ const useColumnsSizing = (
           return false;
         }
 
-        const optimizedWidth = computeOptimizedWidth(column, shouldSkipHeader);
+        const optimizedWidth = computeOptimizedWidth(
+          column,
+          shouldSkipHeader,
+          shouldSkipSortTool
+        );
 
         if (optimizedWidth > 0) {
           const newWidth = normaliseWidth(column, optimizedWidth);
