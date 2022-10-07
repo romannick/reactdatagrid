@@ -90,7 +90,7 @@ const App = () => {
         onCopyActiveRowChange={(rows: any) => {
           console.log('rows', rows);
         }}
-        key={`checkbox_${checkboxColumn}`}
+        key={`checkbox_${checkboxColumn}__${enableCellSelection}`}
         defaultCellSelection={enableCellSelection ? {} : undefined}
         enableClipboard
         enableSelection

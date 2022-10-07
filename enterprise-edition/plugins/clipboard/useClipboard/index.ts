@@ -278,11 +278,9 @@ const useClipboard = (
 
     Object.keys(selectedCells).map((key: string): void => {
       const parsedKey = key.split(',');
-      const parsedId: string = parsedKey[0];
-      const rowId = parseInt(parsedId, 10);
-      const id = isNaN(rowId) ? parsedId : rowId;
-      const index: number = computedProps.getRowIndexById(id);
+      const id: string = parsedKey[0];
       const column: string = parsedKey[1];
+      const index: number = computedProps.getItemIndexById(id);
 
       if (index !== undefined && column !== undefined) {
         const cellValue = data[index][column];
