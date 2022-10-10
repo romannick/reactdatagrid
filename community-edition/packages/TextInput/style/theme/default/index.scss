@@ -8,7 +8,7 @@
 @import '../../variables.scss';
 @import './variables.scss';
 
-.#{$INOVUA_TEXT_INPUT_ROOT_CLASS}.#{$INOVUA_TEXT_INPUT_ROOT_CLASS}--theme-#{$THEME_NAME} {
+.#{$INOVUA_TEXT_INPUT_ROOT_CLASS}.#{$INOVUA_TEXT_INPUT_ROOT_CLASS}--theme-#{$TEXT_INPUT_THEME_NAME} {
   font-size: $INOVUA_TEXT_INPUT_FONT_SIZE;
   fill: $INOVUA_TEXT_INPUT_ICON_FILL;
   border: $INOVUA_TEXT_INPUT_BORDER;

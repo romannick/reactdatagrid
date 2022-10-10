@@ -126,6 +126,7 @@ FakeVirtualList.propTypes = {
   renderListScroller: PropTypes.func,
   scrollProps: PropTypes.object,
   virtualized: PropTypes.bool,
+  showScrollbars: PropTypes.bool,
 };
 
 export default FakeVirtualList;

@@ -7,7 +7,7 @@
 
 @import './variables.scss';
 
-.InovuaReactDataGrid__group-toolbar--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid__group-toolbar--theme-#{$DATAGRID_THEME_NAME} {
   padding: $INOVUA_DATAGRID_GROUP_TOOLBAR_PADDING;
   border-bottom: 1px solid $INOVUA_DATAGRID_HEADER_BORDER_COLOR;
   background: $INOVUA_DATAGRID_HEADER_BG;
@@ -24,7 +24,7 @@
   }
 }
 
-.InovuaReactDataGrid__group-toolbar-item--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid__group-toolbar-item--theme-#{$DATAGRID_THEME_NAME} {
   padding: 8px 9px 8px 9px;
   user-select: none;
   border: 1px solid $INOVUA_DATAGRID_HEADER_BORDER_COLOR;
@@ -76,15 +76,15 @@
 }
 
 .InovuaReactDataGrid__group-toolbar--direction-ltr {
-  .InovuaReactDataGrid__group-toolbar-item--theme-#{$THEME_NAME}
-    + .InovuaReactDataGrid__group-toolbar-item--theme-#{$THEME_NAME} {
+  .InovuaReactDataGrid__group-toolbar-item--theme-#{$DATAGRID_THEME_NAME}
+    + .InovuaReactDataGrid__group-toolbar-item--theme-#{$DATAGRID_THEME_NAME} {
     margin-left: 2px;
   }
 }
 
 .InovuaReactDataGrid__group-toolbar--direction-rtl {
-  .InovuaReactDataGrid__group-toolbar-item--theme-#{$THEME_NAME}
-    + .InovuaReactDataGrid__group-toolbar-item--theme-#{$THEME_NAME} {
+  .InovuaReactDataGrid__group-toolbar-item--theme-#{$DATAGRID_THEME_NAME}
+    + .InovuaReactDataGrid__group-toolbar-item--theme-#{$DATAGRID_THEME_NAME} {
     margin-right: 2px;
   }
 }

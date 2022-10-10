@@ -22,6 +22,8 @@ import '../../community-edition/style/theme/green-dark/index.scss';
 import '../../community-edition/style/theme/pink-light/index.scss';
 import '../../community-edition/style/theme/pink-dark/index.scss';
 
+import './custom-theme/orange-dark.scss';
+
 import '../pages/prop-checkboxColumn/prop-checkboxColumns.scss';
 
 import './index.scss';

@@ -891,9 +891,10 @@ export default class InovuaScrollContainer extends Component {
                 result.false = false;
             }
         }
-        const { shouldAllowScrollbars } = this.props;
+        const { shouldAllowScrollbars, showScrollbars } = this.props;
         if (typeof shouldAllowScrollbars == 'function') {
-            const shouldAllow = shouldAllowScrollbars(this.props, getScrollbarWidth());
+            const shouldAllow = showScrollbars ||
+                shouldAllowScrollbars(this.props, getScrollbarWidth());
             if (shouldAllow === false ||
                 (shouldAllow && shouldAllow.horizontal === false)) {
                 result.horizontal = false;
@@ -1051,6 +1052,7 @@ const propTypes = {
     wrapperStyle: PropTypes.shape({}),
     ResizeObserver: PropTypes.func,
     scrollThreshold: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    showScrollbars: PropTypes.bool,
 };
 InovuaScrollContainer.propTypes = propTypes;
 export { propTypes, cleanProps, smoothScrollTo, scrollPage, getScrollbarWidth, isMobile, };

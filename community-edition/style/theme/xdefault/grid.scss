@@ -7,7 +7,7 @@
 
 @import './variables.scss';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   border: $INOVUA_DATAGRID_BORDER;
   background: $INOVUA_DATAGRID_BG_COLOR;
   color: $INOVUA_DATAGRID_FONT_COLOR;
@@ -20,7 +20,7 @@
 }
 
 .inovua-react-panel--theme-#{THEME_NAME}
-  .InovuaReactDataGrid--theme-#{$THEME_NAME},
-.InovuaReactDataGrid--theme-#{$THEME_NAME}.InovuaReactDataGrid--paginated:not(.InovuaReactDataGrid--live-pagination) {
+  .InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME},
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME}.InovuaReactDataGrid--paginated:not(.InovuaReactDataGrid--live-pagination) {
   border: 1px solid #{$INOVUA_DATAGRID_BORDER_POSITIVE_COLOR};
 }

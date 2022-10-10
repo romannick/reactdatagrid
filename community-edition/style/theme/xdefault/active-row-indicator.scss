@@ -7,7 +7,7 @@
 
 @import './variables.scss';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   .InovuaReactDataGrid__row-active-borders-inner {
     border: $INOVUA_DATAGRID_ROW_ACTIVE_BORDER_WIDTH
       $INOVUA_DATAGRID_ROW_ACTIVE_BORDER_STYLE

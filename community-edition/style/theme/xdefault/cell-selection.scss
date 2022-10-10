@@ -7,7 +7,7 @@
 
 @import './variables.scss';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   // last locked start col
   .InovuaReactDataGrid__cell--last-in-section.InovuaReactDataGrid__cell--locked-start {
     .InovuaReactDataGrid__cell__selection {
@@ -53,26 +53,26 @@
 
   .InovuaReactDataGrid__cell--cell-active
     .InovuaReactDataGrid__cell__selection:after {
-    border: 2px solid $INOVUA_DATAGRID_ACCENT_BLUE_COLOR;
+    border: 2px solid $INOVUA_DATAGRID_ACCENT_COLOR;
   }
 
   .InovuaReactDataGrid__cell--cell-selected
     .InovuaReactDataGrid__cell__selection:after {
-    background: rgba($INOVUA_DATAGRID_ACCENT_BLUE_COLOR, 0.15);
+    background: rgba($INOVUA_DATAGRID_ACCENT_COLOR, 0.15);
   }
 
   .InovuaReactDataGrid__cell--cell-active.InovuaReactDataGrid__cell--cell-selected {
     color: $INOVUA_DATAGRID_ROW_ACTIVE_COLOR;
     .InovuaReactDataGrid__cell__selection:after {
-      border: 2px solid $INOVUA_DATAGRID_ACCENT_BLUE_COLOR;
+      border: 2px solid $INOVUA_DATAGRID_ACCENT_COLOR;
     }
   }
 
   .InovuaReactDataGrid__cell__selection {
-    background: rgba($INOVUA_DATAGRID_ACCENT_BLUE_COLOR, 0.05);
+    background: rgba($INOVUA_DATAGRID_ACCENT_COLOR, 0.05);
 
     &:after {
-      border: 1px solid $INOVUA_DATAGRID_ACCENT_BLUE_COLOR;
+      border: 1px solid $INOVUA_DATAGRID_ACCENT_COLOR;
     }
   }
 
@@ -81,6 +81,6 @@
     border-left: none;
     width: 6px;
     height: 6px;
-    background: $INOVUA_DATAGRID_ACCENT_BLUE_COLOR;
+    background: $INOVUA_DATAGRID_ACCENT_COLOR;
   }
 }

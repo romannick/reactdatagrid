@@ -8,7 +8,7 @@
 @import './variables.scss';
 @import '../../../../CheckBox/style/theme/default/index.scss';
 
-.#{$INOVUA_RADIO_BUTTON_ROOT_CLASS}--theme-#{$THEME_NAME} {
+.#{$INOVUA_RADIO_BUTTON_ROOT_CLASS}--theme-#{$INOVUA_RADIO_BUTTON_THEME_NAME} {
   &.inovua-react-toolkit-radio-button {
     .inovua-react-toolkit-radio-button__inner-content-wrapper {
       color: $INOVUA_RADIO_BUTTON_COLOR;

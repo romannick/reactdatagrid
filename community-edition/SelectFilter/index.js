@@ -13,7 +13,7 @@ const renderScroller = (props) => {
     return (React.createElement("div", { ...props, className: `${props.className} InovuaReactDataGrid__column-header__filter--select__scroller` }));
 };
 const renderListScroller = (props) => {
-    return (React.createElement(ScrollContainer, { ...props, applyCSSContainOnScroll: false, renderScroller: renderScroller, viewStyle: { width: '100%' } }));
+    return (React.createElement(ScrollContainer, { ...props, showScrollbars: true, applyCSSContainOnScroll: false, renderScroller: renderScroller, viewStyle: { width: '100%' } }));
 };
 const stopPropagation = (e) => e.stopPropagation();
 const defaultProps = {

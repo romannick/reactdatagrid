@@ -11,7 +11,7 @@ $base: 'InovuaReactDataGrid__cell';
 $footerCell: 'InovuaReactDataGrid__footer-row-cell';
 $lockedRowCell: 'InovuaReactDataGrid__locked-row-cell';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   .InovuaReactDataGrid__cell--show-border-top {
     border-top: 1px solid $INOVUA_DATAGRID_CELL_BORDER_COLOR;
   }

@@ -10,7 +10,7 @@
 
 $base: 'InovuaReactDataGrid__cell';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   .InovuaReactDataGrid__cell--no-background.InovuaReactDataGrid__cell--no-background {
     background: $INOVUA_DATAGRID_BG_COLOR;
   }

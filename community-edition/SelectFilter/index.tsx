@@ -61,6 +61,7 @@ const renderListScroller = (props: any) => {
   return (
     <ScrollContainer
       {...props}
+      showScrollbars
       applyCSSContainOnScroll={false}
       renderScroller={renderScroller}
       viewStyle={{ width: '100%' }}

@@ -7,7 +7,7 @@
 
 @import './variables.scss';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   .inovua-react-toolkit-load-mask__loader-container {
     .InovuaReactDataGrid__loading-wrapper {
       margin-top: 16px;
@@ -26,7 +26,7 @@
     flex: none;
   }
 
-  .inovua-react-pagination-toolbar.inovua-react-pagination-toolbar--theme-#{$THEME_NAME} {
+  .inovua-react-pagination-toolbar.inovua-react-pagination-toolbar--theme-#{$DATAGRID_THEME_NAME} {
     border-top: 1px solid $INOVUA_DATAGRID_BORDER_COLOR;
     border-bottom: none;
     border-left: none;

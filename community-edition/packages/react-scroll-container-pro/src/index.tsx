@@ -71,6 +71,7 @@ type ScrollContainerProps = {
   viewClassName?: string;
   tagName?: string;
   scrollThumbStyle?: ElementCSSInlineStyle;
+  showScrollbars?: boolean;
 } & HTMLAttributes<HTMLElement>;
 
 export default class InovuaScrollContainer extends Component<
@@ -598,6 +599,7 @@ export default class InovuaScrollContainer extends Component<
 
   renderScrollbars() {
     const { scrollbars } = this.state;
+
     return [
       scrollbars.vertical && this.renderScrollbar('vertical', scrollbars),
       scrollbars.horizontal && this.renderScrollbar('horizontal', scrollbars),
@@ -1217,13 +1219,12 @@ export default class InovuaScrollContainer extends Component<
       }
     }
 
-    const { shouldAllowScrollbars } = this.props;
+    const { shouldAllowScrollbars, showScrollbars } = this.props;
 
     if (typeof shouldAllowScrollbars == 'function') {
-      const shouldAllow = shouldAllowScrollbars(
-        this.props,
-        getScrollbarWidth()
-      );
+      const shouldAllow =
+        showScrollbars ||
+        shouldAllowScrollbars(this.props, getScrollbarWidth());
 
       if (
         shouldAllow === false ||
@@ -1402,6 +1403,7 @@ const propTypes = {
   wrapperStyle: PropTypes.shape({}),
   ResizeObserver: PropTypes.func,
   scrollThreshold: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  showScrollbars: PropTypes.bool,
 };
 
 InovuaScrollContainer.propTypes = propTypes;

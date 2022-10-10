@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-$THEME_NAME: 'blue-light' !default;
-$INOVUA_DATAGRID_ACCENT_BLUE_COLOR: #4bacb8 !default;
+$DATAGRID_THEME_NAME: 'blue-light' !default;
+$INOVUA_DATAGRID_ACCENT_COLOR: #4bacb8 !default;
 
 @import '../../../packages/CheckBox/style/theme/blue-light/index.scss';
 @import '../../../packages/Calendar/style/theme/blue-light/index.scss';

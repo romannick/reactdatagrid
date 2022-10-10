@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-$THEME_NAME: 'amber-dark' !default;
-$INOVUA_DATAGRID_ACCENT_BLUE_COLOR: #caae53 !default;
+$DATAGRID_THEME_NAME: 'amber-dark' !default;
+$INOVUA_DATAGRID_ACCENT_COLOR: #caae53 !default;
 
 @import '../../../packages/CheckBox/style/theme/amber-dark/index.scss';
 @import '../../../packages/Calendar/style/theme/amber-dark/index.scss';

@@ -7,7 +7,7 @@
 
 @import './variables.scss';
 
-.InovuaReactDataGrid--theme-#{$THEME_NAME} {
+.InovuaReactDataGrid--theme-#{$DATAGRID_THEME_NAME} {
   // styles applied to the header of the column group,
   // which contains all column headers in the group
   .InovuaReactDataGrid__header,
@@ -111,12 +111,12 @@
 
   .InovuaReactDataGrid__header-group-resize-handle,
   .InovuaReactDataGrid__column-resize-handle {
-    background: $INOVUA_DATAGRID_ACCENT_BLUE_COLOR;
+    background: $INOVUA_DATAGRID_ACCENT_COLOR;
   }
 
   .InovuaReactDataGrid__resize-proxy {
     width: $INOVUA_DATAGRID_COLUMN_HEADER_RESIZER_VISIBLE_WIDTH;
-    background: rgba($INOVUA_DATAGRID_ACCENT_BLUE_COLOR, 0.5);
+    background: rgba($INOVUA_DATAGRID_ACCENT_COLOR, 0.5);
 
     &--constrained {
       background: $INOVUA_DATAGRID_COLUMN_HEADER_RESIZER_CONSTRAINED_COLOR;
@@ -525,7 +525,7 @@
   }
 
   .InovuaReactDataGrid__column-reorder-arrow-fill {
-    background: $INOVUA_DATAGRID_ACCENT_BLUE_COLOR;
+    background: $INOVUA_DATAGRID_ACCENT_COLOR;
     position: absolute;
     width: auto;
     height: auto;
