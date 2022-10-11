@@ -14,6 +14,7 @@ import flags from '../flags';
 import moment from 'moment';
 import { CellProps, TypeFilter } from '@inovua/reactdatagrid-community/types';
 import { countries, CountriesType, CountryType } from './countries';
+import ComboBox from '@inovua/reactdatagrid-community/packages/ComboBox';
 
 const gridStyle = { minHeight: 600 };
 
@@ -44,23 +45,22 @@ const countriesData: { id: string; label: string }[] = countries.map(
 
 countriesData.length = 20;
 
-// const COUNTRIES: any = {
-//   ca: 'Canada',
-//   uk: 'United Kingdom',
-//   usa: 'United States of America',
-// };
-
-// const countries: any = people.reduce((countries: any, p: any) => {
-//   if (countries.filter((c: any) => c.id == p.country).length) {
-//     return countries;
-//   }
-//   countries.push({
-//     id: p.country,
-//     label: COUNTRIES[p.country] || p.country,
-//   });
-
-//   return countries;
-// }, []);
+const themesData = [
+  { id: 'default-dark', label: 'Default dark' },
+  { id: 'default-light', label: 'Default light' },
+  { id: 'orange-dark', label: 'Orange dark' },
+  { id: 'orange-light', label: 'Orange light' },
+  { id: 'magenta-dark', label: 'Magenta dark' },
+  { id: 'magenta-light', label: 'Magenta light' },
+  { id: 'amber-dark', label: 'Amber dark' },
+  { id: 'amber-light', label: 'Amber light' },
+  { id: 'blue-dark', label: 'Blue dark' },
+  { id: 'blue-light', label: 'Blue light' },
+  { id: 'green-dark', label: 'Green dark' },
+  { id: 'green-light', label: 'Green light' },
+  { id: 'pink-dark', label: 'Pink dark' },
+  { id: 'pink-light', label: 'Pink light' },
+];
 
 const defaultFilterValue = [
   { name: 'name', operator: 'startsWith', type: 'string', value: '' },
@@ -175,6 +175,7 @@ const groups = [
 const App = () => {
   const [dataSource, setDataSource] = useState(people);
   const [filterValue, setFilterValue] = useState(defaultFilterValue);
+  const [theme, setTheme] = useState<string>('orange-dark');
 
   const onFilterValueChange = useCallback(filterValue => {
     const data: any = (filter as TypeFilter)(people, filterValue);
@@ -205,12 +206,28 @@ const App = () => {
     // console.log('filteredRows', filteredRows);
   }, []);
 
+  const comboProps = {
+    value: theme,
+    onChange: setTheme,
+    dataSource: themesData,
+    changeValueOnNavigation: true,
+    collapseOnSelect: true,
+    inlineFlex: true,
+    clearIcon: false,
+    style: { width: 200 },
+  };
+
   return (
     <div>
       <h3>Grid with default filter value</h3>
+
+      <div style={{ marginBottom: 20 }}>
+        Theme: <ComboBox {...comboProps} />
+      </div>
+
       <ReactDataGrid
         idProperty="id"
-        // theme="orange-dark"
+        theme={theme}
         style={gridStyle}
         onFilterValueChange={onFilterValueChange}
         filterValue={filterValue}

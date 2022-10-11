@@ -23,6 +23,9 @@ import '../../community-edition/style/theme/pink-light/index.scss';
 import '../../community-edition/style/theme/pink-dark/index.scss';
 
 import './custom-theme/orange-dark.scss';
+import './custom-theme/orange-light.scss';
+import './custom-theme/magenta-dark.scss';
+import './custom-theme/magenta-light.scss';
 
 import '../pages/prop-checkboxColumn/prop-checkboxColumns.scss';
 
