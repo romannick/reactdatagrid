@@ -43,7 +43,7 @@ const countriesData: { id: string; label: string }[] = countries.map(
   }
 );
 
-countriesData.length = 20;
+countriesData.length = 3;
 
 const themesData = [
   { id: 'default-dark', label: 'Default dark' },
