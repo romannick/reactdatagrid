@@ -733,14 +733,14 @@ function InovuaDataGridCell(props: CellProps) {
       if (!complete) {
         stopEdit();
         if (newIndex != props.rowIndex) {
-          props.tryNextRowEdit &&
-            props.tryNextRowEdit(dir, props.columnIndex!, true);
+          thisProps.tryNextRowEdit &&
+            thisProps.tryNextRowEdit(dir, props.columnIndex!, true);
         }
       } else {
         onEditorComplete();
         if (newIndex != thisProps.rowIndex) {
-          props.tryNextRowEdit &&
-            props.tryNextRowEdit(dir, thisProps.columnIndex!, true);
+          thisProps.tryNextRowEdit &&
+            thisProps.tryNextRowEdit(dir, thisProps.columnIndex!, true);
         }
       }
     },
@@ -758,12 +758,12 @@ function InovuaDataGridCell(props: CellProps) {
       if (!complete) {
         stopEdit();
         if (newIndex != thisProps.computedVisibleIndex) {
-          props.tryRowCellEdit && props.tryRowCellEdit(newIndex, dir);
+          thisProps.tryRowCellEdit && thisProps.tryRowCellEdit(newIndex, dir);
         }
       } else {
         onEditorComplete();
         if (newIndex != thisProps.computedVisibleIndex) {
-          props.tryRowCellEdit && props.tryRowCellEdit(newIndex, dir);
+          thisProps.tryRowCellEdit && thisProps.tryRowCellEdit(newIndex, dir);
         }
       }
     },
@@ -819,11 +819,11 @@ function InovuaDataGridCell(props: CellProps) {
   const stopEdit = useCallback(
     (editValue: string = getCurrentEditValue()) => {
       const thisProps: CellProps = getProps();
-      if (props.onEditStop) {
-        props.onEditStop(editValue, thisProps);
+      if (thisProps.onEditStop) {
+        thisProps.onEditStop(editValue, thisProps);
       }
-      if (props.onEditStopForRow) {
-        props.onEditStopForRow(editValue, thisProps);
+      if (thisProps.onEditStopForRow) {
+        thisProps.onEditStopForRow(editValue, thisProps);
       }
     },
     [props.onEditStop, props.onEditStopForRow]
@@ -834,11 +834,11 @@ function InovuaDataGridCell(props: CellProps) {
     stopEdit();
     const thisProps = getProps();
 
-    if (props.onEditCancel) {
-      props.onEditCancel(thisProps);
+    if (thisProps.onEditCancel) {
+      thisProps.onEditCancel(thisProps);
     }
-    if (props.onEditCancelForRow) {
-      props.onEditCancelForRow(thisProps);
+    if (thisProps.onEditCancelForRow) {
+      thisProps.onEditCancelForRow(thisProps);
     }
   }, [props.onEditCancel, props.onEditCancelForRow]);
 
@@ -878,11 +878,11 @@ function InovuaDataGridCell(props: CellProps) {
 
       stopEdit();
 
-      if (props.onEditComplete) {
-        props.onEditComplete(completeValue, thisProps);
+      if (thisProps.onEditComplete) {
+        thisProps.onEditComplete(completeValue, thisProps);
       }
-      if (props.onEditCompleteForRow) {
-        props.onEditCompleteForRow(completeValue, thisProps);
+      if (thisProps.onEditCompleteForRow) {
+        thisProps.onEditCompleteForRow(completeValue, thisProps);
       }
     },
     [props.onEditComplete, props.onEditCompleteForRow, getEditCompleteValue]
@@ -909,12 +909,12 @@ function InovuaDataGridCell(props: CellProps) {
       const value = e && e.target ? e.target.value : e;
       const thisProps = getProps();
 
-      if (props.onEditValueChange) {
-        props.onEditValueChange(value, thisProps);
+      if (thisProps.onEditValueChange) {
+        thisProps.onEditValueChange(value, thisProps);
       }
 
-      if (props.onEditValueChangeForRow) {
-        props.onEditValueChangeForRow(value, thisProps);
+      if (thisProps.onEditValueChangeForRow) {
+        thisProps.onEditValueChangeForRow(value, thisProps);
       }
     },
     [props.onEditValueChange, props.onEditValueChangeForRow]
