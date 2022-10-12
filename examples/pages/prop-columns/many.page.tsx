@@ -64,7 +64,7 @@ class App extends React.Component<any, any> {
     this.state = {
       rtl: true,
       columns,
-      rows: 1050,
+      rows: 100,
       dataSource: [],
       checkboxColumn: true,
     };
@@ -150,6 +150,7 @@ class App extends React.Component<any, any> {
           }}
           showHeader={true}
           // rowIndexColumn
+          rtl={this.state.rtl}
           columns={this.state.columns}
           dataSource={this.state.dataSource}
           virtualizeColumnsThreshold={3}
