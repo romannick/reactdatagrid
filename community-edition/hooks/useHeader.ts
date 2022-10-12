@@ -27,7 +27,10 @@ export default (
   if (computedShowHeader) {
     result.onHeaderSortClick = colProps => {
       if (computedProps.toggleColumnSort) {
-        computedProps.toggleColumnSort(colProps.id);
+        computedProps.toggleColumnSort(
+          colProps.id,
+          colProps.defaultSortingDirection
+        );
       }
     };
   }

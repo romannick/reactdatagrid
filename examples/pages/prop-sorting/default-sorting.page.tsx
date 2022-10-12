@@ -17,7 +17,7 @@ const columns = [
     header: 'Age',
     type: 'number',
     defaultFlex: 1,
-    defaultSortingDirection: 'desc',
+    defaultSortingDirection: 'asc',
   },
 ];
 
@@ -38,7 +38,7 @@ const App = () => {
       style={gridStyle}
       columns={columns}
       dataSource={dataSource}
-      // defaultSortingDirection="desc"
+      defaultSortingDirection="desc"
     />
   );
 };

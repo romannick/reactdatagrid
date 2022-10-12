@@ -118,7 +118,7 @@ const useSortInfo = (props, _, computedPropsRef) => {
             }
         });
     }, [silentSetSortInfo]);
-    const toggleColumnSort = useCallback((colId) => {
+    const toggleColumnSort = useCallback((colId, defaultSortingDirection) => {
         const computedProps = computedPropsRef.current;
         if (!computedProps) {
             return;
@@ -131,11 +131,13 @@ const useSortInfo = (props, _, computedPropsRef) => {
         const sortInfo = computedProps.computedSortInfo === undefined
             ? null
             : computedProps.computedSortInfo;
-        const sortingDirection = computedProps.defaultSortingDirection !== undefined
-            ? computedProps.defaultSortingDirection === 'asc'
-                ? 1
-                : -1
-            : undefined;
+        const sortingDirection = defaultSortingDirection !== undefined
+            ? defaultSortingDirection
+            : computedProps.defaultSortingDirection !== undefined
+                ? computedProps.defaultSortingDirection === 'asc'
+                    ? 1
+                    : -1
+                : undefined;
         const computedIsMultiSort = computedProps.computedIsMultiSort;
         const nextSortInfo = computedIsMultiSort
             ? getNextMultipleSortInfo(computedColumn, sortInfo, {

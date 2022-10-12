@@ -446,9 +446,22 @@ export default (
         return;
       }
 
+      const threshold = 20;
+      let preventRowSelection = preventRowSelectionOnClickWithMouseMove
+        ? mouseDidNotMove
+        : true;
+
+      if (
+        (preventRowSelection === false &&
+          Math.abs(lastMouseDownEventProps.pageX - event.pageX) < threshold) ||
+        Math.abs(lastMouseDownEventProps.pageY - event.pageY) < threshold
+      ) {
+        preventRowSelection = true;
+      }
+
       if (
         (!props.checkboxOnlyRowSelect || event.type !== 'click') &&
-        (preventRowSelectionOnClickWithMouseMove ? mouseDidNotMove : true)
+        preventRowSelection
       ) {
         // perform row selection
         handleRowSelectionOnClick(event, rowProps, computedProps, queue);

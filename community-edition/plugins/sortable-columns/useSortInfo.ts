@@ -244,7 +244,8 @@ const useSortInfo = (
         | string
         | number
         | { id: string | number; name?: string | number }
-        | { name: string | number; id?: string | number }
+        | { name: string | number; id?: string | number },
+      defaultSortingDirection: 'asc' | 'desc'
     ): void => {
       const computedProps = computedPropsRef.current;
       if (!computedProps) {
@@ -265,7 +266,9 @@ const useSortInfo = (
           : computedProps.computedSortInfo;
 
       const sortingDirection =
-        computedProps.defaultSortingDirection !== undefined
+        defaultSortingDirection !== undefined
+          ? defaultSortingDirection
+          : computedProps.defaultSortingDirection !== undefined
           ? computedProps.defaultSortingDirection === 'asc'
             ? 1
             : -1
