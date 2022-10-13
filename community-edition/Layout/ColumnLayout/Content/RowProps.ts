@@ -79,6 +79,7 @@ export type RowProps = {
   lastCellInRange?: any;
   lastNonEmpty?: boolean;
   lastRowInGroup?: boolean;
+  disabledRow?: boolean;
 
   maxWidth?: number;
   id?: string | number;

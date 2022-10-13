@@ -758,6 +758,7 @@ export type TypePivotUniqueValuesDescriptor = {
 };
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ColumnLayout?: any;
+  disabledRows?: { [key: string]: boolean } | null;
   copySpreadsheetCompatibleString?: boolean;
   clipboardSeparator?: string;
   enableColumnFilterContextMenu?: boolean;

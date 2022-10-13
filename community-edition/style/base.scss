@@ -188,6 +188,11 @@
   overflow: visible;
   z-index: unset;
 
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   &:not(.InovuaReactDataGrid__row--virtualize-columns) {
     &,
     & > .InovuaReactDataGrid__row-cell-wrap {

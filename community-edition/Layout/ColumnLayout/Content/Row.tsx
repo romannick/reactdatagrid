@@ -623,6 +623,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       enableColumnAutosize,
       renderRowDetailsExpandIcon,
       renderRowDetailsCollapsedIcon,
+      disabledRow,
     } = props;
 
     const expandColumnId: string | undefined = expandColumnFn
@@ -807,6 +808,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
         columnHoverClassName,
         renderRowDetailsExpandIcon,
         renderRowDetailsCollapsedIcon,
+        disabledRow,
       };
 
       if (computedCellSelection && getCellSelectionKey) {
@@ -1746,6 +1748,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     hasLockedEnd,
     hasLockedStart,
     showHorizontalCellBorders,
+    disabledRow,
   } = props;
 
   let { rowClassName } = props;
@@ -1800,7 +1803,8 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     last && `${CLASS_NAME}--last`,
     indexInGroup == 0 && `${CLASS_NAME}--first-in-group`,
     lastInGroup && `${CLASS_NAME}--last-in-group`,
-    hasRowSpan ? `${CLASS_NAME}--has-rowspan` : ''
+    hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
+    disabledRow ? `${CLASS_NAME}--disabled` : ''
   );
 
   if (passedProps) {
@@ -1851,9 +1855,9 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     ...passedProps,
     // passedProps should not overwrite the folowing methods
     // onEvent prop will be called also
-    onClick: onClick,
+    onClick: !disabledRow ? onClick : null,
     // onMouseDown: onMouseDown,
-    onContextMenu: onContextMenu,
+    onContextMenu: !disabledRow ? onContextMenu : null,
   };
 
   rowProps.children = [
@@ -2268,6 +2272,7 @@ DataGridRow.propTypes = {
   renderRowDetailsCollapsedIcon: PropTypes.func,
   renderGroupCollapseTool: PropTypes.func,
   renderGroupExpandTool: PropTypes.func,
+  disabledRow: PropTypes.bool,
 } as any;
 
 export default React.memo(
