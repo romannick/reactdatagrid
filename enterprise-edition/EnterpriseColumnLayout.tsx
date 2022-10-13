@@ -307,6 +307,8 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
       dragBoxInitialRegion,
     });
 
+    this.dragStartCallbacks(props, dragIndex, selectedGroup);
+
     this.DRAG_INFO = {
       dragging: true,
       dragIndex,
@@ -441,6 +443,8 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
       enableTreeRowReorderNestingChange,
     } = props;
 
+    this.dragEndCallbacks(props, dropIndex);
+
     if (!this.DRAG_INFO) {
       this.clearDropInfo();
       return;
@@ -546,6 +550,8 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
   updateGroups = (props: any, dragIndex: number, dropIndex: number) => {
     const { data, silentSetData, setItemOnReorderingGroups } = props;
     const { dropGroup, selectedGroup } = this.DRAG_INFO;
+
+    this.dragEndGroupCallbacks(props, dropIndex, dropGroup);
 
     if (!selectedGroup.localeCompare(dropGroup)) {
       const newDataSource = moveYAfterX(data, dragIndex, dropIndex);
@@ -1204,6 +1210,47 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
 
   setReorderArrowVisible = (visible: boolean) => {
     this.dragRowArrow.setVisible(visible);
+  };
+
+  dragStartCallbacks = (
+    props: TypeComputedProps,
+    dragIndex: number,
+    selectedGroup: string
+  ) => {
+    const data = props.data[dragIndex];
+    const grouped = props.computedGroupBy && props.computedGroupBy.length > 0;
+
+    if (grouped) {
+      props.onGroupRowReorderStart &&
+        props.onGroupRowReorderStart({
+          data,
+          dragIndex,
+          dragGroup: selectedGroup,
+        });
+    } else {
+      props.onRowReorderStart && props.onRowReorderStart({ data, dragIndex });
+    }
+  };
+
+  dragEndCallbacks = (
+    props: TypeComputedProps,
+    dropIndex: number | undefined
+  ) => {
+    if (dropIndex) {
+      const data = props.data[dropIndex];
+      props.onRowReorderEnd && props.onRowReorderEnd({ data, dropIndex });
+    }
+  };
+
+  dragEndGroupCallbacks = (
+    props: TypeComputedProps,
+    dropIndex: number | undefined,
+    dropGroup: string
+  ) => {
+    if (dropIndex !== undefined && props.onGroupRowReorderEnd) {
+      const data = props.data[dropIndex];
+      props.onGroupRowReorderEnd({ data, dropIndex, dropGroup });
+    }
   };
 
   onRowReorderValidation = (

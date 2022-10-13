@@ -662,6 +662,38 @@ type TypeDataGridPropsNoI18n = {
 
   rowReorderColumn?: IColumn | boolean;
   onRowReorder?: TypeRowReorder;
+  onGroupRowReorderStart?: ({
+    data,
+    dragIndex,
+    dragGroup,
+  }: {
+    data: any;
+    dragIndex: number;
+    dragGroup: string;
+  }) => void;
+  onRowReorderStart?: ({
+    data,
+    dragIndex,
+  }: {
+    data: any;
+    dragIndex: number;
+  }) => void;
+  onGroupRowReorderEnd?: ({
+    data,
+    dropIndex,
+    dropGroup,
+  }: {
+    data: any;
+    dropIndex: number;
+    dropGroup: string;
+  }) => void;
+  onRowReorderEnd?: ({
+    data,
+    dropIndex,
+  }: {
+    data: any;
+    dropIndex: number;
+  }) => void;
   allowRowReorderBetweenGroups?: boolean;
   renderRowReorderProxy?: ({
     data,

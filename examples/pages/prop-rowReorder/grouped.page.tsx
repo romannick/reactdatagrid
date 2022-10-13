@@ -33,6 +33,30 @@ const App = () => {
   ] = useState<boolean>(true);
   const [smallGrid, setSmallGrid] = useState<boolean>(false);
 
+  const onGroupRowReorderStart = ({
+    data,
+    dragIndex,
+    dragGroup,
+  }: {
+    data: any;
+    dragIndex: number;
+    dragGroup: string;
+  }) => {
+    console.log('drag start', dragIndex, dragGroup, data);
+  };
+
+  const onGroupRowReorderEnd = ({
+    data,
+    dropIndex,
+    dropGroup,
+  }: {
+    data: any;
+    dropIndex: number;
+    dropGroup: string;
+  }) => {
+    console.log('drag end', dropIndex, dropGroup, data);
+  };
+
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
@@ -78,6 +102,8 @@ const App = () => {
         dataSource={people}
         rowReorderColumn
         allowRowReorderBetweenGroups={allowRowReorderBetweenGroups}
+        onGroupRowReorderStart={onGroupRowReorderStart}
+        onGroupRowReorderEnd={onGroupRowReorderEnd}
       />
     </div>
   );
