@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { RefObject, useRef, useState } from 'react';
 
 import ReactDataGrid from '../../../enterprise-edition';
 import CheckBox from '@inovua/reactdatagrid-community/packages/CheckBox';
 
 import people from '../people';
 import Button from '@inovua/reactdatagrid-community/packages/Button';
+import { TypeComputedProps } from '@inovua/reactdatagrid-community/types';
 
 const columns = [
   {
@@ -23,40 +24,34 @@ const columns = [
 ];
 
 const App = () => {
-  const [gridRef, setGridRef] = useState(null);
-  const [stickyGroupRows, setStickyGroupRows] = useState(false);
+  const gridRef = useRef<TypeComputedProps | null>(null);
+
+  const [stickyGroupRows, setStickyGroupRows] = useState<boolean>(false);
   const [
-    allowRowReoderBetweenGroups,
-    setAllowRowReoderBetweenGroups,
-  ] = useState(true);
+    allowRowReorderBetweenGroups,
+    setAllowRowReorderBetweenGroups,
+  ] = useState<boolean>(true);
   const [smallGrid, setSmallGrid] = useState<boolean>(false);
 
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <CheckBox
-          theme="default-dark"
-          checked={stickyGroupRows}
-          onChange={setStickyGroupRows}
-        >
+        <CheckBox checked={stickyGroupRows} onChange={setStickyGroupRows}>
           Use sticky group rows
         </CheckBox>
       </div>
       <div style={{ marginBottom: 20 }}>
         <CheckBox
-          theme="default-dark"
-          checked={allowRowReoderBetweenGroups}
-          onChange={setAllowRowReoderBetweenGroups}
+          checked={allowRowReorderBetweenGroups}
+          onChange={setAllowRowReorderBetweenGroups}
         >
-          AllowRowReoderBetweenGroups
+          AllowRowReorderBetweenGroups
         </CheckBox>
       </div>
       <div style={{ marginBottom: 20 }}>
         <Button
-          theme="default-dark"
           onClick={() => {
-            console.log('ref', gridRef.current);
-            gridRef.current.setItemAt(
+            gridRef?.current?.setItemAt(
               2,
               { country: 'usa' },
               { replace: false }
@@ -67,26 +62,22 @@ const App = () => {
         </Button>
       </div>
       <div style={{ marginBottom: 20 }}>
-        <CheckBox
-          theme="default-dark"
-          checked={smallGrid}
-          onChange={setSmallGrid}
-        >
+        <CheckBox checked={smallGrid} onChange={setSmallGrid}>
           Small grid
         </CheckBox>
       </div>
       <ReactDataGrid
         idProperty="id"
-        handle={setGridRef}
-        theme="default-dark"
-        licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
+        handle={(ref: RefObject<TypeComputedProps | null>) =>
+          (gridRef.current = ref ? ref.current : null)
+        }
         style={{ minHeight: smallGrid ? 450 : 750 }}
         stickyGroupRows={stickyGroupRows}
         defaultGroupBy={['country']}
         columns={columns}
         dataSource={people}
         rowReorderColumn
-        allowRowReoderBetweenGroups={allowRowReoderBetweenGroups}
+        allowRowReorderBetweenGroups={allowRowReorderBetweenGroups}
       />
     </div>
   );

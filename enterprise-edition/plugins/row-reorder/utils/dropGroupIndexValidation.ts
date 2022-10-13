@@ -11,14 +11,14 @@ const dropGroupIndexValidation = ({
   dropIndex,
   isRowReorderValid,
   selectedGroup,
-  allowRowReoderBetweenGroups,
+  allowRowReorderBetweenGroups,
 }: {
   data: any[];
   dragIndex: number;
   dropIndex: number;
   isRowReorderValid: Function;
   selectedGroup: string[];
-  allowRowReoderBetweenGroups: boolean;
+  allowRowReorderBetweenGroups: boolean;
 }) => {
   let iterateRows = false;
 
@@ -28,13 +28,13 @@ const dropGroupIndexValidation = ({
       if (!value.localeCompare(selectedGroup)) {
         iterateRows = true;
       } else {
-        if (!allowRowReoderBetweenGroups) {
+        if (!allowRowReorderBetweenGroups) {
           iterateRows = false;
         }
       }
     }
 
-    if (allowRowReoderBetweenGroups) {
+    if (allowRowReorderBetweenGroups) {
       iterateRows = true;
     }
 

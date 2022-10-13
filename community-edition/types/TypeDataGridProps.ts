@@ -662,7 +662,7 @@ type TypeDataGridPropsNoI18n = {
 
   rowReorderColumn?: IColumn | boolean;
   onRowReorder?: TypeRowReorder;
-  allowRowReoderBetweenGroups?: boolean;
+  allowRowReorderBetweenGroups?: boolean;
   renderRowReorderProxy?: ({
     data,
     dataSource,

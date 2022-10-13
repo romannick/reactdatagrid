@@ -636,7 +636,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
         return { dragProxyTop, dragProxyLeft };
     };
     getValidDropPositions = (props, dragIndex, dropIndex) => {
-        const { computedGroupBy, data, count, isRowReorderValid, allowRowReoderBetweenGroups, computedTreeEnabled, enableTreeRowReorderParentChange, nodePathSeparator, groupPathSeparator, generateIdFromPath, } = props;
+        const { computedGroupBy, data, count, isRowReorderValid, allowRowReorderBetweenGroups, computedTreeEnabled, enableTreeRowReorderParentChange, nodePathSeparator, groupPathSeparator, generateIdFromPath, } = props;
         const { selectedGroup, selectedParent } = DRAG_INFO;
         const validDropPositions = dropIndexValidation({
             data,
@@ -648,7 +648,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
             selectedParent,
             nodePathSeparator,
             groupPathSeparator,
-            allowRowReoderBetweenGroups,
+            allowRowReorderBetweenGroups,
             computedGroupBy,
             computedTreeEnabled,
             generateIdFromPath,

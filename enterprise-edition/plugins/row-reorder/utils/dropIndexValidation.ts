@@ -15,7 +15,7 @@ const dropIndexValidation = ({
   selectedParent,
   nodePathSeparator,
   groupPathSeparator,
-  allowRowReoderBetweenGroups,
+  allowRowReorderBetweenGroups,
   computedGroupBy,
   computedTreeEnabled,
   generateIdFromPath,
@@ -30,7 +30,7 @@ const dropIndexValidation = ({
   selectedParent?: string;
   nodePathSeparator?: string;
   groupPathSeparator?: string;
-  allowRowReoderBetweenGroups: boolean;
+  allowRowReorderBetweenGroups: boolean;
   computedGroupBy?: string[];
   computedTreeEnabled?: boolean;
   generateIdFromPath?: boolean;
@@ -46,13 +46,13 @@ const dropIndexValidation = ({
         if (!value.localeCompare(selectedGroup)) {
           iterateRows = true;
         } else {
-          if (!allowRowReoderBetweenGroups) {
+          if (!allowRowReorderBetweenGroups) {
             iterateRows = false;
           }
         }
       }
 
-      if (allowRowReoderBetweenGroups) {
+      if (allowRowReorderBetweenGroups) {
         iterateRows = true;
       }
 

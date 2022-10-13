@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const dropGroupIndexValidation = ({ data, dragIndex, dropIndex, isRowReorderValid, selectedGroup, allowRowReoderBetweenGroups, }) => {
+const dropGroupIndexValidation = ({ data, dragIndex, dropIndex, isRowReorderValid, selectedGroup, allowRowReorderBetweenGroups, }) => {
     let iterateRows = false;
     let validDropPositions = data.reduce((acc, curr, i) => {
         if (curr.__group) {
@@ -13,12 +13,12 @@ const dropGroupIndexValidation = ({ data, dragIndex, dropIndex, isRowReorderVali
                 iterateRows = true;
             }
             else {
-                if (!allowRowReoderBetweenGroups) {
+                if (!allowRowReorderBetweenGroups) {
                     iterateRows = false;
                 }
             }
         }
-        if (allowRowReoderBetweenGroups) {
+        if (allowRowReorderBetweenGroups) {
             iterateRows = true;
         }
         if (!curr.__group && iterateRows) {
