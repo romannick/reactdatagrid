@@ -345,19 +345,19 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
     const {
       initialDiffTop,
       initialDiffLeft,
-      dragProxyAjust,
+      dragProxyAdjust,
       scrollDiff,
       scrollTop,
       diffTop,
       diffLeft,
     } = this.adjustScrollOnDrag(props, config);
 
-    const { dragProxyTop, dragProxyLeft } = this.ajustDragProxy({
+    const { dragProxyTop, dragProxyLeft } = this.adjustDragProxy({
       diffTop,
       diffLeft,
       initialDiffTop,
       initialDiffLeft,
-      dragProxyAjust,
+      dragProxyAdjust,
     });
 
     dragProxy.setTop(dragProxyTop);
@@ -950,18 +950,18 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
     return ranges.map(mapRange);
   };
 
-  ajustDragProxy = ({
+  adjustDragProxy = ({
     diffTop,
     diffLeft,
     initialDiffTop,
     initialDiffLeft,
-    dragProxyAjust,
+    dragProxyAdjust,
   }: {
     diffTop: number;
     diffLeft: number;
     initialDiffTop: number;
     initialDiffLeft: number;
-    dragProxyAjust: number;
+    dragProxyAdjust: number;
   }) => {
     const {
       dragBoxRegion,
@@ -987,7 +987,7 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
       dragBoxInitialRegion.top -
       dragBoxOffsets.top +
       initialDiffTop -
-      dragProxyAjust +
+      dragProxyAdjust +
       headerHeight;
 
     const dragProxyLeft =
@@ -1093,42 +1093,42 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
 
     diffTop += scrollDiff;
 
-    let scrollAjust = 0;
-    let dragProxyAjust = 0;
+    let scrollAdjust = 0;
+    let dragProxyAdjust = 0;
 
     if (
       dragBoxInitialRegion.top + initialDiffTop <
         minScrollTop + SCROLL_MARGIN &&
       initialDiffTop < 0
     ) {
-      scrollAjust = -rowReorderScrollByAmount;
+      scrollAdjust = -rowReorderScrollByAmount;
     } else if (
       dragBoxInitialRegion.top + initialDiffTop >
         maxScrollTop - SCROLL_MARGIN &&
       initialDiffTop > 0
     ) {
-      scrollAjust = rowReorderScrollByAmount;
+      scrollAdjust = rowReorderScrollByAmount;
     }
 
-    if (scrollAjust) {
-      if (scrollTop + scrollAjust < 0) {
-        scrollAjust = -scrollTop;
+    if (scrollAdjust) {
+      if (scrollTop + scrollAdjust < 0) {
+        scrollAdjust = -scrollTop;
       }
-      if (scrollTop + scrollAjust > scrollTopMax) {
-        scrollAjust = scrollTopMax - scrollTop;
+      if (scrollTop + scrollAdjust > scrollTopMax) {
+        scrollAdjust = scrollTopMax - scrollTop;
       }
-      if (scrollAjust) {
+      if (scrollAdjust) {
         if (!props.rowReorderAutoScroll) {
-          this.setScrollTop(scrollTop + scrollAjust);
+          this.setScrollTop(scrollTop + scrollAdjust);
         }
-        dragProxyAjust = scrollAjust;
+        dragProxyAdjust = scrollAdjust;
       }
     }
 
     return {
       initialDiffTop,
       initialDiffLeft,
-      dragProxyAjust,
+      dragProxyAdjust,
       scrollDiff,
       scrollTop,
       diffTop,
