@@ -1391,7 +1391,7 @@ export default class InovuaVirtualList extends Component<TypeProps> {
 
     this.scrollToIndex(
       index,
-      { direction: dir == 1 ? 'bottom' : 'top' },
+      { direction: dir == 1 ? 'bottom' : 'top', duration: 50 },
       () => {
         const nextRow = this.getRowAt(index);
         const nextRowNode = nextRow.getDOMNode

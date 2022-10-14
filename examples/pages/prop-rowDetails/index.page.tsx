@@ -37,24 +37,23 @@ const columns = [
   {
     name: 'id',
     type: 'number',
-    xdefaultLocked: 'start' as 'start',
     lockedRowCellRender: (value: any) => {
       return value + '!';
     },
   },
-  { name: 'firstName', flex: 1, defaultLocked: 'start' as 'start' },
-  { name: 'firstName3', flex: 1, defaultLocked: 'end' as 'end' },
+  { name: 'firstName', flex: 1 },
+  { name: 'firstName3', flex: 1 },
   { name: 'firstName1', flex: 1 },
   { name: 'firstName2', flex: 1 },
   { name: 'country', flex: 1 },
-  { name: 'age', type: 'number', xdefaultLocked: 'end' as 'end' },
+  { name: 'age', type: 'number' },
 ];
 
 const dataSource = people;
 
 const expandedRows = {
-  1: true,
-  3: true,
+  // 1: true,
+  // 3: true,
 };
 const App = () => {
   return (
@@ -66,7 +65,6 @@ const App = () => {
       columnMaxWidth={400}
       rowExpandHeight={250}
       defaultExpandedRows={expandedRows}
-      licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
       renderRowDetails={renderRowDetails}
       columnDefaultWidth={500}
       dataSource={dataSource}

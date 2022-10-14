@@ -1007,7 +1007,7 @@ export default class InovuaVirtualList extends Component {
         if (index >= this.getMaxRenderCount() || index < 0) {
             return;
         }
-        this.scrollToIndex(index, { direction: dir == 1 ? 'bottom' : 'top' }, () => {
+        this.scrollToIndex(index, { direction: dir == 1 ? 'bottom' : 'top', duration: 50 }, () => {
             const nextRow = this.getRowAt(index);
             const nextRowNode = nextRow.getDOMNode
                 ? nextRow.getDOMNode()
