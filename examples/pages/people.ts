@@ -17,6 +17,8 @@ export type PeopleType = {
   birthDate: string;
 };
 
+export type People = PeopleType[];
+
 const people = [
   {
     id: 0,
