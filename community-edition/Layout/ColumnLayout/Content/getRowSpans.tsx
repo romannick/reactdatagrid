@@ -19,7 +19,7 @@ export default (rowProps: TypeRowProps): { [key: string]: number } => {
     dataSourceArray,
   } = rowProps;
 
-  columns.forEach((column: TypeComputedColumn) => {
+  columns?.forEach((column: TypeComputedColumn) => {
     const name: string | undefined = column.name;
     const rowspan = column.rowspan;
 

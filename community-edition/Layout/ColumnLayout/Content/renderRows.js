@@ -53,6 +53,7 @@ computedSelected, computedUnselected, treeColumn, renderNodeTool, renderTreeColl
                 : computedSelected == id);
         const rowExpanded = isRowExpandedById(id);
         const rowProps = {
+            rowspanZIndex: totalCount - realIndex,
             availableWidth,
             computedGroupBy,
             expandGroupTitle,

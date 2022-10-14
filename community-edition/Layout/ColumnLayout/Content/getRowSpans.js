@@ -7,7 +7,7 @@
 export default (rowProps) => {
     const rowSpans = {};
     const { data, realIndex: rowIndex, remoteRowIndex, columns, empty, dataSourceArray, } = rowProps;
-    columns.forEach((column) => {
+    columns?.forEach((column) => {
         const name = column.name;
         const rowspan = column.rowspan;
         const value = data && name ? data[name] : null;

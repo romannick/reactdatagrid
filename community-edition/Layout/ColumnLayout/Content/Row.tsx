@@ -1749,6 +1749,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     hasLockedStart,
     showHorizontalCellBorders,
     disabledRow,
+    rowspanZIndex,
   } = props;
 
   let { rowClassName } = props;
@@ -1803,7 +1804,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     last && `${CLASS_NAME}--last`,
     indexInGroup == 0 && `${CLASS_NAME}--first-in-group`,
     lastInGroup && `${CLASS_NAME}--last-in-group`,
-    hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
+    // hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
     disabledRow ? `${CLASS_NAME}--disabled` : ''
   );
 
@@ -1818,6 +1819,10 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     minWidth,
     direction: 'ltr',
   };
+
+  if (hasRowSpan) {
+    style.zIndex = rowspanZIndex;
+  }
 
   if (maxWidth != null) {
     style.maxWidth = maxWidth;
@@ -1853,7 +1858,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     style,
     ref: domRef,
     ...passedProps,
-    // passedProps should not overwrite the folowing methods
+    // passedProps should not overwrite the following methods
     // onEvent prop will be called also
     onClick: !disabledRow ? onClick : null,
     // onMouseDown: onMouseDown,
@@ -2273,6 +2278,7 @@ DataGridRow.propTypes = {
   renderGroupCollapseTool: PropTypes.func,
   renderGroupExpandTool: PropTypes.func,
   disabledRow: PropTypes.bool,
+  rowspanZIndex: PropTypes.number,
 } as any;
 
 export default React.memo(

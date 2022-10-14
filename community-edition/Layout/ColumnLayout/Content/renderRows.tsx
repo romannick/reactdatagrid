@@ -235,6 +235,7 @@ const renderRows = (
     const rowExpanded = isRowExpandedById(id);
 
     const rowProps = {
+      rowspanZIndex: totalCount - realIndex,
       availableWidth,
       computedGroupBy,
       expandGroupTitle,

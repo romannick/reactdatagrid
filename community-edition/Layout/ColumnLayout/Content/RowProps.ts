@@ -179,6 +179,7 @@ export type RowProps = {
   groupColumn?: any;
   computedShowZebraRows?: boolean;
   computedRowspans?: any;
+  rowspanZIndex?: number;
   editStartEvent?: string;
   computedHasColSpan?: boolean;
 
