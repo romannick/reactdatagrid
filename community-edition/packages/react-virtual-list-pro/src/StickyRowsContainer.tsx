@@ -114,7 +114,9 @@ const StickyRowsContainer = (props: TypeProps) => {
     renderedRowsRef.current = rows;
     rowElementsRef.current = content;
 
-    setEnteringRow(config);
+    requestAnimationFrame(() => {
+      setEnteringRow(config);
+    });
   };
 
   const getCurrentVisibleStickyRowsCount = (): number => {

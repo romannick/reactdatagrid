@@ -69,6 +69,7 @@ const App = () => {
           (globalObject as any).api = api;
         }}
         disableGroupByToolbar={disableGroupByToolbar}
+        stickyGroupRows={true}
       />
     </div>
   );

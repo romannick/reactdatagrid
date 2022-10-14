@@ -90,6 +90,7 @@ const App = () => {
         defaultGroupBy={groupBy}
         columns={columns}
         dataSource={dataSource}
+        stickyGroupRows={true}
       />
     </div>
   );

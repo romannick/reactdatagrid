@@ -71,7 +71,9 @@ const StickyRowsContainer = (props) => {
         }
         renderedRowsRef.current = rows;
         rowElementsRef.current = content;
-        setEnteringRow(config);
+        requestAnimationFrame(() => {
+            setEnteringRow(config);
+        });
     };
     const getCurrentVisibleStickyRowsCount = () => {
         return rowElementsRef.current ? rowElementsRef.current.length : 0;
