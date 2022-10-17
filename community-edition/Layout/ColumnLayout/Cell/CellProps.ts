@@ -12,6 +12,8 @@ import { TypeGroupTool } from '../../../types';
 type func = (...args: any[]) => any;
 export type CellProps = {
   timestamp: number;
+  dataSourceChange?: boolean;
+  columnsChange?: boolean;
   onTransitionEnd?: (e: any) => void;
   inEdit?: boolean;
   cellRef?: any;

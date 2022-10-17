@@ -17,10 +17,7 @@ import React, {
 import PropTypes from 'prop-types';
 
 import cleanProps from '../../../packages/react-clean-props';
-import {
-  // shallowequal,
-  equalReturnKey,
-} from '../../../packages/shallowequal';
+import shallowequal, { equalReturnKey } from '../../../packages/shallowequal';
 
 import join from '../../../packages/join';
 import clamp from '../../../utils/clamp';
@@ -29,7 +26,7 @@ import Cell from '../Cell';
 import renderCellsMaybeLocked from './renderCellsMaybeLocked';
 import adjustCellProps from './adjustCellProps';
 import { CellProps, CellInstance } from '../Cell/CellProps';
-import { TypeComputedColumn } from '../../../types';
+import { TypeComputedColumn, TypeDataSource } from '../../../types';
 
 import { RowProps, EnhancedRowProps } from './RowProps';
 import usePrevious from '../../../hooks/usePrevious';
@@ -536,6 +533,15 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
   const propsRef = useRef(props);
   propsRef.current = props;
 
+  const lastDataSource = usePrevious<TypeDataSource>(
+    propsRef.current.dataSourceArray,
+    propsRef.current.dataSourceArray
+  );
+  const lastColumns = usePrevious<TypeDataSource>(
+    propsRef.current.columns,
+    propsRef.current.columns
+  );
+
   const getPropsForCells = (
     startIndex?: number,
     endIndex?: number
@@ -625,6 +631,12 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       renderRowDetailsCollapsedIcon,
       disabledRow,
     } = props;
+
+    const dataSourceChange = !shallowequal(
+      lastDataSource,
+      props.dataSourceArray
+    );
+    const columnsChange = !shallowequal(lastColumns, props.columns);
 
     const expandColumnId: string | undefined = expandColumnFn
       ? expandColumnFn({ data })
@@ -809,6 +821,8 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
         renderRowDetailsExpandIcon,
         renderRowDetailsCollapsedIcon,
         disabledRow,
+        dataSourceChange,
+        columnsChange,
       };
 
       if (computedCellSelection && getCellSelectionKey) {

@@ -7,9 +7,7 @@
 import React, { useEffect, useRef, useImperativeHandle, useCallback, } from 'react';
 import PropTypes from 'prop-types';
 import cleanProps from '../../../packages/react-clean-props';
-import { 
-// shallowequal,
-equalReturnKey, } from '../../../packages/shallowequal';
+import shallowequal, { equalReturnKey } from '../../../packages/shallowequal';
 import join from '../../../packages/join';
 import clamp from '../../../utils/clamp';
 import Cell from '../Cell';
@@ -363,6 +361,8 @@ const DataGridRow = React.forwardRef((props, ref) => {
     ]);
     const propsRef = useRef(props);
     propsRef.current = props;
+    const lastDataSource = usePrevious(propsRef.current.dataSourceArray, propsRef.current.dataSourceArray);
+    const lastColumns = usePrevious(propsRef.current.columns, propsRef.current.columns);
     const getPropsForCells = (startIndex, endIndex) => {
         // if (startIndex !== undefined || endIndex !== undefined) {
         //   console.warn(
@@ -373,6 +373,8 @@ const DataGridRow = React.forwardRef((props, ref) => {
         const initialColumns = props.columns;
         let columns = initialColumns;
         const { hasLockedStart, data, onGroupToggle, computedPivot, rowHeight, remoteRowIndex, initialRowHeight, lastLockedStartIndex, lastLockedEndIndex, lastUnlockedIndex, minRowHeight, realIndex, showHorizontalCellBorders, showVerticalCellBorders, empty, treeColumn, groupColumn, totalDataCount, depth, dataSourceArray, computedGroupBy, groupProps, summaryProps, indexInGroup, firstUnlockedIndex, firstLockedEndIndex, selectAll, deselectAll, columnUserSelect, multiSelect, selection, setRowSelected, computedRowExpandEnabled, rtl, last: lastRow, computedCellSelection, lastNonEmpty, maxVisibleRows, onCellClick, editStartEvent, naturalRowHeight, renderNodeTool, computedTreeEnabled, expanded: rowExpanded, expandGroupTitle, expandColumn: expandColumnFn, onCellSelectionDraggerMouseDown, onCellMouseDown, onCellEnter, computedCellMultiSelectionEnabled, getCellSelectionKey, lastCellInRange, computedRowspans, renderIndex, nativeScroll, onDragRowMouseDown, theme, onContextMenu, setActiveIndex, renderTreeCollapseTool, renderTreeExpandTool, renderGroupCollapseTool, renderGroupExpandTool, renderTreeLoadingTool, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, computedEnableColumnHover, columnHoverClassName, enableColumnAutosize, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, disabledRow, } = props;
+        const dataSourceChange = !shallowequal(lastDataSource, props.dataSourceArray);
+        const columnsChange = !shallowequal(lastColumns, props.columns);
         const expandColumnId = expandColumnFn
             ? expandColumnFn({ data })
             : undefined;
@@ -524,6 +526,8 @@ const DataGridRow = React.forwardRef((props, ref) => {
                 renderRowDetailsExpandIcon,
                 renderRowDetailsCollapsedIcon,
                 disabledRow,
+                dataSourceChange,
+                columnsChange,
             };
             if (computedCellSelection && getCellSelectionKey) {
                 cellProps.cellSelected =
