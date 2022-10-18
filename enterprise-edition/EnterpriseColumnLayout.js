@@ -324,24 +324,35 @@ export default class InovuaDataGridEnterpriseColumnLayout extends InovuaDataGrid
             props.reload();
         }
     };
-    updateGroups = (props, dragIndex, dropIndex) => {
+    updateGroups = async (props, dragIndex, dropIndex) => {
         const { data, silentSetData, setItemOnReorderingGroups } = props;
         const { dropGroup, selectedGroup } = this.DRAG_INFO;
         this.dragEndGroupCallbacks(props, dropIndex, dropGroup);
         if (!selectedGroup.localeCompare(dropGroup)) {
-            const newDataSource = moveYAfterX(data, dragIndex, dropIndex);
+            const newDataSource = await moveYAfterX(data, dragIndex, dropIndex);
             silentSetData(newDataSource);
             this.clearDropInfo();
             return;
         }
         if (dropGroup) {
-            const item = this.computeItem(props);
-            setItemOnReorderingGroups(dragIndex, item, {
-                replace: false,
+            new Promise(resolve => {
+                const item = this.computeItem(props);
+                resolve(setItemOnReorderingGroups(dragIndex, item, {
+                    replace: false,
+                }));
+            })
+                .then(() => {
+                return moveYAfterX(data, dragIndex, dropIndex);
+            })
+                .then(newDataSource => {
+                silentSetData(newDataSource);
+            })
+                .then(() => {
+                this.clearDropInfo();
+            })
+                .catch(error => {
+                console.error(error);
             });
-            const newDataSource = moveYAfterX(data, dragIndex, dropIndex);
-            silentSetData(newDataSource);
-            this.clearDropInfo();
             return;
         }
         this.clearDropInfo();

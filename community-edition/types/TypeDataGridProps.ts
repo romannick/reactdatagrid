@@ -1345,6 +1345,11 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
     property: string,
     value: any
   ) => void;
+  setItemOnReorderingGroups: (
+    index: number,
+    item: { [key: string]: any },
+    config?: { replace?: boolean }
+  ) => void;
   setItemAt: (
     index: number,
     item: any,

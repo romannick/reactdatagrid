@@ -67,13 +67,13 @@ export default ({
 
     config.data = flattenedData.data;
 
-    groupArray.forEach(group => {
+    groupArray.forEach((group: { keyPath?: string[]; array?: any[] }) => {
       const keyPath = group.keyPath;
 
       let root = flattenedData.bucket;
 
-      for (let i = 0, len = keyPath.length; i < len; i++) {
-        let key = keyPath[i];
+      for (let i = 0, len = keyPath!.length; i < len; i++) {
+        let key = keyPath![i];
         if (!root || !root.data) {
           break;
         }

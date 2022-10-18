@@ -639,7 +639,7 @@ export default (
 
   const setItemOnReorderingGroups = (
     index: number,
-    item: any,
+    item: { [key: string]: any },
     config?: { replace?: boolean }
   ) => {
     const { current: computedProps } = computedPropsRef;

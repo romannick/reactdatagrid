@@ -40,7 +40,7 @@ export default ({ groupBy, config, computedProps, batchUpdateQueue, columnsMap, 
         });
         config.computedShowEmptyRows = lastTopGroupCollapsed ? false : undefined;
         config.data = flattenedData.data;
-        groupArray.forEach(group => {
+        groupArray.forEach((group) => {
             const keyPath = group.keyPath;
             let root = flattenedData.bucket;
             for (let i = 0, len = keyPath.length; i < len; i++) {
