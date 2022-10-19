@@ -75,12 +75,17 @@ export const notifySelection = (
   queue = queue || batchUpdate();
   const onSelectionChange = (isSafari ? delay35 : now)(() => {
     if (typeof computedProps.onSelectionChange == 'function') {
-      computedProps.onSelectionChange({ selected, data, unselected });
+      computedProps.onSelectionChange({
+        selected,
+        data,
+        unselected,
+        originalData: computedProps?.originalData || null,
+      });
     }
   });
 
   if (!isControlledProperty(computedProps.initialProps, 'unselected')) {
-    const unselectedCount = computedProps.getUnselectedCount(unselected);
+    // const unselectedCount = computedProps.getUnselectedCount(unselected);
 
     queue(() => {
       computedProps.setUnselected(unselected);

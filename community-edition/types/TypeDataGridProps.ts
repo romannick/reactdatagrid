@@ -97,6 +97,7 @@ export type TypeOnSelectionChangeArg = {
   selected: TypeRowSelection;
   data?: object;
   unselected?: TypeRowSelection;
+  originalData?: TypeDataSource;
 };
 export type TypeRowDetailsInfo = {
   id: string | number;

@@ -13,8 +13,8 @@ const largeCmp = ({ value, data }: any) => {
   return <div className="prop-checkboxColumns__large-comp">{value}</div>;
 };
 
-const buildColumns = cols => {
-  return cols.split('').map(letter => {
+const buildColumns = (cols: string) => {
+  return cols.split('').map((letter: string) => {
     if (letter === 'b') {
       return {
         defaultWidth: 120,
@@ -40,17 +40,23 @@ const buildDataSource = (
     return callback();
   }
 
-  const dataSource = [...new Array(records)].map((_: any, index: number) => {
-    const result = {
-      id: index,
-    };
+  type Result = {
+    [key: string | number]: string | number | undefined;
+  };
 
-    cols.split('').map((letter: string) => {
-      result[letter] = letter.toUpperCase() + ' ' + (index + 1);
-    });
+  const dataSource = [...new Array(records)].map(
+    (_: unknown, index: number) => {
+      const result: Result = {
+        id: index,
+      };
 
-    return result;
-  });
+      cols.split('').map((letter: string) => {
+        result[letter] = letter.toUpperCase() + ' ' + (index + 1);
+      });
+
+      return result;
+    }
+  );
 
   return dataSource;
 };
@@ -76,8 +82,6 @@ const App = () => {
       </div>
       <ReactDataGrid
         idProperty="id"
-        theme="default-dark"
-        licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
         selected={selected}
         checkboxColumn={checkboxColumn}
         onSelectionChange={onSelectionChange}
