@@ -35,7 +35,7 @@ class GenericFilter extends React.Component {
     setupEventListener = () => {
         this.unsubscribeColumnFilterVisibility = this.props.props.notifyColumnFilterVisibleStateChange.onCalled((visible) => {
             if (!visible && this.state.open) {
-                this.close();
+                this.close(this.settings);
             }
         });
         this.refSettings = (s) => {
@@ -82,6 +82,12 @@ class GenericFilter extends React.Component {
             this.onMenuClose(e);
         }
     };
+    onFocus = () => {
+        this.setState({ focused: true });
+    };
+    onBlur = () => {
+        this.setState({ focused: false });
+    };
     onMenuOpen = (e) => {
         e.preventDefault();
         this.props.cellInstance.showFilterContextMenu(this.settings);
@@ -94,12 +100,17 @@ class GenericFilter extends React.Component {
         e.preventDefault();
         this.close();
     };
-    close = () => {
+    onKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            this.onMenuOpen(event);
+        }
+    };
+    close = (settings) => {
         this.setState({
             focused: false,
             open: false,
         }, () => {
-            this.props.cellInstance.hideFilterContextMenu();
+            this.props.cellInstance.hideFilterContextMenu(settings);
         });
     };
     setValue = (value) => {
@@ -134,7 +145,7 @@ class GenericFilter extends React.Component {
                 filterValue,
             })) : (React.createElement("svg", { tabIndex: 0, className: settingsIconClassName, width: "14", height: "14", viewBox: "0 0 14 14" },
                 React.createElement("path", { fillRule: "evenodd", d: "M13.222 2H.778C.348 2 0 1.552 0 1s.348-1 .778-1h12.444c.43 0 .778.448.778 1s-.348 1-.778 1zM1.556 3.111l3.888 4.667v5.444c0 .43.349.778.778.778h1.556c.43 0 .778-.348.778-.778V7.778l3.888-4.667H1.556z" })));
-            settings = (React.createElement("div", { className: "InovuaReactDataGrid__column-header__filter-settings", ref: this.refSettings }, settingsIcon));
+            settings = (React.createElement("div", { className: "InovuaReactDataGrid__column-header__filter-settings", ref: this.refSettings, onKeyDown: this.onKeyDown, onFocus: this.onFocus, onBlur: this.onBlur }, settingsIcon));
         }
         if (!filterValue) {
             className += ` ${filterWrapperClassName}--empty`;

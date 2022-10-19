@@ -82,8 +82,8 @@ const columns = [
     minWidth: 180,
     filterEditorProps: {
       placeholder: 'Name',
-      renderSettings: ({ className }: { className: string }) =>
-        filterIcon(className),
+      // renderSettings: ({ className }: { className: string }) =>
+      //   filterIcon(className),
     },
   },
   {
@@ -112,8 +112,8 @@ const columns = [
   },
   {
     name: 'birthDate',
-    header: 'Bith date',
-    defualtFlex: 1,
+    header: 'Birth date',
+    defaultFlex: 1,
     minWidth: 200,
     dateFormat: 'MM-DD-YYYY',
     filterEditor: DateFilter,
@@ -177,7 +177,7 @@ const App = () => {
   const onEditComplete = useCallback(
     ({ value, columnId, rowIndex }) => {
       const data = [...dataSource];
-      data[rowIndex][columnId] = value;
+      (data as any[])[rowIndex][columnId] = value;
 
       setDataSource(data);
     },
@@ -191,6 +191,14 @@ const App = () => {
   return (
     <div>
       <h3>Grid with default filter value</h3>
+      <input
+        style={{
+          marginBottom: 20,
+          background: '#464d56',
+          border: 'none',
+          height: 24,
+        }}
+      />
       <ReactDataGrid
         idProperty="id"
         style={gridStyle}

@@ -913,9 +913,9 @@ function InovuaDataGridCell(props) {
             props.showColumnFilterContextMenu(node, getProps());
         }
     }, [props.showColumnFilterContextMenu]);
-    const hideFilterContextMenu = useCallback(() => {
+    const hideFilterContextMenu = useCallback((node) => {
         if (props.hideColumnFilterContextMenu) {
-            props.hideColumnFilterContextMenu();
+            props.hideColumnFilterContextMenu(node);
         }
     }, [props.hideColumnFilterContextMenu]);
     const showContextMenu = useCallback((domRef, onHide) => {

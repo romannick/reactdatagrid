@@ -18,7 +18,7 @@ type TypeGenericFilterProps = {
   props?: any;
   rtl?: boolean;
   enableColumnFilterContextMenu?: boolean;
-  notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
+  notifyColumnFilterVisibleStateChange?: FunctionNotifier<boolean>;
 };
 
 type TypeGenericFilterState = {
@@ -65,7 +65,7 @@ class GenericFilter extends React.Component<
     this.unsubscribeColumnFilterVisibility = this.props.props.notifyColumnFilterVisibleStateChange.onCalled(
       (visible: boolean) => {
         if (!visible && this.state.open) {
-          this.close();
+          this.close(this.settings);
         }
       }
     );
@@ -118,6 +118,14 @@ class GenericFilter extends React.Component<
     }
   };
 
+  onFocus = () => {
+    this.setState({ focused: true });
+  };
+
+  onBlur = () => {
+    this.setState({ focused: false });
+  };
+
   onMenuOpen = (e: any) => {
     e.preventDefault();
     this.props.cellInstance.showFilterContextMenu(this.settings);
@@ -133,14 +141,20 @@ class GenericFilter extends React.Component<
     this.close();
   };
 
-  close = () => {
+  onKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      this.onMenuOpen(event);
+    }
+  };
+
+  close = (settings?: ReactNode) => {
     this.setState(
       {
         focused: false,
         open: false,
       },
       () => {
-        this.props.cellInstance.hideFilterContextMenu();
+        this.props.cellInstance.hideFilterContextMenu(settings);
       }
     );
   };
@@ -207,6 +221,9 @@ class GenericFilter extends React.Component<
         <div
           className="InovuaReactDataGrid__column-header__filter-settings"
           ref={this.refSettings}
+          onKeyDown={this.onKeyDown}
+          onFocus={this.onFocus}
+          onBlur={this.onBlur}
         >
           {settingsIcon}
         </div>

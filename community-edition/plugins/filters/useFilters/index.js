@@ -168,6 +168,7 @@ export const renderColumnFilterContextMenu = (computedProps, computedPropsRef) =
     const rtl = computedProps.rtl;
     const menuProps = {
         autoFocus: true,
+        dismissWithEscape: true,
         items,
         theme: computedProps.theme,
         updatePositionOnScroll: computedProps.updateMenuPositionOnScroll,
@@ -324,11 +325,15 @@ const useFilters = (props, computedProps, computedPropsRef) => {
         setColumnFilterContextMenuProps(cellProps);
         computedProps.notifyColumnFilterVisibleStateChange(true);
     }, [setColumnFilterContextMenuProps]);
-    const hideColumnFilterContextMenu = useCallback(() => {
+    const hideColumnFilterContextMenu = useCallback((node) => {
         const { current: computedProps } = computedPropsRef;
         if (columnFilterContextMenuProps && computedProps) {
             setColumnFilterContextMenuProps(null);
             computedProps.notifyColumnFilterVisibleStateChange(false);
+        }
+        if (node && !node.type) {
+            const filterIcon = node.querySelector('.InovuaReactDataGrid__column-header__filter-settings-icon');
+            filterIcon.focus();
         }
     }, [columnFilterContextMenuProps]);
     const shouldShowFilteringMenuItems = useCallback(() => {

@@ -11,6 +11,7 @@ import {
   useMemo,
   useState,
   useRef,
+  ReactNode,
 } from 'react';
 import useProperty from '../../../hooks/useProperty';
 import {
@@ -214,6 +215,7 @@ export const renderColumnFilterContextMenu = (
   const rtl = computedProps.rtl;
   const menuProps = {
     autoFocus: true,
+    dismissWithEscape: true,
     items,
     theme: computedProps.theme,
     updatePositionOnScroll: computedProps.updateMenuPositionOnScroll,
@@ -433,7 +435,7 @@ const useFilters = (
   ] = useState<any>(null);
 
   const showColumnFilterContextMenu = useCallback(
-    (alignTo: any, cellProps: TypeCellProps) => {
+    (alignTo: ReactNode, cellProps: TypeCellProps) => {
       const { current: computedProps } = computedPropsRef;
       if (columnFilterContextMenuProps || !computedProps) {
         return;
@@ -453,14 +455,24 @@ const useFilters = (
     [setColumnFilterContextMenuProps]
   );
 
-  const hideColumnFilterContextMenu = useCallback(() => {
-    const { current: computedProps } = computedPropsRef;
+  const hideColumnFilterContextMenu = useCallback(
+    (node?: any) => {
+      const { current: computedProps } = computedPropsRef;
 
-    if (columnFilterContextMenuProps && computedProps) {
-      setColumnFilterContextMenuProps(null);
-      computedProps.notifyColumnFilterVisibleStateChange(false);
-    }
-  }, [columnFilterContextMenuProps]);
+      if (columnFilterContextMenuProps && computedProps) {
+        setColumnFilterContextMenuProps(null);
+        computedProps.notifyColumnFilterVisibleStateChange(false);
+      }
+
+      if (node && !node.type) {
+        const filterIcon = node.querySelector(
+          '.InovuaReactDataGrid__column-header__filter-settings-icon'
+        );
+        filterIcon.focus();
+      }
+    },
+    [columnFilterContextMenuProps]
+  );
 
   const shouldShowFilteringMenuItems = useCallback((): boolean => {
     if (props.showFilteringMenuItems) {

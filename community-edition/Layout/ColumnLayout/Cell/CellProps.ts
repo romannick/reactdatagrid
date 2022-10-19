@@ -259,7 +259,7 @@ export type CellProps = {
   onColumnMouseEnter?: (props: CellProps) => void;
   onColumnMouseLeave?: (props: CellProps) => void;
   showColumnFilterContextMenu?: (node: ReactNode, props: CellProps) => void;
-  hideColumnFilterContextMenu?: () => void;
+  hideColumnFilterContextMenu?: (node?: ReactNode) => void;
   onDoubleClick?: (event: MouseEvent, props: CellProps) => void;
   onFocus?: (event: MouseEvent, props: CellProps) => void;
   editor?: any;
@@ -448,7 +448,7 @@ export type CellInstance = {
     cellProps: EnhancedCellProps
   ) => void | JSX.Element | null;
   showFilterContextMenu: (node: ReactNode) => void;
-  hideFilterContextMenu: () => void;
+  hideFilterContextMenu: (node: ReactNode) => void;
   getProxyRegion: () => void;
   renderGroupTool: () => void;
   toggleGroup: (event: any) => void;

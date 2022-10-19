@@ -1423,11 +1423,14 @@ function InovuaDataGridCell(props: CellProps) {
     [props.showColumnFilterContextMenu]
   );
 
-  const hideFilterContextMenu = useCallback(() => {
-    if (props.hideColumnFilterContextMenu) {
-      props.hideColumnFilterContextMenu();
-    }
-  }, [props.hideColumnFilterContextMenu]);
+  const hideFilterContextMenu = useCallback(
+    (node?: ReactNode) => {
+      if (props.hideColumnFilterContextMenu) {
+        props.hideColumnFilterContextMenu(node);
+      }
+    },
+    [props.hideColumnFilterContextMenu]
+  );
 
   const showContextMenu = useCallback(
     (domRef: ReactNode, onHide: () => void) => {

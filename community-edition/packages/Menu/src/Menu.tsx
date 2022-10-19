@@ -739,9 +739,17 @@ class InovuaMenu extends Component {
       case 'Enter':
         this.handleEnterOnFocusedItem(event);
         break;
+      case 'Escape':
+        this.handleEscape(event);
       case ' ':
         this.handleSpaceOnFocusedItem(event);
         break;
+    }
+  }
+
+  handleEscape(event) {
+    if (this.props.dismissWithEscape) {
+      this.dismiss(event);
     }
   }
 
@@ -1929,6 +1937,7 @@ InovuaMenu.propTypes = {
   showWarnings: PropTypes.bool,
   updatePositionOnScroll: PropTypes.bool,
   browserNativeSelectInputs: PropTypes.bool,
+  dismissWithEscape: PropTypes.bool,
 };
 
 export default InovuaMenu;
