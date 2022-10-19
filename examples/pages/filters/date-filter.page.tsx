@@ -6,37 +6,42 @@ import DateFilter from '@inovua/reactdatagrid-community/DateFilter';
 import NumberFilter from '@inovua/reactdatagrid-community/NumberFilter';
 
 import people from '../people';
-import flags from '../flags';
+import flags, { FlagsType } from '../flags';
 import moment from 'moment';
 import { getGlobal } from '@inovua/reactdatagrid-community/getGlobal';
+import { TypeFilterValue } from '@inovua/reactdatagrid-community/types';
+import Button from '@inovua/reactdatagrid-community/packages/Button';
 
 const globalObject = getGlobal();
 
 let window = globalObject || globalThis;
 
-if (window.moment == null) {
-  window.moment = moment;
+if ((window as any).moment == null) {
+  (window as any).moment = moment;
 }
 
 const gridStyle = { minHeight: 600 };
 
-const COUNTRIES = {
+const COUNTRIES: { [key: string]: string } = {
   ca: 'Canada',
   uk: 'United Kingdom',
   usa: 'United States of America',
 };
 
-const countries = people.reduce((countries, p) => {
-  if (countries.filter(c => c.id == p.country).length) {
-    return countries;
-  }
-  countries.push({
-    id: p.country,
-    label: COUNTRIES[p.country] || p.country,
-  });
+const countries = people.reduce(
+  (countries: { id: string; label: string }[], p: any) => {
+    if (countries.filter((c: { id: string }) => c.id == p.country).length) {
+      return countries;
+    }
+    countries.push({
+      id: p.country,
+      label: COUNTRIES[p.country] || p.country,
+    });
 
-  return countries;
-}, []);
+    return countries;
+  },
+  []
+);
 
 const columns = [
   {
@@ -62,17 +67,18 @@ const columns = [
       placeholder: 'All',
       dataSource: countries,
     },
-    render: ({ value }) => (flags[value] ? flags[value] : value),
+    render: ({ value }: { value: string }) =>
+      flags[value as keyof FlagsType] ? flags[value as keyof FlagsType] : value,
   },
   {
     name: 'birthDate',
-    header: 'Bith date',
-    defualtFlex: 1,
+    header: 'Birth date',
+    defaultFlex: 1,
     minWidth: 200,
     dateFormat: 'MM-DD-YYYY',
     filterEditor: DateFilter,
-    filterEditorProps: (props, { index }) => {
-      // for range and notinrange operators, the index is 1 for the after field
+    filterEditorProps: ({ index }: { index: number }) => {
+      // for range and not in range operators, the index is 1 for the after field
       return {
         dateFormat: 'MM-DD-YYYY',
         cancelButton: false,
@@ -81,7 +87,7 @@ const columns = [
           index == 1 ? 'Created date is before...' : 'Created date is after...',
       };
     },
-    render: ({ value, cellProps }) => {
+    render: ({ value }: { value: string }) => {
       return moment(value).format('MM-DD-YYYY');
     },
   },
@@ -96,25 +102,31 @@ const initialFilterValue = [
     name: 'birthDate',
     operator: 'before',
     type: 'date',
-    value: '07-05-2022',
+    value: '',
   },
   { name: 'country', operator: 'startsWith', type: 'string', value: '' },
-];
+] as TypeFilterValue;
+
 const App = () => {
-  const [filterValue, setFilterValue] = useState(initialFilterValue);
+  const [filterValue, setFilterValue] = useState<TypeFilterValue>(
+    initialFilterValue
+  );
+
   return (
     <div>
       <h3>Grid with default filter value</h3>
-      <button
+
+      <Button
+        style={{ marginBottom: 20, borderRadius: 4 }}
         onClick={() => {
           setFilterValue(initialFilterValue);
         }}
       >
-        reset
-      </button>
+        Reset filters
+      </Button>
+
       <ReactDataGrid
         idProperty="id"
-        theme="default-dark"
         style={gridStyle}
         filterValue={filterValue}
         onFilterValueChange={setFilterValue}

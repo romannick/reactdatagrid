@@ -12,11 +12,13 @@ class DateFilter extends Component {
         const { filterValue } = props;
         this.state = {
             value: filterValue ? filterValue.value || '' : '',
+            text: '',
         };
         this.onChange = this.onChange.bind(this);
         this.onStartChange = this.onStartChange.bind(this);
         this.onEndChange = this.onEndChange.bind(this);
         this.onValueChange = this.onValueChange.bind(this);
+        this.onTextChange = this.onTextChange.bind(this);
     }
     componentDidUpdate(prevProps) {
         if (this.props.filterValue &&
@@ -67,6 +69,9 @@ class DateFilter extends Component {
                 value,
             });
     }
+    onTextChange(value) {
+        this.setState({ text: value });
+    }
     render() {
         const { filterValue, readOnly, disabled, rtl, style, cell, renderInPortal, i18n, theme, } = this.props;
         let { filterEditorProps, cellProps: { dateFormat }, } = this.props;
@@ -115,6 +120,8 @@ class DateFilter extends Component {
             },
             theme,
             rtl,
+            text: this.state.text,
+            onTextChange: this.onTextChange,
         };
         if (filterValue) {
             inputProps.value = this.state.value;

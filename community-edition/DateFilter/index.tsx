@@ -40,6 +40,7 @@ type DateFilterProps = {
 
 type DateFilterState = {
   value?: any;
+  text?: string;
 };
 
 type InputProps = {
@@ -57,6 +58,7 @@ type InputProps = {
   theme?: string;
   rtl?: boolean;
   text?: string;
+  onTextChange?: (value: string) => void;
 };
 
 class DateFilter extends Component<DateFilterProps, DateFilterState> {
@@ -67,12 +69,14 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
 
     this.state = {
       value: filterValue ? filterValue.value || '' : '',
+      text: '',
     };
 
     this.onChange = this.onChange.bind(this);
     this.onStartChange = this.onStartChange.bind(this);
     this.onEndChange = this.onEndChange.bind(this);
     this.onValueChange = this.onValueChange.bind(this);
+    this.onTextChange = this.onTextChange.bind(this);
   }
 
   componentDidUpdate(prevProps: any) {
@@ -131,6 +135,10 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
         ...this.props.filterValue,
         value,
       });
+  }
+
+  onTextChange(value: string) {
+    this.setState({ text: value });
   }
 
   render() {
@@ -201,6 +209,8 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
       },
       theme,
       rtl,
+      text: this.state.text,
+      onTextChange: this.onTextChange,
     };
 
     if (filterValue) {
