@@ -12,7 +12,13 @@ import {
   TypeCellProps,
   TypeBatchUpdateQueue,
 } from '../../types';
-import { MutableRefObject, useRef, useCallback } from 'react';
+import {
+  MutableRefObject,
+  useRef,
+  useCallback,
+  ReactNode,
+  RefObject,
+} from 'react';
 
 import batchUpdate from '../../utils/batchUpdate';
 
@@ -20,6 +26,11 @@ import { handleSelection } from './handleSelection';
 import handleRowNavigation from './handleRowNavigation';
 import handleCellNavigation from './handleCellNavigation';
 import containsNode from '../../common/containsNode';
+import useNamedState from '../useNamedState';
+import { getGlobal } from '../../getGlobal';
+import contains from '@inovua/reactdatagrid-community/packages/contains';
+
+const globalObject = getGlobal();
 
 export default (
   props: TypeDataGridProps,
@@ -30,6 +41,16 @@ export default (
   computedOnKeyDown: (event: KeyboardEvent) => void;
   computedOnFocus: (event: FocusEvent) => void;
   computedOnBlur: (event: FocusEvent) => void;
+  computedOnRowFocus: (
+    event: FocusEvent,
+    rowNode: ReactNode,
+    rowProps: TypeRowProps
+  ) => void;
+  computedOnRowBlur: (
+    event: FocusEvent,
+    rowNode: ReactNode,
+    rowProps: TypeRowProps
+  ) => void;
   computedOnRowClick: (event: MouseEvent, rowProps: TypeRowProps) => void;
   computedOnRowMouseDown: (event: MouseEvent, rowProps: TypeRowProps) => void;
   computedOnCellMouseDown: (
@@ -46,6 +67,13 @@ export default (
   rowProps: any;
   computedActiveItem: any;
   isGroup: (item: any) => boolean;
+  computedFocusedRowIndex: number;
+  doSetRowFocusIndex: (index: number) => void;
+  computedOnRowKeyDown: (
+    event: KeyboardEvent,
+    rowNode: RefObject<HTMLElement> | null,
+    rowIndex?: number
+  ) => void;
 } => {
   const computedOnKeyDown = (event: KeyboardEvent) => {
     if (props.onKeyDown) {
@@ -319,6 +347,99 @@ export default (
     computedProps.setActiveIndex(-1);
     computedProps.computedSetFocused(false);
   }, []);
+
+  const context = computedProps.context!;
+  const [computedFocusedRowIndex, setFocusedRowIndex] = useNamedState<number>(
+    -1,
+    context,
+    'focusedRow'
+  );
+
+  const computedOnRowKeyDown = useCallback(
+    (
+      event: KeyboardEvent,
+      rowNode: RefObject<HTMLElement> | null,
+      rowIndex?: number
+    ) => {
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const activeElement = globalObject.document.activeElement;
+
+      console.log('rowIndex', rowIndex);
+
+      if (
+        !activeElement ||
+        (rowNode && !contains(rowNode as any, activeElement))
+      ) {
+        return;
+      }
+
+      const dir = event.shiftKey ? -1 : 1;
+      const rows: any = computedProps.getRows!();
+      // console.log('___ROWS___', rows);
+      const row = rows[rowIndex!];
+
+      if (!row) {
+        return;
+      }
+
+      const rowInstance = row.getInstance();
+      console.log('rowInstance', rowInstance);
+      const totalDataCount = rowInstance.totalDataCount;
+
+      const nextRowIndex = rowIndex! + dir;
+
+      if (nextRowIndex < 0 || nextRowIndex >= totalDataCount) {
+        return;
+      }
+
+      computedProps.scrollToIndex(
+        nextRowIndex,
+        { direction: dir === -1 ? 'top' : 'bottom' },
+        () => {
+          const nextRow = rows.find((row: any) => row.index === nextRowIndex);
+          console.log('NEXT___ROW', nextRowIndex, nextRow);
+          if (!nextRow) {
+            return;
+          }
+          const nextRowInstance = nextRow?.getInstance();
+          const nextRowNode = nextRowInstance.getDOMNode
+            ? nextRowInstance.getDOMNode()
+            : nextRowInstance.domRef.current;
+
+          if (nextRowNode) {
+            nextRowNode.focus();
+          }
+        }
+      );
+
+      event.preventDefault();
+    },
+    []
+  );
+
+  const doSetRowFocusIndex = useCallback((index: number) => {
+    setFocusedRowIndex(index);
+  }, []);
+
+  const computedOnRowFocus = useCallback(
+    (event: FocusEvent, _rowNode: ReactNode, rowProps: TypeRowProps) => {
+      event.preventDefault();
+      const rowIndex = rowProps ? rowProps.rowIndex : -1;
+
+      doSetRowFocusIndex(rowIndex);
+    },
+    []
+  );
+
+  const computedOnRowBlur = useCallback(
+    (_event: FocusEvent, _rowNode: ReactNode, _rowProps: TypeRowProps) => {
+      doSetRowFocusIndex(-1);
+    },
+    []
+  );
 
   const onGroupRowClick = useCallback(
     (
@@ -658,10 +779,15 @@ export default (
     computedOnKeyDown,
     computedOnFocus,
     computedOnBlur,
+    computedOnRowFocus,
+    computedOnRowBlur,
     computedOnRowClick,
     computedOnRowMouseDown,
     computedOnCellMouseDown,
+    computedOnRowKeyDown,
     isGroup,
+    computedFocusedRowIndex,
+    doSetRowFocusIndex,
     computedActiveItem:
       computedActiveIndex !== -1 && computedProps.data
         ? computedProps.data[computedActiveIndex]

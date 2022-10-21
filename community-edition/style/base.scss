@@ -193,6 +193,10 @@
     pointer-events: none;
   }
 
+  &--focused {
+    background: green !important;
+  }
+
   &:not(.InovuaReactDataGrid__row--virtualize-columns) {
     &,
     & > .InovuaReactDataGrid__row-cell-wrap {

@@ -4,12 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, } from 'react';
 import batchUpdate from '../../utils/batchUpdate';
 import { handleSelection } from './handleSelection';
 import handleRowNavigation from './handleRowNavigation';
 import handleCellNavigation from './handleCellNavigation';
 import containsNode from '../../common/containsNode';
+import useNamedState from '../useNamedState';
+import { getGlobal } from '../../getGlobal';
+import contains from '@inovua/reactdatagrid-community/packages/contains';
+const globalObject = getGlobal();
 export default (props, computedProps, computedPropsRef) => {
     const computedOnKeyDown = (event) => {
         if (props.onKeyDown) {
@@ -242,6 +246,59 @@ export default (props, computedProps, computedPropsRef) => {
         computedProps.setActiveIndex(-1);
         computedProps.computedSetFocused(false);
     }, []);
+    const context = computedProps.context;
+    const [computedFocusedRowIndex, setFocusedRowIndex] = useNamedState(-1, context, 'focusedRow');
+    const computedOnRowKeyDown = useCallback((event, rowNode, rowIndex) => {
+        if (event.key !== 'Tab') {
+            return;
+        }
+        const activeElement = globalObject.document.activeElement;
+        console.log('rowIndex', rowIndex);
+        if (!activeElement ||
+            (rowNode && !contains(rowNode, activeElement))) {
+            return;
+        }
+        const dir = event.shiftKey ? -1 : 1;
+        const rows = computedProps.getRows();
+        // console.log('___ROWS___', rows);
+        const row = rows[rowIndex];
+        if (!row) {
+            return;
+        }
+        const rowInstance = row.getInstance();
+        console.log('rowInstance', rowInstance);
+        const totalDataCount = rowInstance.totalDataCount;
+        const nextRowIndex = rowIndex + dir;
+        if (nextRowIndex < 0 || nextRowIndex >= totalDataCount) {
+            return;
+        }
+        computedProps.scrollToIndex(nextRowIndex, { direction: dir === -1 ? 'top' : 'bottom' }, () => {
+            const nextRow = rows.find((row) => row.index === nextRowIndex);
+            console.log('NEXT___ROW', nextRowIndex, nextRow);
+            if (!nextRow) {
+                return;
+            }
+            const nextRowInstance = nextRow?.getInstance();
+            const nextRowNode = nextRowInstance.getDOMNode
+                ? nextRowInstance.getDOMNode()
+                : nextRowInstance.domRef.current;
+            if (nextRowNode) {
+                nextRowNode.focus();
+            }
+        });
+        event.preventDefault();
+    }, []);
+    const doSetRowFocusIndex = useCallback((index) => {
+        setFocusedRowIndex(index);
+    }, []);
+    const computedOnRowFocus = useCallback((event, _rowNode, rowProps) => {
+        event.preventDefault();
+        const rowIndex = rowProps ? rowProps.rowIndex : -1;
+        doSetRowFocusIndex(rowIndex);
+    }, []);
+    const computedOnRowBlur = useCallback((_event, _rowNode, _rowProps) => {
+        doSetRowFocusIndex(-1);
+    }, []);
     const onGroupRowClick = useCallback((rowProps, { enableKeyboardNavigation, setActiveIndex, }, queue) => {
         if (rowProps.groupProps || (rowProps.data && rowProps.data.__group)) {
             // it's a group row, so stop doing anything else and only update
@@ -466,10 +523,15 @@ export default (props, computedProps, computedPropsRef) => {
         computedOnKeyDown,
         computedOnFocus,
         computedOnBlur,
+        computedOnRowFocus,
+        computedOnRowBlur,
         computedOnRowClick,
         computedOnRowMouseDown,
         computedOnCellMouseDown,
+        computedOnRowKeyDown,
         isGroup,
+        computedFocusedRowIndex,
+        doSetRowFocusIndex,
         computedActiveItem: computedActiveIndex !== -1 && computedProps.data
             ? computedProps.data[computedActiveIndex]
             : null,

@@ -12,6 +12,7 @@ import {
   MutableRefObject,
   ReactPortal,
   CSSProperties,
+  RefObject,
 } from 'react';
 
 import { TypeSortInfo } from './TypeSortInfo';
@@ -61,6 +62,7 @@ import {
   TypeExpandedGroups,
   TypeGroupTool,
   CellProps,
+  RowProps,
 } from '.';
 import {
   TypeRowSelection,
@@ -791,6 +793,24 @@ export type TypePivotUniqueValuesDescriptor = {
 };
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ColumnLayout?: any;
+  computedOnRowFocus?: (
+    event: FocusEvent,
+    rowNode: ReactNode,
+    props: RowProps
+  ) => void;
+  computedOnRowBlur?: (
+    event: FocusEvent,
+    rowNode: ReactNode,
+    props: RowProps
+  ) => void;
+  focusedRow?: boolean;
+  computedFocusedRowIndex?: number;
+  doSetRowFocusIndex?: (index: number) => void;
+  computedOnRowKeyDown?: (
+    event: KeyboardEvent,
+    rowNode: RefObject<HTMLElement> | null,
+    rowIndex?: number
+  ) => void;
   disabledRows?: { [key: string]: boolean } | null;
   copySpreadsheetCompatibleString?: boolean;
   clipboardSeparator?: string;

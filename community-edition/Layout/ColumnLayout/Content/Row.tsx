@@ -191,6 +191,31 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     []
   );
 
+  const onFocus = useCallback(
+    (event: FocusEvent) => {
+      if (props.onRowFocus) {
+        props.onRowFocus(event, getDOMNode(), props);
+      }
+    },
+    [props.onRowFocus]
+  );
+
+  const onBlur = useCallback(
+    (event: FocusEvent) => {
+      if (props.onRowBlur) {
+        props.onRowBlur(event, getDOMNode(), props);
+      }
+    },
+    [props.onRowBlur]
+  );
+
+  const onRowKeyDown = useCallback((event: KeyboardEvent) => {
+    const rowIndex = props.rowIndex;
+    if (props.onRowKeyDown) {
+      props.onRowKeyDown(event, getDOMNode(), rowIndex);
+    }
+  }, []);
+
   const orderCells = useCallback(() => {
     const cells = cleanupCells();
 
@@ -1710,6 +1735,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       onClick,
       onMouseDown,
       getCurrentGaps,
+      totalDataCount: props.totalDataCount,
       rowProps,
       domRef: domRef,
       props,
@@ -1764,6 +1790,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     showHorizontalCellBorders,
     disabledRow,
     rowspanZIndex,
+    focusedRowIndex,
   } = props;
 
   let { rowClassName } = props;
@@ -1819,7 +1846,8 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     indexInGroup == 0 && `${CLASS_NAME}--first-in-group`,
     lastInGroup && `${CLASS_NAME}--last-in-group`,
     // hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
-    disabledRow ? `${CLASS_NAME}--disabled` : ''
+    disabledRow ? `${CLASS_NAME}--disabled` : '',
+    focusedRowIndex === realIndex ? `${CLASS_NAME}--focused` : ''
   );
 
   if (passedProps) {
@@ -1877,6 +1905,10 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     onClick: !disabledRow ? onClick : null,
     // onMouseDown: onMouseDown,
     onContextMenu: !disabledRow ? onContextMenu : null,
+    onFocus: onFocus,
+    onBlur: onBlur,
+    onKeyDown: onRowKeyDown,
+    tabIndex: 0,
   };
 
   rowProps.children = [
@@ -2293,6 +2325,10 @@ DataGridRow.propTypes = {
   renderGroupExpandTool: PropTypes.func,
   disabledRow: PropTypes.bool,
   rowspanZIndex: PropTypes.number,
+  onRowFocus: PropTypes.func,
+  onRowBlur: PropTypes.func,
+  onRowKeyDown: PropTypes.func,
+  focusedRowIndex: PropTypes.number,
 } as any;
 
 export default React.memo(

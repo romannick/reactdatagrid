@@ -7,7 +7,7 @@
 
 import { TypeComputedColumn } from '../../../types/TypeColumn';
 import { CellProps } from '../Cell/CellProps';
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode, RefObject } from 'react';
 import Renderable from '../../../types/TypeRenderable';
 import { TypeDataGridProps } from '../../../types/TypeDataGridProps';
 import { TypeGroupTool } from '../../../types';
@@ -41,6 +41,14 @@ export type RowProps = {
   lockedStartColumns: TypeComputedColumn[];
   lockedEndColumns: TypeComputedColumn[];
   virtualizeColumns: boolean;
+  onRowFocus?: (event: FocusEvent, node: ReactNode, props: RowProps) => void;
+  onRowBlur?: (event: FocusEvent, node: ReactNode, props: RowProps) => void;
+  onRowKeyDown?: (
+    event: KeyboardEvent,
+    rowNode: RefObject<HTMLElement> | null,
+    rowIndex?: number
+  ) => void;
+  focusedRowIndex?: number;
 
   rowSelected: boolean;
   availableWidth: number;

@@ -187,6 +187,10 @@ const renderRows = (
     renderRowDetailsCollapsedIcon,
     computedOnRowMouseDown,
     disabledRows,
+    computedOnRowFocus,
+    computedOnRowBlur,
+    computedFocusedRowIndex,
+    computedOnRowKeyDown,
   }: any
 ) => {
   const remoteOffset = computedLivePagination ? 0 : computedSkip || 0;
@@ -397,6 +401,10 @@ const renderRows = (
       renderRowDetailsCollapsedIcon,
       memorizedScrollLeft,
       disabledRow: disabledRows ? disabledRows[realIndex] : null,
+      onRowFocus: computedOnRowFocus,
+      onRowBlur: computedOnRowBlur,
+      focusedRowIndex: computedFocusedRowIndex,
+      onRowKeyDown: computedOnRowKeyDown,
     };
 
     if (rowProps.rowIndex === editRowIndex) {
