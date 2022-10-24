@@ -4,14 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { useRef, useCallback, } from 'react';
+import { useRef, useCallback } from 'react';
 import batchUpdate from '../../utils/batchUpdate';
 import { handleSelection } from './handleSelection';
 import handleRowNavigation from './handleRowNavigation';
 import handleCellNavigation from './handleCellNavigation';
 import containsNode from '../../common/containsNode';
-import { getGlobal } from '../../getGlobal';
-const globalObject = getGlobal();
 export default (props, computedProps, computedPropsRef) => {
     const computedOnKeyDown = (event) => {
         if (props.onKeyDown) {

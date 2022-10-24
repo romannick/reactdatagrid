@@ -12,13 +12,7 @@ import {
   TypeCellProps,
   TypeBatchUpdateQueue,
 } from '../../types';
-import {
-  MutableRefObject,
-  useRef,
-  useCallback,
-  ReactNode,
-  RefObject,
-} from 'react';
+import { MutableRefObject, useRef, useCallback } from 'react';
 
 import batchUpdate from '../../utils/batchUpdate';
 
@@ -26,11 +20,6 @@ import { handleSelection } from './handleSelection';
 import handleRowNavigation from './handleRowNavigation';
 import handleCellNavigation from './handleCellNavigation';
 import containsNode from '../../common/containsNode';
-import useNamedState from '../useNamedState';
-import { getGlobal } from '../../getGlobal';
-import contains from '@inovua/reactdatagrid-community/packages/contains';
-
-const globalObject = getGlobal();
 
 export default (
   props: TypeDataGridProps,
