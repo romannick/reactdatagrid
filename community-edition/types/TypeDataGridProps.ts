@@ -160,6 +160,8 @@ type TypeGridPublicAPI = any;
 type TypeDataGridPropsNoI18n = {
   activeCellThrottle?: number;
   activeIndexThrottle?: number;
+  allowRowTabNavigation?: boolean;
+  rowFocusClassName?: string;
   scrollThreshold?: number | string;
   rowContextMenuAlignPositions?: string[];
   rowContextMenuPosition?: 'fixed' | 'absolute';
@@ -793,24 +795,7 @@ export type TypePivotUniqueValuesDescriptor = {
 };
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ColumnLayout?: any;
-  computedOnRowFocus?: (
-    event: FocusEvent,
-    rowNode: ReactNode,
-    props: RowProps
-  ) => void;
-  computedOnRowBlur?: (
-    event: FocusEvent,
-    rowNode: ReactNode,
-    props: RowProps
-  ) => void;
-  focusedRow?: boolean;
-  computedFocusedRowIndex?: number;
-  doSetRowFocusIndex?: (index: number) => void;
-  computedOnRowKeyDown?: (
-    event: KeyboardEvent,
-    rowNode: RefObject<HTMLElement> | null,
-    rowIndex?: number
-  ) => void;
+  getDOMNodeForRowIndex: (index: number) => ReactNode | null;
   disabledRows?: { [key: string]: boolean } | null;
   copySpreadsheetCompatibleString?: boolean;
   clipboardSeparator?: string;

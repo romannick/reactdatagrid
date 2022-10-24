@@ -68,7 +68,7 @@ export default class InovuaVirtualListRow extends React.Component<
     this.mounted = true;
   }
 
-  getInstance() {
+  public getInstance() {
     return this.row;
   }
 

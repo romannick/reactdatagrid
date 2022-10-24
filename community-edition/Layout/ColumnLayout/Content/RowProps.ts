@@ -41,14 +41,8 @@ export type RowProps = {
   lockedStartColumns: TypeComputedColumn[];
   lockedEndColumns: TypeComputedColumn[];
   virtualizeColumns: boolean;
-  onRowFocus?: (event: FocusEvent, node: ReactNode, props: RowProps) => void;
-  onRowBlur?: (event: FocusEvent, node: ReactNode, props: RowProps) => void;
-  onRowKeyDown?: (
-    event: KeyboardEvent,
-    rowNode: RefObject<HTMLElement> | null,
-    rowIndex?: number
-  ) => void;
-  focusedRowIndex?: number;
+  focusedRow?: boolean;
+  rowFocusClassName?: string;
 
   rowSelected: boolean;
   availableWidth: number;

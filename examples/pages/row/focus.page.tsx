@@ -109,6 +109,20 @@ const App = () => {
         defaultFilterValue={filterValue}
         columns={columns}
         dataSource={people}
+        allowRowTabNavigation
+        rowFocusClassName="global-row-background-tomato"
+      />
+
+      <input
+        type="text"
+        style={{
+          background: '#464d56',
+          color: '#fafafa',
+          height: 32,
+          width: 120,
+          marginTop: 20,
+          border: 'none',
+        }}
       />
       <p>
         Delete the filters if you want to show all data. You can click the

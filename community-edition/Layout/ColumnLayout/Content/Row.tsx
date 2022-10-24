@@ -191,31 +191,6 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     []
   );
 
-  const onFocus = useCallback(
-    (event: FocusEvent) => {
-      if (props.onRowFocus) {
-        props.onRowFocus(event, getDOMNode(), props);
-      }
-    },
-    [props.onRowFocus]
-  );
-
-  const onBlur = useCallback(
-    (event: FocusEvent) => {
-      if (props.onRowBlur) {
-        props.onRowBlur(event, getDOMNode(), props);
-      }
-    },
-    [props.onRowBlur]
-  );
-
-  const onRowKeyDown = useCallback((event: KeyboardEvent) => {
-    const rowIndex = props.rowIndex;
-    if (props.onRowKeyDown) {
-      props.onRowKeyDown(event, getDOMNode(), rowIndex);
-    }
-  }, []);
-
   const orderCells = useCallback(() => {
     const cells = cleanupCells();
 
@@ -1790,7 +1765,8 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     showHorizontalCellBorders,
     disabledRow,
     rowspanZIndex,
-    focusedRowIndex,
+    focusedRow,
+    rowFocusClassName,
   } = props;
 
   let { rowClassName } = props;
@@ -1847,7 +1823,12 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     lastInGroup && `${CLASS_NAME}--last-in-group`,
     // hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
     disabledRow ? `${CLASS_NAME}--disabled` : '',
-    focusedRowIndex === realIndex ? `${CLASS_NAME}--focused` : ''
+    focusedRow
+      ? join(
+          `${CLASS_NAME}--focused`,
+          rowFocusClassName ? rowFocusClassName : ''
+        )
+      : ''
   );
 
   if (passedProps) {
@@ -1905,10 +1886,6 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     onClick: !disabledRow ? onClick : null,
     // onMouseDown: onMouseDown,
     onContextMenu: !disabledRow ? onContextMenu : null,
-    onFocus: onFocus,
-    onBlur: onBlur,
-    onKeyDown: onRowKeyDown,
-    tabIndex: 0,
   };
 
   rowProps.children = [
@@ -2328,7 +2305,8 @@ DataGridRow.propTypes = {
   onRowFocus: PropTypes.func,
   onRowBlur: PropTypes.func,
   onRowKeyDown: PropTypes.func,
-  focusedRowIndex: PropTypes.number,
+  focusedRow: PropTypes.bool,
+  rowFocusClassName: PropTypes.string,
 } as any;
 
 export default React.memo(
