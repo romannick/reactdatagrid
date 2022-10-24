@@ -1710,6 +1710,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       onClick,
       onMouseDown,
       getCurrentGaps,
+      totalDataCount: props.totalDataCount,
       rowProps,
       domRef: domRef,
       props,
@@ -1764,6 +1765,8 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     showHorizontalCellBorders,
     disabledRow,
     rowspanZIndex,
+    focusedRow,
+    rowFocusClassName,
   } = props;
 
   let { rowClassName } = props;
@@ -1819,7 +1822,13 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     indexInGroup == 0 && `${CLASS_NAME}--first-in-group`,
     lastInGroup && `${CLASS_NAME}--last-in-group`,
     // hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
-    disabledRow ? `${CLASS_NAME}--disabled` : ''
+    disabledRow ? `${CLASS_NAME}--disabled` : '',
+    focusedRow
+      ? join(
+          `${CLASS_NAME}--focused`,
+          rowFocusClassName ? rowFocusClassName : ''
+        )
+      : ''
   );
 
   if (passedProps) {
@@ -2293,6 +2302,11 @@ DataGridRow.propTypes = {
   renderGroupExpandTool: PropTypes.func,
   disabledRow: PropTypes.bool,
   rowspanZIndex: PropTypes.number,
+  onRowFocus: PropTypes.func,
+  onRowBlur: PropTypes.func,
+  onRowKeyDown: PropTypes.func,
+  focusedRow: PropTypes.bool,
+  rowFocusClassName: PropTypes.string,
 } as any;
 
 export default React.memo(

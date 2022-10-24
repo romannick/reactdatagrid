@@ -1172,12 +1172,13 @@ const DataGridRow = React.forwardRef((props, ref) => {
             onClick,
             onMouseDown,
             getCurrentGaps,
+            totalDataCount: props.totalDataCount,
             rowProps,
             domRef: domRef,
             props,
         };
     });
-    const { rowHeight, initialRowHeight, maxRowHeight, groupNestingSize, summaryProps, data, id, columns, minWidth, maxWidth, rowStyle, scrollbars, renderRow, computedRowExpandEnabled, even, odd, active, selected, expanded, passedProps, realIndex, remoteRowIndex, nativeScroll, indexInGroup, naturalRowHeight, rowDetailsStyle, renderDetailsGrid, last, empty, computedPivot, computedShowZebraRows, rowDetailsWidth, availableWidth, groupProps, groupColumn, dataSourceArray, onRenderRow, shouldRenderCollapsedRowDetails, editing, rtl, sticky, hasLockedEnd, hasLockedStart, showHorizontalCellBorders, disabledRow, rowspanZIndex, } = props;
+    const { rowHeight, initialRowHeight, maxRowHeight, groupNestingSize, summaryProps, data, id, columns, minWidth, maxWidth, rowStyle, scrollbars, renderRow, computedRowExpandEnabled, even, odd, active, selected, expanded, passedProps, realIndex, remoteRowIndex, nativeScroll, indexInGroup, naturalRowHeight, rowDetailsStyle, renderDetailsGrid, last, empty, computedPivot, computedShowZebraRows, rowDetailsWidth, availableWidth, groupProps, groupColumn, dataSourceArray, onRenderRow, shouldRenderCollapsedRowDetails, editing, rtl, sticky, hasLockedEnd, hasLockedStart, showHorizontalCellBorders, disabledRow, rowspanZIndex, focusedRow, rowFocusClassName, } = props;
     let { rowClassName } = props;
     const virtualizeColumns = getVirtualizeColumns();
     const lastInGroup = indexInGroup == props.groupCount - 1;
@@ -1200,7 +1201,9 @@ const DataGridRow = React.forwardRef((props, ref) => {
         ? `${CLASS_NAME}--has-locked-end`
         : `${CLASS_NAME}--no-locked-end`, showHorizontalCellBorders && `${CLASS_NAME}--show-horizontal-borders`, active && `${CLASS_NAME}--active`, virtualizeColumns && `${CLASS_NAME}--virtualize-columns`, rowHeight && `${CLASS_NAME}--rowheight`, naturalRowHeight && `${CLASS_NAME}--natural-rowheight`, realIndex == 0 && `${CLASS_NAME}--first`, last && `${CLASS_NAME}--last`, indexInGroup == 0 && `${CLASS_NAME}--first-in-group`, lastInGroup && `${CLASS_NAME}--last-in-group`, 
     // hasRowSpan ? `${CLASS_NAME}--has-rowspan` : '',
-    disabledRow ? `${CLASS_NAME}--disabled` : '');
+    disabledRow ? `${CLASS_NAME}--disabled` : '', focusedRow
+        ? join(`${CLASS_NAME}--focused`, rowFocusClassName ? rowFocusClassName : '')
+        : '');
     if (passedProps) {
         className = join(className, selected && passedProps.selectedClassName);
     }
@@ -1568,6 +1571,11 @@ DataGridRow.propTypes = {
     renderGroupExpandTool: PropTypes.func,
     disabledRow: PropTypes.bool,
     rowspanZIndex: PropTypes.number,
+    onRowFocus: PropTypes.func,
+    onRowBlur: PropTypes.func,
+    onRowKeyDown: PropTypes.func,
+    focusedRow: PropTypes.bool,
+    rowFocusClassName: PropTypes.string,
 };
 export default React.memo(DataGridRow, (prevProps, nextProps) => {
     let areEqual = equalReturnKey(prevProps, nextProps, {

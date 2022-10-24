@@ -810,6 +810,18 @@ const GridFactory = (
       return vl.getRows();
     };
 
+    const getDOMNodeForRowIndex = (index: number): ReactNode | null => {
+      const rows = getRows();
+      const row = rows.find((row: any) => row.index === index);
+      const rowInstance = row.getInstance();
+
+      return rowInstance.getDOMNode
+        ? rowInstance.getDOMNode()
+        : rowInstance.domRef
+        ? rowInstance.domRef.current
+        : null;
+    };
+
     const getHeader = () => {
       const body = bodyRef.current;
       const columnLayout = body && body.getColumnLayout();
@@ -1223,6 +1235,7 @@ const GridFactory = (
       getItemIdAt,
       getRows,
       focus,
+      getDOMNodeForRowIndex,
       blur,
       computedShowHeaderBorderRight:
         columnInfo.totalComputedWidth < viewportAvailableWidth ||
@@ -1708,6 +1721,7 @@ const GridFactory = (
     defaultShowHoverRows: true,
     defaultShowZebraRows: true,
     defaultShowCellBorders: true,
+    allowRowTabNavigation: false,
 
     cellSelectionByIndex: false,
 

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import contains from '../../packages/contains';
 import { TypeComputedProps } from '../../types';
 
 const handleRowNavigation = (
@@ -43,6 +44,32 @@ const handleRowNavigation = (
   if (fn) {
     fn(event);
     return true;
+  }
+
+  if (computedProps.allowRowTabNavigation) {
+    if (key === 'Tab') {
+      const dir = event.shiftKey ? -1 : 1;
+      // if activeElement is inside the currently active row, we want to skip our tab navigation and let the VirtualList handle its thing
+      const rowNode = computedProps.getDOMNodeForRowIndex(
+        computedProps.computedActiveIndex
+      );
+
+      if (
+        document.activeElement &&
+        rowNode &&
+        contains(rowNode as any, document.activeElement)
+      ) {
+        return false;
+      }
+
+      const nextIndex = computedProps.computedActiveIndex + dir;
+      const validNextIndex = nextIndex >= 0 && nextIndex < computedProps.count;
+
+      if (validNextIndex) {
+        computedProps.incrementActiveIndex(dir);
+        return true; // prevent normal tab navigation as we're doing row navigation
+      }
+    }
   }
 
   return false;

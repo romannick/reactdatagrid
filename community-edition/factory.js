@@ -540,6 +540,16 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             const vl = getVirtualList();
             return vl.getRows();
         };
+        const getDOMNodeForRowIndex = (index) => {
+            const rows = getRows();
+            const row = rows.find((row) => row.index === index);
+            const rowInstance = row.getInstance();
+            return rowInstance.getDOMNode
+                ? rowInstance.getDOMNode()
+                : rowInstance.domRef
+                    ? rowInstance.domRef.current
+                    : null;
+        };
         const getHeader = () => {
             const body = bodyRef.current;
             const columnLayout = body && body.getColumnLayout();
@@ -826,6 +836,7 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
             getItemIdAt,
             getRows,
             focus,
+            getDOMNodeForRowIndex,
             blur,
             computedShowHeaderBorderRight: columnInfo.totalComputedWidth < viewportAvailableWidth ||
                 (props.nativeScroll && getScrollbarWidth() && scrollbars.vertical),
@@ -1129,6 +1140,7 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
         defaultShowHoverRows: true,
         defaultShowZebraRows: true,
         defaultShowCellBorders: true,
+        allowRowTabNavigation: false,
         cellSelectionByIndex: false,
         columnResizeHandleWidth: isMobile ? 15 : 5,
         columnResizeProxyWidth: 5,
