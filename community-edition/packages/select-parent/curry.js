@@ -10,7 +10,7 @@ function curry(fn, n) {
         n = fn.length;
     }
     function getCurryClosure(prevArgs) {
-        function curryClosure() {
+        function curryClosure(..._rest) {
             var len = arguments.length;
             var args = [].concat(prevArgs);
             if (len) {

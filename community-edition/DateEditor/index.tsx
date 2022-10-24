@@ -83,16 +83,22 @@ class DateEditor extends React.Component<DateEditorProps, DateEditorState> {
     const { cell } = this.props;
 
     const cellNode =
-      cell && cell.getDOMNode() ? cell.getDOMNode() : cell.domRef.current;
-    const gridNode = selectParent('.inovua-react-virtual-list', cellNode);
+      cell && cell.getDOMNode()
+        ? cell.getDOMNode()
+        : cell && cell.domRef
+        ? cell.domRef.current
+        : null;
+    if (cellNode) {
+      const gridNode = selectParent('.inovua-react-virtual-list', cellNode);
 
-    const gridRect = gridNode.getBoundingClientRect();
-    const cellRect = cellNode.getBoundingClientRect();
+      const gridRect = gridNode.getBoundingClientRect();
+      const cellRect = cellNode.getBoundingClientRect();
 
-    if (cellRect.top > gridRect.top + 350 /* TODO remove hardcoded value */) {
-      this.setState({
-        position: 'top',
-      });
+      if (cellRect.top > gridRect.top + 350 /* TODO remove hardcoded value */) {
+        this.setState({
+          position: 'top',
+        });
+      }
     }
   }
 

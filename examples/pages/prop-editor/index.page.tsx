@@ -58,13 +58,13 @@ const defaultColumns = [
     dateFormat: 'DD.MM.YYYY',
     renderEditor: (editorProps: any) => {
       const { cellProps } = editorProps;
-      // const dataType = editorProps.cellProps.data.type;
+
       if (cellProps.data.id === 1) {
         return <BoolEditor key="boolean_editor" />;
       } else if (cellProps.data.id === 2) {
         return <SelectEditor key="select_editor" {...editorProps} />;
       } else if (cellProps.data.id === 3) {
-        return <DateEditor key="date_editor" />;
+        return <DateEditor key="date_editor" {...editorProps} />;
       }
     },
     editorProps: {
@@ -99,13 +99,21 @@ const columnsData = [
   { id: 3, type: 30, value: '21.09.2022', field: 'chemestry' },
 ];
 
+const portalStyle = {
+  position: 'absolute',
+  zIndex: 1,
+};
+
 export default function App() {
   return (
-    <ReactDataGrid
-      columns={defaultColumns}
-      dataSource={columnsData}
-      idProperty="id"
-      editable={true}
-    />
+    <div>
+      <ReactDataGrid
+        columns={defaultColumns}
+        dataSource={columnsData}
+        idProperty="id"
+        editable={true}
+        pagination
+      />
+    </div>
   );
 }

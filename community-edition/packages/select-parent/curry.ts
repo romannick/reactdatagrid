@@ -13,7 +13,7 @@ function curry(fn: any, n?: number) {
   }
 
   function getCurryClosure(prevArgs: any) {
-    function curryClosure(this: any) {
+    function curryClosure(this: any, ..._rest: any[]) {
       var len = arguments.length;
       var args: any = [].concat(prevArgs);
 
