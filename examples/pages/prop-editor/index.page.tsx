@@ -99,21 +99,14 @@ const columnsData = [
   { id: 3, type: 30, value: '21.09.2022', field: 'chemestry' },
 ];
 
-const portalStyle = {
-  position: 'absolute',
-  zIndex: 1,
-};
-
 export default function App() {
   return (
-    <div>
-      <ReactDataGrid
-        columns={defaultColumns}
-        dataSource={columnsData}
-        idProperty="id"
-        editable={true}
-        pagination
-      />
-    </div>
+    <ReactDataGrid
+      columns={defaultColumns}
+      dataSource={columnsData}
+      idProperty="id"
+      editable={true}
+      pagination
+    />
   );
 }
