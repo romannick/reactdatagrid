@@ -106,7 +106,6 @@ export default function App() {
       dataSource={columnsData}
       idProperty="id"
       editable={true}
-      pagination
     />
   );
 }
