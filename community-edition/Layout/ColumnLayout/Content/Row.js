@@ -372,7 +372,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
         const props = propsRef.current;
         const initialColumns = props.columns;
         let columns = initialColumns;
-        const { hasLockedStart, data, onGroupToggle, computedPivot, rowHeight, remoteRowIndex, initialRowHeight, lastLockedStartIndex, lastLockedEndIndex, lastUnlockedIndex, minRowHeight, realIndex, showHorizontalCellBorders, showVerticalCellBorders, empty, treeColumn, groupColumn, totalDataCount, depth, dataSourceArray, computedGroupBy, groupProps, summaryProps, indexInGroup, firstUnlockedIndex, firstLockedEndIndex, selectAll, deselectAll, columnUserSelect, multiSelect, selection, setRowSelected, computedRowExpandEnabled, rtl, last: lastRow, computedCellSelection, lastNonEmpty, maxVisibleRows, onCellClick, editStartEvent, naturalRowHeight, renderNodeTool, computedTreeEnabled, expanded: rowExpanded, expandGroupTitle, expandColumn: expandColumnFn, onCellSelectionDraggerMouseDown, onCellMouseDown, onCellEnter, computedCellMultiSelectionEnabled, getCellSelectionKey, lastCellInRange, computedRowspans, renderIndex, nativeScroll, onDragRowMouseDown, theme, onContextMenu, setActiveIndex, renderTreeCollapseTool, renderTreeExpandTool, renderGroupCollapseTool, renderGroupExpandTool, renderTreeLoadingTool, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, computedEnableColumnHover, columnHoverClassName, enableColumnAutosize, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, disabledRow, } = props;
+        const { hasLockedStart, data, onGroupToggle, computedPivot, rowHeight, remoteRowIndex, initialRowHeight, lastLockedStartIndex, lastLockedEndIndex, lastUnlockedIndex, minRowHeight, realIndex, showHorizontalCellBorders, showVerticalCellBorders, empty, treeColumn, groupColumn, totalDataCount, depth, dataSourceArray, computedGroupBy, groupProps, summaryProps, indexInGroup, firstUnlockedIndex, firstLockedEndIndex, selectAll, deselectAll, columnUserSelect, multiSelect, selection, setRowSelected, computedRowExpandEnabled, rtl, last: lastRow, computedCellSelection, lastNonEmpty, maxVisibleRows, onCellClick, editStartEvent, naturalRowHeight, renderNodeTool, computedTreeEnabled, expanded: rowExpanded, expandGroupTitle, expandColumn: expandColumnFn, onCellSelectionDraggerMouseDown, onCellMouseDown, onCellEnter, computedCellMultiSelectionEnabled, getCellSelectionKey, lastCellInRange, computedRowspans, renderIndex, nativeScroll, onDragRowMouseDown, theme, onContextMenu, setActiveIndex, renderTreeCollapseTool, renderTreeExpandTool, renderGroupCollapseTool, renderGroupExpandTool, renderTreeLoadingTool, onColumnMouseEnter, onColumnMouseLeave, columnIndexHovered, computedEnableColumnHover, columnHoverClassName, enableColumnAutosize, renderRowDetailsExpandIcon, renderRowDetailsCollapsedIcon, disabledRow, onCellDoubleClick, } = props;
         const dataSourceChange = !shallowequal(lastDataSource, props.dataSourceArray);
         const columnsChange = !shallowequal(lastColumns, props.columns);
         const expandColumnId = expandColumnFn
@@ -528,6 +528,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
                 disabledRow,
                 dataSourceChange,
                 columnsChange,
+                onDoubleClick: onCellDoubleClick,
             };
             if (computedCellSelection && getCellSelectionKey) {
                 cellProps.cellSelected =
@@ -1126,6 +1127,11 @@ const DataGridRow = React.forwardRef((props, ref) => {
         props.expandOnMouseDown,
         props.onClick,
     ]);
+    const onDoubleClick = useCallback((event) => {
+        if (props.onRowDoubleClick) {
+            props.onRowDoubleClick(event, props);
+        }
+    }, [props.onRowDoubleClick]);
     const onMouseDown = useCallback((event) => {
         if (props.onMouseDown) {
             props.onMouseDown(event, props);
@@ -1251,6 +1257,7 @@ const DataGridRow = React.forwardRef((props, ref) => {
         // passedProps should not overwrite the following methods
         // onEvent prop will be called also
         onClick: !disabledRow ? onClick : null,
+        onDoubleClick: !disabledRow ? onDoubleClick : null,
         // onMouseDown: onMouseDown,
         onContextMenu: !disabledRow ? onContextMenu : null,
     };
@@ -1446,6 +1453,8 @@ DataGridRow.propTypes = {
     onArrowDown: PropTypes.func,
     onArrowUp: PropTypes.func,
     onCellClick: PropTypes.func,
+    onCellDoubleClick: PropTypes.func,
+    onRowDoubleClick: PropTypes.func,
     onCellEnter: PropTypes.func,
     onCellMouseDown: PropTypes.func,
     onCellSelectionDraggerMouseDown: PropTypes.func,

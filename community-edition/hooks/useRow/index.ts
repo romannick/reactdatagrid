@@ -31,6 +31,7 @@ export default (
   computedOnFocus: (event: FocusEvent) => void;
   computedOnBlur: (event: FocusEvent) => void;
   computedOnRowClick: (event: MouseEvent, rowProps: TypeRowProps) => void;
+  computedRowDoubleClick: (event: MouseEvent, rowProps: TypeRowProps) => void;
   computedOnRowMouseDown: (event: MouseEvent, rowProps: TypeRowProps) => void;
   computedOnCellMouseDown: (
     event: MouseEvent,
@@ -38,6 +39,10 @@ export default (
   ) => void;
   onCellClickAction: (
     event: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean },
+    cellProps: TypeCellProps
+  ) => void;
+  computedCellDoubleClick: (
+    event: MouseEvent,
     cellProps: TypeCellProps
   ) => void;
   selectionIndexRef: MutableRefObject<number | null>;
@@ -481,6 +486,34 @@ export default (
     []
   );
 
+  const computedRowDoubleClick = useCallback(
+    (event: MouseEvent, rowProps: TypeRowProps) => {
+      const { current: computedProps } = computedPropsRef;
+      if (!computedProps) {
+        return;
+      }
+
+      if (computedProps.onRowDoubleClick) {
+        computedProps.onRowDoubleClick(event, rowProps);
+      }
+    },
+    []
+  );
+
+  const computedCellDoubleClick = useCallback(
+    (event: MouseEvent, cellProps: TypeCellProps) => {
+      const { current: computedProps } = computedPropsRef;
+      if (!computedProps) {
+        return;
+      }
+
+      if (computedProps.onCellDoubleClick) {
+        computedProps.onCellDoubleClick(event, cellProps);
+      }
+    },
+    []
+  );
+
   const onCellClickAction = useCallback(
     (
       event: { shiftKey?: boolean; metaKey?: boolean; ctrlKey?: boolean },
@@ -655,10 +688,12 @@ export default (
     selectionIndexRef,
     shiftKeyIndexRef,
     onCellClickAction,
+    computedCellDoubleClick,
     computedOnKeyDown,
     computedOnFocus,
     computedOnBlur,
     computedOnRowClick,
+    computedRowDoubleClick,
     computedOnRowMouseDown,
     computedOnCellMouseDown,
     isGroup,

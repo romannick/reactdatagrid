@@ -630,6 +630,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       renderRowDetailsExpandIcon,
       renderRowDetailsCollapsedIcon,
       disabledRow,
+      onCellDoubleClick,
     } = props;
 
     const dataSourceChange = !shallowequal(
@@ -823,6 +824,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
         disabledRow,
         dataSourceChange,
         columnsChange,
+        onDoubleClick: onCellDoubleClick,
       };
 
       if (computedCellSelection && getCellSelectionKey) {
@@ -1660,6 +1662,15 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     ]
   );
 
+  const onDoubleClick = useCallback(
+    (event: MouseEvent) => {
+      if (props.onRowDoubleClick) {
+        props.onRowDoubleClick(event, props);
+      }
+    },
+    [props.onRowDoubleClick]
+  );
+
   const onMouseDown = useCallback(
     (event: MouseEvent) => {
       if (props.onMouseDown) {
@@ -1884,6 +1895,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     // passedProps should not overwrite the following methods
     // onEvent prop will be called also
     onClick: !disabledRow ? onClick : null,
+    onDoubleClick: !disabledRow ? onDoubleClick : null,
     // onMouseDown: onMouseDown,
     onContextMenu: !disabledRow ? onContextMenu : null,
   };
@@ -2171,6 +2183,8 @@ DataGridRow.propTypes = {
   onArrowDown: PropTypes.func,
   onArrowUp: PropTypes.func,
   onCellClick: PropTypes.func,
+  onCellDoubleClick: PropTypes.func,
+  onRowDoubleClick: PropTypes.func,
   onCellEnter: PropTypes.func,
   onCellMouseDown: PropTypes.func,
   onCellSelectionDraggerMouseDown: PropTypes.func,

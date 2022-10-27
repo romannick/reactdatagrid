@@ -7,10 +7,10 @@
 
 import { TypeComputedColumn } from '../../../types/TypeColumn';
 import { CellProps } from '../Cell/CellProps';
-import { CSSProperties, ReactNode, RefObject } from 'react';
+import { CSSProperties } from 'react';
 import Renderable from '../../../types/TypeRenderable';
 import { TypeDataGridProps } from '../../../types/TypeDataGridProps';
-import { TypeGroupTool } from '../../../types';
+import { TypeCellProps, TypeGroupTool, TypeRowProps } from '../../../types';
 
 type func = (...args: any[]) => any;
 
@@ -44,7 +44,7 @@ export type RowProps = {
   focusedRow?: boolean;
   rowFocusClassName?: string;
 
-  rowSelected: boolean;
+  rowSelected?: boolean;
   availableWidth: number;
   computedGroupBy?: any[];
   expandGroupTitle?: boolean;
@@ -76,7 +76,7 @@ export type RowProps = {
   summaryProps?: any;
   hasLockedEnd?: boolean;
   hasLockedStart?: boolean;
-  indexInGroup?: number;
+  indexInGroup?: number | null;
   last?: boolean;
   lastCellInRange?: any;
   lastNonEmpty?: boolean;
@@ -85,7 +85,7 @@ export type RowProps = {
 
   maxWidth?: number;
   id?: string | number;
-  data?: any;
+  data: any;
   className?: string;
   maxRowHeight?: number;
   minRowHeight?: number;
@@ -97,6 +97,8 @@ export type RowProps = {
   onArrowDown?: func;
   onArrowUp?: func;
   onCellClick?: func;
+  onCellDoubleClick?: (event: MouseEvent, cellProps: TypeCellProps) => void;
+  onRowDoubleClick?: (event: MouseEvent, rowProps: TypeRowProps) => void;
   onCellEnter?: func;
   onCellMouseDown?: func;
   onCellSelectionDraggerMouseDown?: func;
@@ -112,7 +114,7 @@ export type RowProps = {
   defaultRowHeight?: number;
   rowIndex: number;
   remoteRowIndex?: number;
-  rowIndexInGroup: boolean;
+  rowIndexInGroup?: boolean;
   rowStyle?: any | func;
   rowClassName?: string | func;
   scrollLeft?: number;

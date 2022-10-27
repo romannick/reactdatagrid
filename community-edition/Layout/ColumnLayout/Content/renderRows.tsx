@@ -9,6 +9,7 @@ import React from 'react';
 import Row from './Row';
 
 import getRowSpans from './getRowSpans';
+import { RowProps } from './RowProps';
 
 const emptyObject = Object.freeze ? Object.freeze({}) : {};
 
@@ -75,8 +76,6 @@ const renderRows = (
     // should have the following props:
     // index - the index of the column group
     // count - how many column groups there are
-    columnGroupCount,
-    columnGroupIndex,
     columnUserSelect,
     selectAll,
     deselectAll,
@@ -104,9 +103,10 @@ const renderRows = (
     onRowMouseEnter,
     onRowMouseLeave,
     computedOnRowClick,
+    computedRowDoubleClick,
     onCellClick,
+    computedCellDoubleClick,
     onCellSelectionDraggerMouseDown,
-    onCellMouseDown,
     onCellEnter,
     onColumnMouseEnter,
     onColumnMouseLeave,
@@ -133,7 +133,6 @@ const renderRows = (
     renderGroupCollapseTool,
     renderGroupExpandTool,
     renderTreeLoadingTool,
-    isRowExpanded,
     rowExpandHeight,
     isRowExpandedById,
     computedRenderRowDetails,
@@ -363,9 +362,11 @@ const renderRows = (
       onMouseLeave: !empty ? onRowMouseLeave : null,
       onClick: !empty ? computedOnRowClick : null,
       onMouseDown: !empty ? computedOnRowMouseDown : null,
+      onRowDoubleClick: !empty ? computedRowDoubleClick : null,
       scrollToColumn,
       scrollToIndexIfNeeded,
       onCellClick,
+      onCellDoubleClick: computedCellDoubleClick,
       onCellSelectionDraggerMouseDown,
       onCellMouseDown: computedOnCellMouseDown,
       onColumnMouseEnter,
@@ -401,7 +402,7 @@ const renderRows = (
       disabledRow: disabledRows ? disabledRows[realIndex] : null,
       focusedRow,
       rowFocusClassName,
-    };
+    } as RowProps;
 
     if (rowProps.rowIndex === editRowIndex) {
       rowProps.editing = true;

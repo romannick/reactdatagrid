@@ -493,6 +493,7 @@ type TypeDataGridPropsNoI18n = {
   onActiveIndexChange?: (index: number) => void;
   onKeyDown?: (event: KeyboardEvent) => void;
   onRowClick?: (rowProps: TypeRowProps, event: MouseEvent) => void;
+  onRowDoubleClick?: (event: MouseEvent, rowProps: TypeRowProps) => void;
   onFocus?: (event: FocusEvent) => void;
   onBlur?: (event: FocusEvent) => void;
   selected?: TypeRowSelection;
@@ -741,6 +742,7 @@ type TypeDataGridPropsNoI18n = {
   onPasteSelectedRowsChange?: (rows: any[]) => void;
   pageSizes?: number[];
   onCellClick?: (event: MouseEvent, cellProps: TypeCellProps) => void;
+  onCellDoubleClick?: (event: MouseEvent, cellProps: TypeCellProps) => void;
   enableTreeRowReorder?: boolean;
   enableTreeRowReorderNestingChange?: boolean;
   enableTreeRowReorderParentChange?: boolean;
@@ -796,6 +798,11 @@ export type TypePivotUniqueValuesDescriptor = {
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ColumnLayout?: any;
   getDOMNodeForRowIndex: (index: number) => ReactNode | null;
+  computedCellDoubleClick?: (
+    event: MouseEvent,
+    cellProps: TypeCellProps
+  ) => void;
+  computedRowDoubleClick?: (event: MouseEvent, rowProps: TypeRowProps) => void;
   disabledRows?: { [key: string]: boolean } | null;
   copySpreadsheetCompatibleString?: boolean;
   clipboardSeparator?: string;

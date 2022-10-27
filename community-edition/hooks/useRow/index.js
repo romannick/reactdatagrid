@@ -346,6 +346,24 @@ export default (props, computedProps, computedPropsRef) => {
         }
         queue.commit();
     }, []);
+    const computedRowDoubleClick = useCallback((event, rowProps) => {
+        const { current: computedProps } = computedPropsRef;
+        if (!computedProps) {
+            return;
+        }
+        if (computedProps.onRowDoubleClick) {
+            computedProps.onRowDoubleClick(event, rowProps);
+        }
+    }, []);
+    const computedCellDoubleClick = useCallback((event, cellProps) => {
+        const { current: computedProps } = computedPropsRef;
+        if (!computedProps) {
+            return;
+        }
+        if (computedProps.onCellDoubleClick) {
+            computedProps.onCellDoubleClick(event, cellProps);
+        }
+    }, []);
     const onCellClickAction = useCallback((event, cellProps) => {
         if (cellProps.groupProps || cellProps.cellSelectable === false) {
             return;
@@ -463,10 +481,12 @@ export default (props, computedProps, computedPropsRef) => {
         selectionIndexRef,
         shiftKeyIndexRef,
         onCellClickAction,
+        computedCellDoubleClick,
         computedOnKeyDown,
         computedOnFocus,
         computedOnBlur,
         computedOnRowClick,
+        computedRowDoubleClick,
         computedOnRowMouseDown,
         computedOnCellMouseDown,
         isGroup,
