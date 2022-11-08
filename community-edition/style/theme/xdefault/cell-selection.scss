@@ -68,12 +68,18 @@
     }
   }
 
-  .InovuaReactDataGrid__cell__selection {
+  .InovuaReactDataGrid__cell__selection:not(.InovuaReactDataGrid__cell__selection__bulk-update-mouse-down) {
     background: rgba($INOVUA_DATAGRID_ACCENT_COLOR, 0.05);
 
     &:after {
       border: 1px solid $INOVUA_DATAGRID_ACCENT_COLOR;
     }
+  }
+
+  .InovuaReactDataGrid__cell--cell-selected:not(.InovuaReactDataGrid__cell--cell-active).InovuaReactDataGrid__cell--cell-bulk-update-mouse-down
+    .InovuaReactDataGrid__cell__selection:after {
+    border-style: dashed;
+    border-color: $INOVUA_DATAGRID_ACCENT_COLOR;
   }
 
   .InovuaReactDataGrid__cell__selection-dragger {

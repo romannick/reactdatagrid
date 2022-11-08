@@ -213,7 +213,7 @@ export default (props, computedProps, computedPropsRef) => {
     if (props.enableKeyboardNavigation === false) {
         computedHasRowNavigation = false;
     }
-    const { computedCellSelection, setCellSelection, cellSelectionEnabled: computedCellSelectionEnabled, cellMultiSelectionEnabled: computedCellMultiSelectionEnabled, cellNavigationEnabled: computedCellNavigationEnabled, computedActiveCell, incrementActiveCell, getCellSelectionIdKey, getCellSelectionBetween, toggleActiveCellSelection, onCellEnter, setActiveCell, getCellSelectionKey, cellDragStartRowIndex, setCellDragStartRowIndex, onCellSelectionDraggerMouseDown, } = computedProps.useCellSelection(props, {
+    const { computedCellSelection, setCellSelection, cellSelectionEnabled: computedCellSelectionEnabled, cellMultiSelectionEnabled: computedCellMultiSelectionEnabled, cellNavigationEnabled: computedCellNavigationEnabled, computedActiveCell, incrementActiveCell, getCellSelectionIdKey, getCellSelectionBetween, toggleActiveCellSelection, onCellEnter, setActiveCell, getCellSelectionKey, cellDragStartRowIndex, setCellDragStartRowIndex, onCellSelectionDraggerMouseDown, computedCellBulkUpdateMouseDown, bulkUpdateMouseDown, computedCellBulkUpdateMouseUp, } = computedProps.useCellSelection(props, {
         rowSelectionEnabled,
         listenOnCellEnter: computedProps.listenOnCellEnter,
         hasRowNavigation: computedHasRowNavigation,
@@ -454,5 +454,8 @@ export default (props, computedProps, computedPropsRef) => {
         getCellSelectionIdKey,
         setActiveCell,
         getCellSelectionKey,
+        computedCellBulkUpdateMouseDown,
+        computedCellBulkUpdateMouseUp,
+        bulkUpdateMouseDown,
     };
 };

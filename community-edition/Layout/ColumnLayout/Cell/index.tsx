@@ -408,6 +408,7 @@ function InovuaDataGridCell(props: CellProps) {
       columnIndex,
       columnIndexHovered,
       columnHoverClassName,
+      bulkUpdateMouseDown: bulkUpdate,
     } = thisProps;
 
     let { userSelect, headerUserSelect } = thisProps;
@@ -470,6 +471,9 @@ function InovuaDataGridCell(props: CellProps) {
       inEdit && `${baseClassName}--in-edit`,
       cellSelected && `${baseClassName}--cell-selected`,
       cellActive && `${baseClassName}--cell-active`,
+      bulkUpdate &&
+        cellSelected &&
+        `${baseClassName}--cell-bulk-update-mouse-down`,
       thisProps.textAlign &&
         (isHeaderCell ? !thisProps.headerAlign : true) &&
         `${baseClassName}--align-${thisProps.textAlign}`,
@@ -928,6 +932,7 @@ function InovuaDataGridCell(props: CellProps) {
         inShowTransition,
         cellSelected,
         cellActive,
+        bulkUpdateMouseDown: bulkUpdate,
       } = thisProps;
 
       if (!cellSelected && !cellActive) {
@@ -947,12 +952,14 @@ function InovuaDataGridCell(props: CellProps) {
           typeof duration == 'number' ? `${duration}ms` : duration;
       }
 
+      const className = join(
+        'InovuaReactDataGrid__cell__selection',
+        bulkUpdate &&
+          'InovuaReactDataGrid__cell__selection__bulk-update-mouse-down'
+      );
+
       return (
-        <div
-          key="selectionBox"
-          style={style}
-          className="InovuaReactDataGrid__cell__selection"
-        >
+        <div key="selectionBox" style={style} className={className}>
           {props.lastInRange && props.computedCellMultiSelectionEnabled && (
             <div
               className={`InovuaReactDataGrid__cell__selection-dragger InovuaReactDataGrid__cell__selection-dragger--direction-${
@@ -1090,8 +1097,12 @@ function InovuaDataGridCell(props: CellProps) {
       if (props.onCellSelectionDraggerMouseDown) {
         props.onCellSelectionDraggerMouseDown(event, getProps());
       }
+
+      if (props.onCellBulkUpdateMouseDown) {
+        props.onCellBulkUpdateMouseDown(event, getProps());
+      }
     },
-    [props.onCellSelectionDraggerMouseDown]
+    [props.onCellSelectionDraggerMouseDown, props.onCellBulkUpdateMouseDown]
   );
 
   const prepareHeaderCellProps = useCallback(

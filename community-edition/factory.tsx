@@ -1712,6 +1712,7 @@ const GridFactory = (
       domProps.tabIndex = 0;
     },
 
+    enableCellBulkUpdate: false,
     enableKeyboardNavigation: true,
     scrollTopOnFilter: true,
     scrollTopOnSort: true,

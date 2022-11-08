@@ -23,6 +23,7 @@ import {
   TypeBatchUpdateQueue,
   TypeCellProps,
   TypeGetColumnByParam,
+  CellProps,
 } from '../../types';
 
 import useProperty from '../useProperty';
@@ -318,6 +319,15 @@ export default (
     col: TypeGetColumnByParam
   ) => string | number;
   setActiveCell: (activeCell: [number, number] | null) => void;
+  computedCellBulkUpdateMouseDown?: (
+    event: MouseEvent,
+    cellProps: CellProps
+  ) => void;
+  computedCellBulkUpdateMouseUp?: (
+    event: MouseEvent,
+    cellProps: CellProps
+  ) => void;
+  bulkUpdateMouseDown: boolean;
 } => {
   const {
     selected: computedSelected,
@@ -482,6 +492,9 @@ export default (
     cellDragStartRowIndex,
     setCellDragStartRowIndex,
     onCellSelectionDraggerMouseDown,
+    computedCellBulkUpdateMouseDown,
+    bulkUpdateMouseDown,
+    computedCellBulkUpdateMouseUp,
   } = computedProps.useCellSelection(
     props,
     {
@@ -717,7 +730,7 @@ export default (
         let unselectedMap =
           selectedMap === true ? computedProps.computedUnselected || {} : null;
 
-        let clone: { [key: string]: any } = selectedMap as {
+        let clone: { [key: string]: any } | any = selectedMap as {
           [key: string]: any;
         };
 
@@ -817,5 +830,8 @@ export default (
     getCellSelectionIdKey,
     setActiveCell,
     getCellSelectionKey,
+    computedCellBulkUpdateMouseDown,
+    computedCellBulkUpdateMouseUp,
+    bulkUpdateMouseDown,
   };
 };

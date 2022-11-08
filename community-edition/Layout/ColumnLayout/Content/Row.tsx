@@ -631,6 +631,9 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
       renderRowDetailsCollapsedIcon,
       disabledRow,
       onCellDoubleClick,
+      onCellBulkUpdateMouseDown,
+      onCellBulkUpdateMouseUp,
+      bulkUpdateMouseDown,
     } = props;
 
     const dataSourceChange = !shallowequal(
@@ -825,6 +828,9 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
         dataSourceChange,
         columnsChange,
         onDoubleClick: onCellDoubleClick,
+        onCellBulkUpdateMouseDown,
+        onCellBulkUpdateMouseUp,
+        bulkUpdateMouseDown,
       };
 
       if (computedCellSelection && getCellSelectionKey) {
@@ -1680,6 +1686,12 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     [props.onMouseDown]
   );
 
+  const onMouseUp = useCallback((event: MouseEvent) => {
+    if (props.onMouseUp) {
+      props.onMouseUp(event);
+    }
+  }, []);
+
   useImperativeHandle(ref, () => {
     return {
       onCellUnmount,
@@ -1898,6 +1910,7 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
     onDoubleClick: !disabledRow ? onDoubleClick : null,
     // onMouseDown: onMouseDown,
     onContextMenu: !disabledRow ? onContextMenu : null,
+    onMouseUp: !disabledRow ? onMouseUp : null,
   };
 
   rowProps.children = [
@@ -2321,6 +2334,9 @@ DataGridRow.propTypes = {
   onRowKeyDown: PropTypes.func,
   focusedRow: PropTypes.bool,
   rowFocusClassName: PropTypes.string,
+  onCellBulkUpdateMouseDown: PropTypes.func,
+  onCellBulkUpdateMouseUp: PropTypes.func,
+  bulkUpdateMouseDown: PropTypes.bool,
 } as any;
 
 export default React.memo(

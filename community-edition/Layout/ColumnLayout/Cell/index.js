@@ -257,7 +257,7 @@ function InovuaDataGridCell(props) {
         return style;
     };
     const prepareClassName = (thisProps) => {
-        const { groupCell: isGroupCell, groupTitleCell, groupExpandCell, headerCell: isHeaderCell, headerCellDefaultClassName, cellDefaultClassName, computedGroupBy, depth, computedVisibleIndex, headerCell, headerEllipsis, groupProps, hidden, showBorderRight, showBorderTop, showBorderBottom, showBorderLeft, firstInSection, lastInSection, noBackground, computedLocked, computedWidth, inTransition, rowSelected, computedRowspan, cellSelected, cellActive, groupSpacerColumn, computedPivot, computedResizable, groupColumnVisible, computedFilterable, rtl, inEdit, columnIndex, columnIndexHovered, columnHoverClassName, } = thisProps;
+        const { groupCell: isGroupCell, groupTitleCell, groupExpandCell, headerCell: isHeaderCell, headerCellDefaultClassName, cellDefaultClassName, computedGroupBy, depth, computedVisibleIndex, headerCell, headerEllipsis, groupProps, hidden, showBorderRight, showBorderTop, showBorderBottom, showBorderLeft, firstInSection, lastInSection, noBackground, computedLocked, computedWidth, inTransition, rowSelected, computedRowspan, cellSelected, cellActive, groupSpacerColumn, computedPivot, computedResizable, groupColumnVisible, computedFilterable, rtl, inEdit, columnIndex, columnIndexHovered, columnHoverClassName, bulkUpdateMouseDown: bulkUpdate, } = thisProps;
         let { userSelect, headerUserSelect } = thisProps;
         if (typeof userSelect === 'boolean') {
             userSelect = userSelect ? 'text' : 'none';
@@ -280,7 +280,9 @@ function InovuaDataGridCell(props) {
             : thisProps.className;
         let className = join(propsClassName, baseClassName, commonClassName, !isHeaderCell && thisProps.cellClassName, (nested || hidden) && `${baseClassName}--no-padding`, hidden && `${baseClassName}--hidden`, `${baseClassName}--direction-${rtl ? 'rtl' : 'ltr'}`, computedRowspan > 1 && `${baseClassName}--rowspan`, inTransition && `${baseClassName}--transition`, inTransition && computedWidth && `${baseClassName}--showing`, inTransition && !computedWidth && `${baseClassName}--hiding`, computedWidth === 0 && `${baseClassName}--no-size`, nested && `${baseClassName}--stretch`, (isHeaderCell && headerUserSelect == null) || !isHeaderCell
             ? userSelect && `${baseClassName}--user-select-${userSelect}`
-            : null, groupExpandCell && `${baseClassName}--group-expand-cell`, groupTitleCell && `${baseClassName}--group-title-cell`, rowSelected && `${baseClassName}--selected`, groupProps && `${baseClassName}--group-cell`, computedPivot && `${baseClassName}--pivot-enabled`, groupSpacerColumn && `${baseClassName}--group-column-cell`, inEdit && `${baseClassName}--in-edit`, cellSelected && `${baseClassName}--cell-selected`, cellActive && `${baseClassName}--cell-active`, thisProps.textAlign &&
+            : null, groupExpandCell && `${baseClassName}--group-expand-cell`, groupTitleCell && `${baseClassName}--group-title-cell`, rowSelected && `${baseClassName}--selected`, groupProps && `${baseClassName}--group-cell`, computedPivot && `${baseClassName}--pivot-enabled`, groupSpacerColumn && `${baseClassName}--group-column-cell`, inEdit && `${baseClassName}--in-edit`, cellSelected && `${baseClassName}--cell-selected`, cellActive && `${baseClassName}--cell-active`, bulkUpdate &&
+            cellSelected &&
+            `${baseClassName}--cell-bulk-update-mouse-down`, thisProps.textAlign &&
             (isHeaderCell ? !thisProps.headerAlign : true) &&
             `${baseClassName}--align-${thisProps.textAlign}`, thisProps.textVerticalAlign &&
             (isHeaderCell ? !thisProps.headerVerticalAlign : true) &&
@@ -578,7 +580,7 @@ function InovuaDataGridCell(props) {
     }, [props.onEditValueChange, props.onEditValueChangeForRow]);
     const renderSelectionBox = useCallback((_props) => {
         const thisProps = getProps();
-        const { inTransition, inShowTransition, cellSelected, cellActive, } = thisProps;
+        const { inTransition, inShowTransition, cellSelected, cellActive, bulkUpdateMouseDown: bulkUpdate, } = thisProps;
         if (!cellSelected && !cellActive) {
             return null;
         }
@@ -591,7 +593,9 @@ function InovuaDataGridCell(props) {
             style.transitionDuration =
                 typeof duration == 'number' ? `${duration}ms` : duration;
         }
-        return (React.createElement("div", { key: "selectionBox", style: style, className: "InovuaReactDataGrid__cell__selection" }, props.lastInRange && props.computedCellMultiSelectionEnabled && (React.createElement("div", { className: `InovuaReactDataGrid__cell__selection-dragger InovuaReactDataGrid__cell__selection-dragger--direction-${props.rtl ? 'rtl' : 'ltr'}`, onMouseDown: onCellSelectionDraggerMouseDown }))));
+        const className = join('InovuaReactDataGrid__cell__selection', bulkUpdate &&
+            'InovuaReactDataGrid__cell__selection__bulk-update-mouse-down');
+        return (React.createElement("div", { key: "selectionBox", style: style, className: className }, props.lastInRange && props.computedCellMultiSelectionEnabled && (React.createElement("div", { className: `InovuaReactDataGrid__cell__selection-dragger InovuaReactDataGrid__cell__selection-dragger--direction-${props.rtl ? 'rtl' : 'ltr'}`, onMouseDown: onCellSelectionDraggerMouseDown }))));
     }, [
         props.computedCellMultiSelectionEnabled,
         props.lastInRange,
@@ -682,7 +686,10 @@ function InovuaDataGridCell(props) {
         if (props.onCellSelectionDraggerMouseDown) {
             props.onCellSelectionDraggerMouseDown(event, getProps());
         }
-    }, [props.onCellSelectionDraggerMouseDown]);
+        if (props.onCellBulkUpdateMouseDown) {
+            props.onCellBulkUpdateMouseDown(event, getProps());
+        }
+    }, [props.onCellSelectionDraggerMouseDown, props.onCellBulkUpdateMouseDown]);
     const prepareHeaderCellProps = useCallback((cellProps) => {
         const thisProps = getProps();
         const { children, computedSortInfo } = cellProps;

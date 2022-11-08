@@ -11,6 +11,7 @@ import {
   TypeCellProps,
   TypeGetColumnByParam,
   TypeCellSelection,
+  CellProps,
 } from '../../types';
 import {
   MutableRefObject,
@@ -27,6 +28,7 @@ import batchUpdate from '@inovua/reactdatagrid-community/utils/batchUpdate';
 import clamp from '@inovua/reactdatagrid-community/utils/clamp';
 import useActiveCell from './useActiveCell';
 import usePrevious from '@inovua/reactdatagrid-community/hooks/usePrevious';
+import useNamedState from '@inovua/reactdatagrid-community/hooks/useNamedState';
 
 const getFirstSelectedCell = (
   cellSelection: [number, number][]
@@ -75,6 +77,12 @@ export const useCellSelection = (
   cellSelectionEnabled: boolean;
   cellMultiSelectionEnabled: boolean;
   cellNavigationEnabled: boolean;
+  computedCellBulkUpdateMouseDown: (
+    event: MouseEvent,
+    cellProps: CellProps
+  ) => void;
+  bulkUpdateMouseDown: boolean;
+  computedCellBulkUpdateMouseUp: (event: MouseEvent) => void;
   onCellSelectionDraggerMouseDown:
     | ((
         event: any,
@@ -101,6 +109,11 @@ export const useCellSelection = (
   const [cellSelection, setCellSelection] = useProperty<TypeCellSelection>(
     props,
     'cellSelection'
+  );
+  const [bulkUpdateMouseDown, setBulkUpdateMouseDown] = useNamedState(
+    false,
+    props.context!,
+    'bulkUpdateMouseDown'
   );
 
   let {
@@ -363,7 +376,7 @@ export const useCellSelection = (
                   ? currentRange
                   : ([currentCell] as [number, number][])
               )
-            : // since in groupBy we are not guaranteed to have continous rows, for how
+            : // since in groupBy we are not guaranteed to have continuos rows, for how
               // we leave the activeCell as the selection topmost cell
               computedProps.computedActiveCell ||
               computedProps.lastSelectedCell;
@@ -398,12 +411,99 @@ export const useCellSelection = (
     return null;
   }, [cellMultiSelectionEnabled]);
 
+  const cellContentRef = useRef<any>(null);
+
+  const computedCellBulkUpdateMouseDown = useCallback(
+    (_event: MouseEvent, _cellProps: CellProps) => {
+      const { current: computedProps } = computedPropsRef;
+      if (!computedProps) {
+        return;
+      }
+
+      if (!computedProps.enableCellBulkUpdate) {
+        return;
+      }
+
+      const { computedActiveCell, data } = computedProps;
+      if (!computedActiveCell) {
+        return;
+      }
+
+      setBulkUpdateMouseDown(true);
+
+      const [activeRow, activeColumn]: any = computedActiveCell;
+      const row = data[activeRow];
+      const column = computedProps.getColumnBy(activeColumn);
+      const columnName = column.name;
+
+      const cellContent = columnName ? row[columnName] : null;
+      cellContentRef.current = cellContent;
+    },
+    []
+  );
+
+  const computedCellBulkUpdateMouseUp = useCallback((_event: MouseEvent) => {
+    setBulkUpdateMouseDown(false);
+
+    const { current: computedProps } = computedPropsRef;
+    if (!computedProps) {
+      return;
+    }
+
+    const cellContent = cellContentRef.current;
+    if (!cellContent) {
+      return;
+    }
+
+    if (!computedProps.enableCellBulkUpdate) {
+      return;
+    }
+
+    const cellSelectionMap = computedProps.computedCellSelection;
+    if (!cellSelectionMap) {
+      return;
+    }
+
+    const dataMap: { [key: string]: object } = {};
+
+    Object.keys(cellSelectionMap).map((key: string) => {
+      const [rowId, columnName] = key.split(',');
+
+      if (!dataMap[rowId]) {
+        dataMap[rowId] = { [columnName]: cellContent };
+      }
+      {
+        dataMap[rowId] = { ...dataMap[rowId], [columnName]: cellContent };
+      }
+    });
+
+    const dataArray = Object.keys(dataMap).map((key: string) => {
+      let index: number = -1;
+      index = computedProps.getItemIndexById(key);
+      if (index === -1) {
+        index = computedProps.getItemIndexById(Number(key));
+      }
+
+      if (index > -1) {
+        const item = computedProps.getItemAt(index);
+        const itemId = computedProps.getItemId(item);
+        return { id: itemId, ...dataMap[key] };
+      }
+    });
+
+    computedProps.setItemsAt(dataArray, { replace: false });
+    cellContentRef.current = null;
+  }, []);
+
   return {
     onCellEnter,
     toggleActiveCellSelection,
     cellDragStartRowIndex,
     setCellDragStartRowIndex,
     onCellSelectionDraggerMouseDown,
+    computedCellBulkUpdateMouseDown,
+    bulkUpdateMouseDown,
+    computedCellBulkUpdateMouseUp,
     // getContinuousSelectedRangeFor,
     getCellSelectionBetween,
     computedActiveCell,

@@ -1131,6 +1131,7 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
         renderScroller: domProps => {
             domProps.tabIndex = 0;
         },
+        enableCellBulkUpdate: false,
         enableKeyboardNavigation: true,
         scrollTopOnFilter: true,
         scrollTopOnSort: true,

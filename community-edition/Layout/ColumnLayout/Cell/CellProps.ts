@@ -125,7 +125,13 @@ export type CellProps = {
   onCellEnter?: func;
   onCellMouseDown?: func;
   preventSortOnClick?: func;
-  onCellSelectionDraggerMouseDown?: func;
+  onCellSelectionDraggerMouseDown?: (
+    event: MouseEvent,
+    cellProps: CellProps
+  ) => void;
+  onCellBulkUpdateMouseDown?: (event: MouseEvent, cellProps: CellProps) => void;
+  onCellBulkUpdateMouseUp?: (event: MouseEvent, cellProps: CellProps) => void;
+  bulkUpdateMouseDown?: boolean;
   onGroupToggle?: func;
   onMount?: func;
   onRender?: func;

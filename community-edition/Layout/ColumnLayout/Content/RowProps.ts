@@ -99,6 +99,9 @@ export type RowProps = {
   onCellClick?: func;
   onCellDoubleClick?: (event: MouseEvent, cellProps: TypeCellProps) => void;
   onRowDoubleClick?: (event: MouseEvent, rowProps: TypeRowProps) => void;
+  onCellBulkUpdateMouseDown?: (event: MouseEvent, cellProps: CellProps) => void;
+  onCellBulkUpdateMouseUp?: (event: MouseEvent, cellProps: CellProps) => void;
+  bulkUpdateMouseDown?: boolean;
   onCellEnter?: func;
   onCellMouseDown?: func;
   onCellSelectionDraggerMouseDown?: func;
@@ -202,6 +205,7 @@ export type RowProps = {
   onMouseEnter?: func;
   onMouseLeave?: func;
   onMouseDown?: func;
+  onMouseUp?: (event: MouseEvent) => void;
   parentGroupDataArray?: any;
   rowDetailsWidth?:
     | 'max-viewport-width'

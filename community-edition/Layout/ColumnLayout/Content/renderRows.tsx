@@ -187,6 +187,9 @@ const renderRows = (
     computedOnRowMouseDown,
     disabledRows,
     rowFocusClassName,
+    computedCellBulkUpdateMouseDown,
+    computedCellBulkUpdateMouseUp,
+    bulkUpdateMouseDown,
   }: any
 ) => {
   const remoteOffset = computedLivePagination ? 0 : computedSkip || 0;
@@ -402,6 +405,9 @@ const renderRows = (
       disabledRow: disabledRows ? disabledRows[realIndex] : null,
       focusedRow,
       rowFocusClassName,
+      onCellBulkUpdateMouseDown: computedCellBulkUpdateMouseDown,
+      onMouseUp: computedCellBulkUpdateMouseUp,
+      bulkUpdateMouseDown,
     } as RowProps;
 
     if (rowProps.rowIndex === editRowIndex) {
