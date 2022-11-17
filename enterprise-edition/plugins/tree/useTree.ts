@@ -6,7 +6,12 @@
  */
 
 import computeTreeData from './computeTreeData';
-import { TypeComputedProps, TypeDataGridProps } from '../../types';
+import editedTreeData from './tree/editedTreeData';
+import {
+  TypeComputedProps,
+  TypeDataGridProps,
+  TypeEditInfo,
+} from '../../types';
 import { MutableRefObject } from 'react';
 import useTreeColumn from './useTreeColumn';
 
@@ -20,5 +25,10 @@ export default (
     useTreeColumn(props, computedProps, computedPropsRef)
   );
 
+  const computedEditedTreeData = (editProps: TypeEditInfo) => {
+    return editedTreeData(editProps, computedPropsRef);
+  };
+
   computedProps.computeTreeData = computeTreeData;
+  computedProps.editedTreeData = computedEditedTreeData;
 };

@@ -803,6 +803,7 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
     event: MouseEvent,
     cellProps: TypeCellProps
   ) => void;
+  editedTreeData?: (editProps: TypeEditInfo) => any[] | null;
   computedRowDoubleClick?: (event: MouseEvent, rowProps: TypeRowProps) => void;
   disabledRows?: { [key: string]: boolean } | null;
   copySpreadsheetCompatibleString?: boolean;
