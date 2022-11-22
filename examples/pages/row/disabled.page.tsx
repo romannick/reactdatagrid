@@ -4,6 +4,7 @@ import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
 import people from '../people';
 import CheckBox from '@inovua/reactdatagrid-community/packages/CheckBox';
 import { TypeComputedProps } from '@inovua/reactdatagrid-community/types';
+import Button from '@inovua/reactdatagrid-community/packages/Button';
 
 const gridStyle = { minHeight: 550 };
 
@@ -22,12 +23,6 @@ const toArray = (
   return Object.keys(keysObject!).map((key: string) => Number(key));
 };
 
-const disabledRows: { [key: string]: boolean } | null = {
-  6: true,
-  7: true,
-  10: true,
-};
-
 const App = () => {
   const [controlledSelection, setControlledSelection] = useState<boolean>(true);
   const [selected, setSelected] = useState<
@@ -35,6 +30,13 @@ const App = () => {
   >({
     2: true,
     4: true,
+  });
+  const [disabledRows, setDisabledRows] = useState<{
+    [key: string]: boolean;
+  } | null>({
+    6: true,
+    7: true,
+    10: true,
   });
 
   const gridRef = useRef<TypeComputedProps | null>(null);
@@ -62,6 +64,20 @@ const App = () => {
         </CheckBox>
       </div>
 
+      <div style={{ marginBottom: 20 }}>
+        <Button
+          onClick={() =>
+            setDisabledRows({
+              1: true,
+              2: true,
+              3: true,
+            })
+          }
+        >
+          Set disabled rows
+        </Button>
+      </div>
+
       <ReactDataGrid
         idProperty="id"
         handle={(ref: RefObject<null>) =>
@@ -75,6 +91,7 @@ const App = () => {
         selected={controlledSelection ? selected : undefined}
         onSelectionChange={controlledSelection ? handleSelection : undefined}
         disabledRows={disabledRows}
+        editable
       />
       <p>Selected rows: {JSON.stringify(toArray(selected, dataMap))}.</p>
     </div>
