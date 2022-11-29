@@ -6,7 +6,7 @@
  */
 import join from '../packages/join';
 const prepareClassName = (computedProps) => {
-    const { visibleColumns, computedShowCellBorders, computedShowZebraRows, theme, rtl, viewportAvailableWidth, totalComputedWidth, computedFocused, computedShowHoverRows, nativeScroll, focusedClassName, computedFilterable, computedShowHeaderBorderRight, virtualizeColumns, className, } = computedProps;
+    const { visibleColumns, computedShowCellBorders, computedShowZebraRows, theme, rtl, viewportAvailableWidth, totalComputedWidth, computedFocused, computedShowHoverRows, nativeScroll, focusedClassName, computedFilterable, computedShowHeaderBorderRight, virtualizeColumns, className, stickyHeader, } = computedProps;
     return join('InovuaReactDataGrid', className, theme && `InovuaReactDataGrid--theme-${theme}`, virtualizeColumns && 'InovuaReactDataGrid--virtualize-columns', nativeScroll && 'InovuaReactDataGrid--native-scroll', visibleColumns.length && 'InovuaReactDataGrid--columns-ready', computedShowZebraRows && 'InovuaReactDataGrid--zebra-rows', computedFilterable && 'InovuaReactDataGrid--filterable', computedFocused && 'InovuaReactDataGrid--focused', computedShowHoverRows && 'InovuaReactDataGrid--show-hover-rows', rtl
         ? 'InovuaReactDataGrid--direction-rtl'
         : 'InovuaReactDataGrid--direction-ltr', computedFocused && focusedClassName, computedShowHeaderBorderRight
@@ -15,6 +15,6 @@ const prepareClassName = (computedProps) => {
         'InovuaReactDataGrid--show-border-right', computedShowCellBorders &&
         (computedShowCellBorders === true
             ? 'InovuaReactDataGrid--cell-borders-horizontal InovuaReactDataGrid--cell-borders-vertical'
-            : `InovuaReactDataGrid--cell-borders-${computedShowCellBorders}`));
+            : `InovuaReactDataGrid--cell-borders-${computedShowCellBorders}`), stickyHeader && 'InovuaReactDataGrid--sticky-header');
 };
 export default prepareClassName;

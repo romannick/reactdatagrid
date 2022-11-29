@@ -25,6 +25,7 @@ import HeaderWrapper from './HeaderWrapper';
 import { getParentGroups } from './Header';
 import getScrollbarWidth from '../../../packages/getScrollbarWidth';
 import { getGlobal } from '../../../getGlobal';
+import join from '@inovua/reactdatagrid-community/packages/join';
 const globalObject = getGlobal();
 const SCROLL_MARGIN = 40;
 let DRAG_INFO = null;
@@ -295,7 +296,9 @@ export default class InovuaDataGridHeaderLayout extends Component {
         }
     }
     render() {
-        return (React.createElement("div", { ref: this.headerDomNode, className: 'InovuaReactDataGrid__header-layout' },
+        const className = join('InovuaReactDataGrid__header-layout', this.props.stickyHeader &&
+            'InovuaReactDataGrid__header-layout__sticky-header');
+        return (React.createElement("div", { ref: this.headerDomNode, className: className },
             this.renderGroupToolbar(),
             this.renderHeaderWrapper(),
             this.renderDragCell(),
@@ -1145,4 +1148,5 @@ InovuaDataGridHeaderLayout.propTypes = {
     getScrollLeftMax: PropTypes.func.isRequired,
     setScrollLeft: PropTypes.func.isRequired,
     renderColumnReorderProxy: PropTypes.func,
+    stickyHeader: PropTypes.bool,
 };

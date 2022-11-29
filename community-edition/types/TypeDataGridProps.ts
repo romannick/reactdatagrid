@@ -796,6 +796,7 @@ export type TypePivotUniqueValuesDescriptor = {
   values: { [key: string]: TypePivotUniqueValuesDescriptor } | null;
 };
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
+  stickyHeader?: boolean;
   ColumnLayout?: any;
   enableCellBulkUpdate?: boolean;
   getDOMNodeForRowIndex: (index: number) => ReactNode | null;

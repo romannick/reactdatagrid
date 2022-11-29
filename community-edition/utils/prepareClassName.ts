@@ -25,6 +25,7 @@ const prepareClassName = (computedProps: TypeComputedProps) => {
     computedShowHeaderBorderRight,
     virtualizeColumns,
     className,
+    stickyHeader,
   } = computedProps;
 
   return join(
@@ -50,7 +51,8 @@ const prepareClassName = (computedProps: TypeComputedProps) => {
     computedShowCellBorders &&
       (computedShowCellBorders === true
         ? 'InovuaReactDataGrid--cell-borders-horizontal InovuaReactDataGrid--cell-borders-vertical'
-        : `InovuaReactDataGrid--cell-borders-${computedShowCellBorders}`)
+        : `InovuaReactDataGrid--cell-borders-${computedShowCellBorders}`),
+    stickyHeader && 'InovuaReactDataGrid--sticky-header'
   );
 };
 
