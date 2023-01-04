@@ -107,7 +107,8 @@ export const validateFilters = (
   const emptyValue = fv.hasOwnProperty('emptyValue')
     ? fv.emptyValue
     : filterTypes[type].emptyValue;
-  const filterOnEmptyValue = currentTypeOperators[operator]?.filterOnEmptyValue;
+
+  const filterOnEmptyValue = currentTypeOperators ? currentTypeOperators[operator]?.filterOnEmptyValue : undefined;
 
   if (active === false) {
     return true;
