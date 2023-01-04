@@ -31,7 +31,7 @@ const computeTreeData = (dataArray, config) => {
     const generateIdFromPath = config.generateIdFromPath;
     const selectedPath = config.selectedPath;
     const destinationPath = config.destinationPath;
-    let value = [];
+    const selectedItem = config.selectedItem;
     let counter = 0;
     const computeData = (data, idSelected, destinationId, result = [], parentNode) => {
         let initialIdSelected = '';
@@ -61,7 +61,6 @@ const computeTreeData = (dataArray, config) => {
             else {
                 const parentNodes = parentNode[nodesName];
                 if (path === initialIdSelected) {
-                    value.push(item);
                     parentNodes.splice(i, 1);
                     counter++;
                 }
@@ -69,7 +68,7 @@ const computeTreeData = (dataArray, config) => {
                     const nodeId = item[idProperty].split(pathSeparator);
                     const idInNodes = nodeId.splice(nodeId.length - 1, 1);
                     const index = parseInt(idInNodes);
-                    parentNodes.splice(index, 0, value[0]);
+                    parentNodes.splice(index, 0, selectedItem);
                     counter++;
                 }
             }
@@ -85,8 +84,12 @@ const computeTreeData = (dataArray, config) => {
     const updatedData = updateTreeDataIds(computedData, config);
     return updatedData;
 };
+const getItemById = (id, data) => {
+    return data.find((item) => item.id === id);
+};
 const updateTreeData = (props, { selectedPath, destinationPath, }) => {
     const originalData = props.originalData || [];
+    const selectedItem = getItemById(selectedPath, props.data);
     const config = {
         idProperty: props.idProperty,
         nodesName: props.nodesProperty,
@@ -95,6 +98,7 @@ const updateTreeData = (props, { selectedPath, destinationPath, }) => {
         generateIdFromPath: props.generateIdFromPath,
         selectedPath,
         destinationPath,
+        selectedItem,
     };
     computeTreeData(originalData, config);
 };

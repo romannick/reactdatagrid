@@ -18,6 +18,7 @@ type TypeConfig = {
   generateIdFromPath: boolean;
   selectedPath: string;
   destinationPath: string;
+  selectedItem: any;
 };
 
 const updateTreeDataIds = (data: any, config: any) => {
@@ -54,8 +55,8 @@ const computeTreeData = (dataArray: any[], config: TypeConfig) => {
   const generateIdFromPath = config.generateIdFromPath;
   const selectedPath = config.selectedPath;
   const destinationPath = config.destinationPath;
+  const selectedItem = config.selectedItem;
 
-  let value: any[] = [];
   let counter = 0;
 
   const computeData = (
@@ -98,7 +99,6 @@ const computeTreeData = (dataArray: any[], config: TypeConfig) => {
         const parentNodes = parentNode[nodesName];
 
         if (path === initialIdSelected) {
-          value.push(item);
           parentNodes.splice(i, 1);
           counter++;
         }
@@ -107,7 +107,7 @@ const computeTreeData = (dataArray: any[], config: TypeConfig) => {
           const nodeId = item[idProperty].split(pathSeparator);
           const idInNodes = nodeId.splice(nodeId.length - 1, 1);
           const index = parseInt(idInNodes);
-          parentNodes.splice(index, 0, value[0]);
+          parentNodes.splice(index, 0, selectedItem);
           counter++;
         }
       }
@@ -128,6 +128,10 @@ const computeTreeData = (dataArray: any[], config: TypeConfig) => {
   return updatedData;
 };
 
+const getItemById = (id: string | number, data: any[]) => {
+  return data.find((item: any) => item.id === id);
+};
+
 const updateTreeData = (
   props: TypeComputedProps,
   {
@@ -140,6 +144,8 @@ const updateTreeData = (
 ) => {
   const originalData = props.originalData || [];
 
+  const selectedItem = getItemById(selectedPath, props.data);
+
   const config: TypeConfig = {
     idProperty: props.idProperty,
     nodesName: props.nodesProperty,
@@ -148,6 +154,7 @@ const updateTreeData = (
     generateIdFromPath: props.generateIdFromPath,
     selectedPath,
     destinationPath,
+    selectedItem,
   };
 
   computeTreeData(originalData, config);
