@@ -158,6 +158,7 @@ export type EnumRowDetailsWidth =
 type TypeGridPublicAPI = any;
 
 type TypeDataGridPropsNoI18n = {
+  copySpreadsheetCompatibleString?: boolean;
   activeCellThrottle?: number;
   activeIndexThrottle?: number;
   allowRowTabNavigation?: boolean;
@@ -783,6 +784,14 @@ type TypeDataGridPropsNoI18n = {
   onRowContextMenu?: (rowProps: TypeRowProps, event: any) => void;
   hideRowFilterContextMenu?: () => void;
   renderGridMenu?: (result: any, computedProps: TypeComputedProps) => void;
+  stickyHeader?: boolean;
+  disabledRows?: { [key: string]: boolean } | null;
+  clipboardSeparator?: string;
+  enableColumnFilterContextMenu?: boolean;
+  rowReorderAutoScroll?: boolean;
+  rowReorderArrowStyle?: CSSProperties;
+  rowReorderAutoScrollSpeed?: number;
+  compoundIdProperty?: boolean;
 };
 type TypeDataGridComputedClashingProps = {
   i18n?: TypeI18n;
@@ -796,7 +805,6 @@ export type TypePivotUniqueValuesDescriptor = {
   values: { [key: string]: TypePivotUniqueValuesDescriptor } | null;
 };
 export type TypeComputedProps = TypeDataGridPropsNoI18n & {
-  stickyHeader?: boolean;
   ColumnLayout?: any;
   enableCellBulkUpdate?: boolean;
   getDOMNodeForRowIndex: (index: number) => ReactNode | null;
@@ -806,18 +814,13 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
   ) => void;
   editedTreeData?: (editProps: TypeEditInfo) => any[] | null;
   computedRowDoubleClick?: (event: MouseEvent, rowProps: TypeRowProps) => void;
-  disabledRows?: { [key: string]: boolean } | null;
-  copySpreadsheetCompatibleString?: boolean;
-  clipboardSeparator?: string;
-  enableColumnFilterContextMenu?: boolean;
+
   filteredRowsCount?: (filteredRows: number) => number;
   dataCountAfterFilter?: number;
   computedLastActiveIndex: number | null;
   doSetLastActiveIndex: (lastActiveIndex: number | null) => void;
   columnContextMenuInstanceProps?: any;
-  rowReorderAutoScroll?: boolean;
-  rowReorderArrowStyle?: CSSProperties;
-  rowReorderAutoScrollSpeed?: number;
+
   notifyColumnFilterVisibleStateChange: FunctionNotifier<boolean>;
   computedPivotUniqueValuesPerColumn: TypePivotUniqueValuesDescriptor;
   computedLicenseValid?: boolean;
@@ -850,9 +853,8 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
 
   data: any[];
   originalData: any[];
-  skip?: number;
+
   computedSkip: number;
-  limit?: number;
   computedLimit: number;
   setSkip?: (skip: number) => void;
   setLimit?: (limit: number) => void;
@@ -1480,7 +1482,6 @@ export type TypeComputedProps = TypeDataGridPropsNoI18n & {
     rowIndex?: number;
     columnId?: string;
   }) => void;
-  compoundIdProperty?: boolean;
 };
 
 export default TypeDataGridProps;
