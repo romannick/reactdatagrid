@@ -102,7 +102,7 @@ const initialFilterValue = [
     name: 'birthDate',
     operator: 'before',
     type: 'date',
-    value: '',
+    value: '2019-01-01',
   },
   { name: 'country', operator: 'startsWith', type: 'string', value: '' },
 ] as TypeFilterValue;
@@ -111,6 +111,7 @@ const App = () => {
   const [filterValue, setFilterValue] = useState<TypeFilterValue>(
     initialFilterValue
   );
+  const [gridRef, setGridRef] = useState<any>(null);
 
   return (
     <div>
@@ -125,9 +126,19 @@ const App = () => {
         Reset filters
       </Button>
 
+      <Button
+        style={{ marginBottom: 20, marginLeft: 16, borderRadius: 4 }}
+        onClick={() => {
+          gridRef?.current?.setColumnFilterValue('birthDate', '2016-01-01');
+        }}
+      >
+        Set date filter
+      </Button>
+
       <ReactDataGrid
         idProperty="id"
         style={gridStyle}
+        handle={setGridRef}
         filterValue={filterValue}
         onFilterValueChange={setFilterValue}
         columns={columns}
