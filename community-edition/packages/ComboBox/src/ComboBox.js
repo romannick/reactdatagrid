@@ -185,7 +185,7 @@ class InovuaComboBox extends Component {
             (!filteredData || filteredData.length === 0) &&
                 !!text &&
                 props.allowCustomTagCreation;
-        return (React.createElement("div", { ...cleanProps(props, InovuaComboBox.propTypes), onClick: this.handleComboClick, onMouseDown: this.handleComboMouseDown, onKeyDown: this.handleComboKeyDown, onFocus: this.handleComboFocus, onBlur: this.handleComboBlur, className: className, style: style, ref: this.addRootRef, onMouseEnter: this.handleMouseEnter, onMouseLeave: this.handleMouseLeave },
+        return (React.createElement("div", { ...cleanProps(props, InovuaComboBox.propTypes), onClick: this.handleComboClick, onMouseDown: this.handleComboMouseDown, onKeyDown: this.handleComboKeyDown, onFocus: this.handleComboFocus, onBlur: this.handleComboBlur, className: className, style: style, ref: this.addRootRef, onMouseEnter: this.handleMouseEnter, onMouseLeave: this.handleMouseLeave, tabIndex: 0 },
             React.createElement(Value, { ...this.getValueProps({ items, groupedItems }), textInput: textInput, toolsSize: state.toolsSize }),
             React.createElement("div", { className: `${props.rootClassName}__tools`, ref: this.refTools },
                 this.renderSpinner(),

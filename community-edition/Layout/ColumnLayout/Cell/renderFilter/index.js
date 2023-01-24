@@ -19,6 +19,17 @@ class GenericFilter extends React.Component {
         this.onSettingsClick = this.onSettingsClick.bind(this);
         this.onSettingsClickListener = null;
         this.ref = (specificFilter) => {
+            const inputRef = props.inputRef ||
+                (props.props.filterEditorProps &&
+                    props.props.filterEditorProps.inputRef);
+            if (inputRef) {
+                if (typeof inputRef === 'function') {
+                    inputRef(specificFilter);
+                }
+                else {
+                    inputRef.current = specificFilter;
+                }
+            }
             this.specificFilter = specificFilter;
         };
         this.state = {
