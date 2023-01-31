@@ -211,7 +211,7 @@ const useClipboard = (_props, computedProps, computedPropsRef) => {
             const parsedKey = key.split(',');
             const id = parsedKey[0];
             const column = parsedKey[1];
-            const index = computedProps.getItemIndexById(Number(id));
+            const index = computedProps.getItemIndexById(id);
             if (index !== undefined && column !== undefined) {
                 const cellValue = data[index][column];
                 rows[index] = Object.assign({}, rows[index], { [column]: cellValue });
