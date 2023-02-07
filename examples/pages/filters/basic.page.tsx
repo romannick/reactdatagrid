@@ -8,7 +8,12 @@ import DateFilter from '@inovua/reactdatagrid-community/DateFilter';
 import moment from 'moment';
 
 import people from '../people';
-import flags from '../flags';
+import flags, { FlagsType } from '../flags';
+import { getGlobal } from '@inovua/reactdatagrid-community/getGlobal';
+
+const globalThis = getGlobal();
+
+(globalThis as any).moment = moment;
 
 const gridStyle = {
   minHeight: 700,
@@ -48,7 +53,10 @@ const filterValue = [
 ];
 
 const App = () => {
-  const countryRef = useRef(null);
+  const selectRef = useRef<any>(null);
+  const numericRef = useRef<any>(null);
+  const stringRef = useRef<any>(null);
+  const dateRef = useRef<any>(null);
 
   const columns = [
     {
@@ -58,13 +66,23 @@ const App = () => {
       defaultWidth: 80,
       type: 'number',
     },
-    { name: 'name', header: 'Name', defaultFlex: 1 },
+    {
+      name: 'name',
+      header: 'Name',
+      defaultFlex: 1,
+      filterEditorProps: {
+        inputRef: stringRef,
+      },
+    },
     {
       name: 'age',
       header: 'Age',
       defaultFlex: 1,
       type: 'number',
       filterEditor: NumberFilter,
+      filterEditorProps: {
+        inputRef: numericRef,
+      },
     },
     {
       name: 'country',
@@ -76,29 +94,33 @@ const App = () => {
         placeholder: 'All',
         dataSource: countries,
         constrainTo: '.InovuaReactDataGrid__body',
-        inputRef: countryRef,
+        inputRef: selectRef,
       },
-      render: ({ value }) => (flags[value] ? flags[value] : value),
+      render: ({ value }: { value: string }) =>
+        flags[value as keyof FlagsType]
+          ? flags[value as keyof FlagsType]
+          : value,
     },
     {
       name: 'birthDate',
-      header: 'Bith date',
-      defualtFlex: 1,
+      header: 'Birth date',
+      defaultFlex: 1,
       minWidth: 200,
       filterEditor: DateFilter,
-      filterEditorProps: (props, { index }) => {
-        // for range and notinrange operators, the index is 1 for the after field
+      filterEditorProps: ({ index }: { index: number }) => {
+        // for range and not in range operators, the index is 1 for the after field
         return {
           dateFormat: 'MM-DD-YYYY',
           cancelButton: false,
           highlightWeekends: false,
+          inputRef: dateRef,
           placeholder:
             index == 1
               ? 'Created date is before...'
               : 'Created date is after...',
         };
       },
-      render: ({ value, cellProps }) => {
+      render: ({ value }: { value: string }) => {
         return moment(value).format('MM-DD-YYYY');
       },
     },
@@ -115,11 +137,41 @@ const App = () => {
       <div style={{ marginBottom: 20 }}>
         <button
           onClick={() => {
-            console.log('countryRef', countryRef?.current?.getSelectRef());
-            countryRef?.current?.getSelectRef()?.comboNode?.focus();
+            console.log('selectRef', selectRef?.current?.getInputRef());
+            selectRef?.current?.getInputRef()?.comboNode?.focus();
           }}
         >
-          Set focus
+          Select focus
+        </button>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <button
+          onClick={() => {
+            console.log('numericRef', numericRef?.current?.getInputRef());
+            numericRef?.current?.getInputRef()?.focus();
+          }}
+        >
+          Numeric focus
+        </button>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <button
+          onClick={() => {
+            console.log('stringRef', stringRef?.current?.getInputRef());
+            stringRef?.current?.getInputRef()?.focus();
+          }}
+        >
+          String focus
+        </button>
+      </div>
+      <div style={{ marginBottom: 20 }}>
+        <button
+          onClick={() => {
+            console.log('dateRef', dateRef?.current);
+            dateRef?.current?.focus();
+          }}
+        >
+          Date focus
         </button>
       </div>
       <ReactDataGrid

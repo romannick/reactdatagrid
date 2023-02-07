@@ -8,8 +8,22 @@ import React from 'react';
 import TextInput from '../packages/TextInput';
 import debounce from '../packages/debounce';
 class StringFilter extends React.Component {
+    input;
+    refInput;
     constructor(props) {
         super(props);
+        this.refInput = (i) => {
+            const inputRef = props.inputRef || props.filterEditorProps?.inputRef;
+            if (inputRef) {
+                if (typeof inputRef === 'function') {
+                    inputRef(i);
+                }
+                else {
+                    inputRef.current = i;
+                }
+            }
+            this.input = i;
+        };
         const { filterValue } = props;
         this.state = {
             value: filterValue ? filterValue.value || '' : '',
@@ -29,6 +43,9 @@ class StringFilter extends React.Component {
                 this.onChange(this.props.filterValue.value);
             }
         }
+    };
+    getInputRef = () => {
+        return this.input;
     };
     onChange(value) {
         this.onValueChange(value);
@@ -70,7 +87,7 @@ class StringFilter extends React.Component {
             inputProps.value = this.state.value;
         }
         return (this.props.render &&
-            this.props.render(React.createElement(TextInput, { ...filterEditorProps, type: "text", onChange: this.onChange, renderClearIcon: this.renderClearIcon, className: "InovuaReactDataGrid__column-header__filter InovuaReactDataGrid__column-header__filter--string", ...inputProps })));
+            this.props.render(React.createElement(TextInput, { ...filterEditorProps, type: "text", ref: this.refInput, onChange: this.onChange, renderClearIcon: this.renderClearIcon, className: "InovuaReactDataGrid__column-header__filter InovuaReactDataGrid__column-header__filter--string", ...inputProps })));
     }
 }
 export default StringFilter;

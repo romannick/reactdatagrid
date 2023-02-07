@@ -101,7 +101,7 @@ class SelectFilter extends React.Component<
     }
   }
 
-  getSelectRef = () => {
+  getInputRef = () => {
     return this.selectRef?.current;
   };
 

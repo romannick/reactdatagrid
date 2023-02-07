@@ -35,7 +35,7 @@ class SelectFilter extends React.Component {
             this.onValueChange = debounce(this.onValueChange, props.filterDelay);
         }
     }
-    getSelectRef = () => {
+    getInputRef = () => {
         return this.selectRef?.current;
     };
     onChange(value) {

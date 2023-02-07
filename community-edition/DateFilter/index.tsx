@@ -36,6 +36,7 @@ type DateFilterProps = {
   filterEditorProps?: any;
   cellProps?: any;
   render?: any;
+  inputRef?: any;
 };
 
 type DateFilterState = {
@@ -59,11 +60,32 @@ type InputProps = {
   rtl?: boolean;
   text?: string;
   onTextChange?: (value: string) => void;
+  ref?: any;
 };
 
 class DateFilter extends Component<DateFilterProps, DateFilterState> {
+  input: any;
+  private refInput: any;
+
   constructor(props: DateFilterProps) {
     super(props);
+
+    this.refInput = (i: any) => {
+      const inputRef =
+        props.inputRef ||
+        (props.filterEditorProps &&
+          typeof props.filterEditorProps === 'function')
+          ? props.filterEditorProps(props)?.inputRef
+          : props.filterEditorProps?.inputRef;
+      if (inputRef) {
+        if (typeof inputRef === 'function') {
+          inputRef(i);
+        } else {
+          inputRef.current = i;
+        }
+      }
+      this.input = i;
+    };
 
     const { filterValue } = props;
 
@@ -89,6 +111,10 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
       this.setValue(this.props.filterValue.value);
     }
   }
+
+  getInputRef = () => {
+    return this.input;
+  };
 
   onChange(value: TypeValue) {
     if (value === this.state.value) {
@@ -141,6 +167,44 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
     this.setState({ text: value });
   }
 
+  getFilterEditorProps = (position?: string) => {
+    let { filterEditorProps, filterValue } = this.props;
+    const { start, end } = this.state.value;
+
+    if (filterEditorProps === undefined) {
+      filterEditorProps = filterValue && filterValue.filterEditorProps;
+    }
+
+    if (typeof filterEditorProps === 'function') {
+      if (position === 'start') {
+        filterEditorProps =
+          typeof filterEditorProps === 'function'
+            ? filterEditorProps(this.props, {
+                value: start,
+                index: 0,
+              })
+            : filterEditorProps;
+      } else if (position === 'end') {
+        filterEditorProps =
+          typeof filterEditorProps === 'function'
+            ? filterEditorProps(this.props, {
+                value: end,
+                index: 1,
+              })
+            : filterEditorProps;
+      } else {
+        filterEditorProps =
+          typeof filterEditorProps === 'function'
+            ? filterEditorProps(this.props, {
+                value: this.state.value,
+              })
+            : filterEditorProps;
+      }
+    }
+
+    return filterEditorProps;
+  };
+
   render() {
     const {
       filterValue,
@@ -154,13 +218,10 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
       theme,
     } = this.props;
     let {
-      filterEditorProps,
       cellProps: { dateFormat },
     } = this.props;
 
-    if (filterEditorProps === undefined) {
-      filterEditorProps = filterValue && filterValue.filterEditorProps;
-    }
+    const filterEditorProps = this.getFilterEditorProps();
 
     if (dateFormat === undefined) {
       if (typeof filterEditorProps === 'function') {
@@ -190,6 +251,7 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
       (cell && cell.getDOMNode());
 
     const inputProps: InputProps = {
+      ref: this.refInput,
       calendarProps: { ...calendarLabels },
       readOnly,
       disabled,
@@ -248,20 +310,8 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
             },
           };
 
-        const startFilterEditorProps =
-          typeof filterEditorProps === 'function'
-            ? filterEditorProps(this.props, {
-                value: start,
-                index: 0,
-              })
-            : filterEditorProps;
-        const endFilterEditorProps =
-          typeof filterEditorProps === 'function'
-            ? filterEditorProps(this.props, {
-                value: end,
-                index: 1,
-              })
-            : filterEditorProps;
+        const startFilterEditorProps = this.getFilterEditorProps('start');
+        const endFilterEditorProps = this.getFilterEditorProps('end');
 
         const startProps = {
           okButton: true,
@@ -294,12 +344,7 @@ class DateFilter extends Component<DateFilterProps, DateFilterState> {
         );
 
       default:
-        const finalEditorProps =
-          typeof filterEditorProps === 'function'
-            ? filterEditorProps(this.props, {
-                value: this.state.value,
-              })
-            : filterEditorProps;
+        const finalEditorProps = this.getFilterEditorProps();
 
         const finalProps = {
           ...finalEditorProps,
