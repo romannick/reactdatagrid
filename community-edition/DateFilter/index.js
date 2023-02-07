@@ -7,8 +7,26 @@
 import React, { Component } from 'react';
 import { DateInput } from '../packages/Calendar';
 class DateFilter extends Component {
+    input;
+    refInput;
     constructor(props) {
         super(props);
+        this.refInput = (i) => {
+            const inputRef = props.inputRef ||
+                (props.filterEditorProps &&
+                    typeof props.filterEditorProps === 'function')
+                ? props.filterEditorProps(props)?.inputRef
+                : props.filterEditorProps?.inputRef;
+            if (inputRef) {
+                if (typeof inputRef === 'function') {
+                    inputRef(i);
+                }
+                else {
+                    inputRef.current = i;
+                }
+            }
+            this.input = i;
+        };
         const { filterValue } = props;
         this.state = {
             value: filterValue ? filterValue.value || '' : '',
@@ -28,6 +46,9 @@ class DateFilter extends Component {
             this.setValue(this.props.filterValue.value);
         }
     }
+    getInputRef = () => {
+        return this.input;
+    };
     onChange(value) {
         if (value === this.state.value) {
             return;
@@ -75,30 +96,46 @@ class DateFilter extends Component {
     onTextChange(value) {
         this.setState({ text: value });
     }
-    onStartTextChange = (start) => {
-        const { text } = this.state;
-        if (text && text.start && start === text.start) {
-            return;
-        }
-        const newText = typeof text === 'string' ? {} : { ...text };
-        newText.start = start;
-        this.setState({ text: newText });
-    };
-    onEndTextChange = (end) => {
-        const { text } = this.state;
-        if (text && text.end && end === text.end) {
-            return;
-        }
-        const newText = typeof text === 'string' ? {} : { ...text };
-        newText.end = end;
-        this.setState({ text: newText });
-    };
-    render() {
-        const { filterValue, readOnly, disabled, rtl, style, cell, renderInPortal, i18n, theme, } = this.props;
-        let { filterEditorProps, cellProps: { dateFormat }, } = this.props;
+    getFilterEditorProps = (position) => {
+        let { filterEditorProps, filterValue } = this.props;
+        const { start, end } = this.state.value;
         if (filterEditorProps === undefined) {
             filterEditorProps = filterValue && filterValue.filterEditorProps;
         }
+        if (typeof filterEditorProps === 'function') {
+            if (position === 'start') {
+                filterEditorProps =
+                    typeof filterEditorProps === 'function'
+                        ? filterEditorProps(this.props, {
+                            value: start,
+                            index: 0,
+                        })
+                        : filterEditorProps;
+            }
+            else if (position === 'end') {
+                filterEditorProps =
+                    typeof filterEditorProps === 'function'
+                        ? filterEditorProps(this.props, {
+                            value: end,
+                            index: 1,
+                        })
+                        : filterEditorProps;
+            }
+            else {
+                filterEditorProps =
+                    typeof filterEditorProps === 'function'
+                        ? filterEditorProps(this.props, {
+                            value: this.state.value,
+                        })
+                        : filterEditorProps;
+            }
+        }
+        return filterEditorProps;
+    };
+    render() {
+        const { filterValue, readOnly, disabled, rtl, style, cell, renderInPortal, i18n, theme, } = this.props;
+        let { cellProps: { dateFormat }, } = this.props;
+        const filterEditorProps = this.getFilterEditorProps();
         if (dateFormat === undefined) {
             if (typeof filterEditorProps === 'function') {
                 dateFormat = filterEditorProps(this.props, {
@@ -122,6 +159,7 @@ class DateFilter extends Component {
                 .querySelectorAll('.InovuaReactDataGrid__column-header__filter')[0]) ||
             (cell && cell.getDOMNode());
         const inputProps = {
+            ref: this.refInput,
             calendarProps: { ...calendarLabels },
             readOnly,
             disabled,
@@ -169,18 +207,8 @@ class DateFilter extends Component {
                         },
                     },
                 };
-                const startFilterEditorProps = typeof filterEditorProps === 'function'
-                    ? filterEditorProps(this.props, {
-                        value: start,
-                        index: 0,
-                    })
-                    : filterEditorProps;
-                const endFilterEditorProps = typeof filterEditorProps === 'function'
-                    ? filterEditorProps(this.props, {
-                        value: end,
-                        index: 1,
-                    })
-                    : filterEditorProps;
+                const startFilterEditorProps = this.getFilterEditorProps('start');
+                const endFilterEditorProps = this.getFilterEditorProps('end');
                 const startProps = {
                     okButton: true,
                     placeholder: i18n && i18n('start'),
@@ -209,11 +237,7 @@ class DateFilter extends Component {
                     React.createElement("div", { className: "InovuaReactDataGrid__column-header__filter__binary_operator_separator" }),
                     endEditor));
             default:
-                const finalEditorProps = typeof filterEditorProps === 'function'
-                    ? filterEditorProps(this.props, {
-                        value: this.state.value,
-                    })
-                    : filterEditorProps;
+                const finalEditorProps = this.getFilterEditorProps();
                 const finalProps = {
                     ...finalEditorProps,
                     onChange: this.onChange,

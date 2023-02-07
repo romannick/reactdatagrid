@@ -6,7 +6,7 @@
  */
 
 import { FunctionNotifier } from '../../../../utils/notifier';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, createRef } from 'react';
 
 import StringFilter from '../../../../StringFilter/StringFilter';
 
@@ -19,6 +19,7 @@ type TypeGenericFilterProps = {
   rtl?: boolean;
   enableColumnFilterContextMenu?: boolean;
   notifyColumnFilterVisibleStateChange?: FunctionNotifier<boolean>;
+  inputRef?: any;
 };
 
 type TypeGenericFilterState = {
@@ -44,6 +45,17 @@ class GenericFilter extends React.Component<
     this.onSettingsClickListener = null;
 
     this.ref = (specificFilter: any) => {
+      const inputRef =
+        props.inputRef ||
+        (props.props.filterEditorProps &&
+          props.props.filterEditorProps.inputRef);
+      if (inputRef) {
+        if (typeof inputRef === 'function') {
+          inputRef(specificFilter);
+        } else {
+          inputRef.current = specificFilter;
+        }
+      }
       this.specificFilter = specificFilter;
     };
 

@@ -29,6 +29,8 @@ type StringFilterProps = {
   onChange?: Function;
   render?: Function;
   placeholder?: string;
+  inputRef?: any;
+  filterEditorProps?: any;
 };
 
 type StringFilterState = {
@@ -49,8 +51,23 @@ class StringFilter extends React.Component<
   StringFilterProps,
   StringFilterState
 > {
+  input: any;
+  private refInput: any;
+
   constructor(props: StringFilterProps) {
     super(props);
+
+    this.refInput = (i: any) => {
+      const inputRef = props.inputRef || props.filterEditorProps?.inputRef;
+      if (inputRef) {
+        if (typeof inputRef === 'function') {
+          inputRef(i);
+        } else {
+          inputRef.current = i;
+        }
+      }
+      this.input = i;
+    };
 
     const { filterValue } = props;
 
@@ -78,6 +95,10 @@ class StringFilter extends React.Component<
         this.onChange(this.props.filterValue.value);
       }
     }
+  };
+
+  getInputRef = () => {
+    return this.input;
   };
 
   onChange(value: string | null) {
@@ -150,6 +171,7 @@ class StringFilter extends React.Component<
         <TextInput
           {...filterEditorProps}
           type="text"
+          ref={this.refInput}
           onChange={this.onChange}
           renderClearIcon={this.renderClearIcon}
           className="InovuaReactDataGrid__column-header__filter InovuaReactDataGrid__column-header__filter--string"

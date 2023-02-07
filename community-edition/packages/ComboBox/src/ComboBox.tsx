@@ -250,6 +250,7 @@ class InovuaComboBox extends Component {
         ref={this.addRootRef}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
+        tabIndex={0}
       >
         <Value
           {...this.getValueProps({ items, groupedItems })}

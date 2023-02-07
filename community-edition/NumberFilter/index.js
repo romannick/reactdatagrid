@@ -13,6 +13,15 @@ class NumberFilter extends React.Component {
     constructor(props) {
         super(props);
         this.refInput = (i) => {
+            const inputRef = props.inputRef || props.filterEditorProps?.inputRef;
+            if (inputRef) {
+                if (typeof inputRef === 'function') {
+                    inputRef(i);
+                }
+                else {
+                    inputRef.current = i;
+                }
+            }
             this.input = i;
         };
         this.state = {
@@ -38,6 +47,9 @@ class NumberFilter extends React.Component {
                 this.setValue(this.props.filterValue?.value);
             }
         }
+    };
+    getInputRef = () => {
+        return this.input;
     };
     onChange(value) {
         if (value === this.state.value) {

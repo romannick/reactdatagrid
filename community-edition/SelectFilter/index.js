@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import React from 'react';
+import React, { createRef } from 'react';
 import debounce from '../packages/debounce';
 import Combo from '../packages/ComboBox';
 import ScrollContainer from '../packages/react-scroll-container-pro/src';
@@ -21,18 +21,23 @@ const defaultProps = {
 };
 class SelectFilter extends React.Component {
     static defaultProps = defaultProps;
+    selectRef;
     constructor(props) {
         super(props);
         const { filterValue } = props;
         this.state = {
             value: filterValue ? filterValue.value || null : null,
         };
+        this.selectRef = createRef();
         this.onChange = this.onChange.bind(this);
         this.onValueChange = this.onValueChange.bind(this);
         if (props.filterDelay && props.filterDelay >= 1) {
             this.onValueChange = debounce(this.onValueChange, props.filterDelay);
         }
     }
+    getInputRef = () => {
+        return this.selectRef?.current;
+    };
     onChange(value) {
         this.onValueChange(value);
         this.setValue(value);
@@ -81,6 +86,7 @@ class SelectFilter extends React.Component {
             dataSource: filterValue && filterValue.dataSource ? filterValue.dataSource : [],
             ...finalEditorProps,
             onChange: this.onChange,
+            ref: this.selectRef,
             className: 'InovuaReactDataGrid__column-header__filter InovuaReactDataGrid__column-header__filter--select',
             ...comboProps,
         };

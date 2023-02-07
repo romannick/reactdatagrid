@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, createRef } from 'react';
 
 import debounce from '../packages/debounce';
 
@@ -80,6 +80,7 @@ class SelectFilter extends React.Component<
   SelectFilterState
 > {
   static defaultProps = defaultProps;
+  selectRef: any;
 
   constructor(props: SelectFilterProps) {
     super(props);
@@ -89,6 +90,9 @@ class SelectFilter extends React.Component<
     this.state = {
       value: filterValue ? filterValue.value || null : null,
     };
+
+    this.selectRef = createRef();
+
     this.onChange = this.onChange.bind(this);
     this.onValueChange = this.onValueChange.bind(this);
 
@@ -96,6 +100,10 @@ class SelectFilter extends React.Component<
       this.onValueChange = debounce(this.onValueChange, props.filterDelay);
     }
   }
+
+  getInputRef = () => {
+    return this.selectRef?.current;
+  };
 
   onChange(value: string | null) {
     this.onValueChange(value);
@@ -169,6 +177,7 @@ class SelectFilter extends React.Component<
         filterValue && filterValue.dataSource ? filterValue.dataSource : [],
       ...finalEditorProps,
       onChange: this.onChange,
+      ref: this.selectRef,
 
       className:
         'InovuaReactDataGrid__column-header__filter InovuaReactDataGrid__column-header__filter--select',
