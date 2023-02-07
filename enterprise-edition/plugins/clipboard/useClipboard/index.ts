@@ -280,7 +280,7 @@ const useClipboard = (
       const parsedKey = key.split(',');
       const id: string = parsedKey[0];
       const column: string = parsedKey[1];
-      const index: number = computedProps.getItemIndexById(Number(id));
+      const index: number = computedProps.getItemIndexById(id);
 
       if (index !== undefined && column !== undefined) {
         const cellValue = data[index][column];

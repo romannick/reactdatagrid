@@ -16,7 +16,12 @@ globalThis.moment = moment;
 
 const defaultFilterValue = [
   { name: 'firstName', operator: 'contains', type: 'string', value: '' },
-  { name: 'createdOn', operator: 'inrange', type: 'date', value: '' },
+  {
+    name: 'createdOn',
+    operator: 'inrange',
+    type: 'date',
+    value: { start: '2007-01-05', end: '2020-03-05' },
+  },
   {
     name: 'age',
     operator: 'inrange',
@@ -68,8 +73,6 @@ const App = () => {
       <h3>Filterable DataGrid with date filter</h3>
       <ReactDataGrid
         idProperty="id"
-        theme="default-dark"
-        licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
         style={gridStyle}
         enableFiltering
         defaultFilterValue={defaultFilterValue}
