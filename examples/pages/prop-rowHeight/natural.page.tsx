@@ -72,10 +72,8 @@ class App extends React.Component {
       <DataGrid
         idProperty="id"
         style={gridStyle}
-        theme="default-light"
         columns={this.state.columns}
         rowHeight={null}
-        licenseKey={process.env.NEXT_PUBLIC_LICENSE_KEY}
         minRowHeight={50}
         columnMinWidth={400}
         dataSource={this.state.dataSource}

@@ -653,6 +653,7 @@ const GridFactory = (
 
       return -1;
     };
+
     const getItemAt = (index: number) => {
       if (!computedPropsRef.current) {
         return undefined;
@@ -664,6 +665,7 @@ const GridFactory = (
 
       return getItemWithCache(item);
     };
+
     const getItemWithCache = (item: any) => {
       if (
         item &&

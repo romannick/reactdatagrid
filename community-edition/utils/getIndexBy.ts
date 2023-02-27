@@ -17,8 +17,9 @@ const getIndexBy = (
   for (let i = 0, len = data.length; i < len; i++) {
     const item = data[i];
     const itemId = compoundIdProperty ? getItemId(item) : item[by];
+    const parsedId = typeof itemId === 'number' ? Number(id) : id;
 
-    if (itemId === id) {
+    if (itemId === parsedId) {
       // we found our id
       index = i;
       break;
