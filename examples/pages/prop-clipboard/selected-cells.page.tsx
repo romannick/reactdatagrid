@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
 
 import ReactDataGrid from '@inovua/reactdatagrid-enterprise';
+import { IColumn } from '@inovua/reactdatagrid-enterprise/types';
 
 import people from '../people';
 
 const gridStyle = { minHeight: 550 };
 
-const columns = [
+const columns: IColumn[] = [
   {
     name: 'id',
     header: 'Id',
@@ -27,14 +28,29 @@ const columns = [
     minWidth: 100,
     defaultVisible: false,
   },
-  { name: 'city', header: 'City', defaultFlex: 1, minWidth: 300 },
-  { name: 'age', header: 'Age', minWidth: 150, type: 'number' },
-  { name: 'email', header: 'Email', defaultFlex: 1, minWidth: 150 },
+  {
+    name: 'city',
+    header: 'City',
+    defaultFlex: 1,
+    minWidth: 300,
+  },
+  {
+    name: 'age',
+    header: 'Age',
+    minWidth: 150,
+    type: 'number',
+  },
+  {
+    name: 'email',
+    header: 'Email',
+    defaultFlex: 1,
+    minWidth: 150,
+  },
   {
     name: 'student',
     header: 'Student',
     defaultFlex: 1,
-    render: ({ value }) => (value === true ? 'Yes' : 'No'),
+    render: ({ value }: { value: boolean }) => (value === true ? 'Yes' : 'No'),
   },
 ];
 
