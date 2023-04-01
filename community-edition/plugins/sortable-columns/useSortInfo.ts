@@ -23,10 +23,12 @@ const getNextSortInfoForColumn = (
     allowUnsort,
     multiSort,
     forceDir,
+    defaultDir,
     sortFunctions,
   }: {
     allowUnsort: boolean;
     multiSort: boolean;
+    defaultDir?: -1 | 1;
     forceDir?: 0 | 1 | -1;
     sortFunctions: {
       [key: string]: (...args: any[]) => number | boolean;
@@ -61,18 +63,38 @@ const getNextSortInfoForColumn = (
     return newSortInfo;
   }
 
-  if (!currentDir) {
-    newSortInfo.dir = 1;
-  } else if (currentDir === 1) {
-    newSortInfo.dir = -1;
-  } else if (currentDir === -1) {
-    // newSortInfo shoud be null in this case
-    // this means there is no sort
-    // so there is no need to sort with nothing
-    if (allowUnsort || multiSort) {
-      return null;
+  if (defaultDir === undefined) {
+    defaultDir = 1;
+  }
+
+  if (defaultDir === 1) {
+    if (!currentDir) {
+      newSortInfo.dir = 1;
+    } else if (currentDir === 1) {
+      newSortInfo.dir = -1;
+    } else if (currentDir === -1) {
+      // newSortInfo should be null in this case
+      // this means there is no sort
+      // so there is no need to sort with nothing
+      if (allowUnsort || multiSort) {
+        return null;
+      }
+      newSortInfo.dir = 1;
     }
-    newSortInfo.dir = 1;
+  } else if (defaultDir === -1) {
+    if (!currentDir) {
+      newSortInfo.dir = -1;
+    } else if (currentDir === -1) {
+      newSortInfo.dir = 1;
+    } else if (currentDir === 1) {
+      // newSortInfo should be null in this case
+      // this means there is no sort
+      // so there is no need to sort with nothing
+      if (allowUnsort || multiSort) {
+        return null;
+      }
+      newSortInfo.dir = 1;
+    }
   }
 
   return newSortInfo;
@@ -85,11 +107,13 @@ const getNextSingleSortInfo = (
     allowUnsort = false,
     multiSort,
     forceDir,
+    defaultDir,
     sortFunctions,
   }: {
     allowUnsort: boolean;
     multiSort: boolean;
     forceDir?: 0 | 1 | -1;
+    defaultDir?: -1 | 1;
     sortFunctions: {
       [key: string]: (...args: any[]) => number | boolean;
     } | null;
@@ -107,7 +131,7 @@ const getNextSingleSortInfo = (
       ? currentSortInfo.dir
       : 0,
     column,
-    { allowUnsort, multiSort, forceDir, sortFunctions }
+    { allowUnsort, multiSort, forceDir, defaultDir, sortFunctions }
   );
 };
 
@@ -178,7 +202,10 @@ const useSortInfo = (
   computedIsMultiSort: boolean;
   computedSortInfo: TypeSortInfo;
   setSortInfo: (sortInfo: TypeSortInfo) => void;
-  toggleColumnSort: (colId: any) => void;
+  toggleColumnSort: (
+    colId: any,
+    defaultSortingDirection?: 'asc' | 'desc'
+  ) => void;
   setColumnSortInfo: (
     column:
       | string
@@ -245,7 +272,7 @@ const useSortInfo = (
         | number
         | { id: string | number; name?: string | number }
         | { name: string | number; id?: string | number },
-      defaultSortingDirection: 'asc' | 'desc'
+      defaultSortingDirection?: 'asc' | 'desc'
     ): void => {
       const computedProps = computedPropsRef.current;
       if (!computedProps) {
@@ -265,14 +292,15 @@ const useSortInfo = (
           ? null
           : computedProps.computedSortInfo;
 
-      const sortingDirection =
-        defaultSortingDirection !== undefined
-          ? defaultSortingDirection
-          : computedProps.defaultSortingDirection !== undefined
-          ? computedProps.defaultSortingDirection === 'asc'
-            ? 1
-            : -1
-          : undefined;
+      let sortingDirection: -1 | 1 | undefined;
+      if (computedProps.defaultSortingDirection) {
+        sortingDirection =
+          computedProps.defaultSortingDirection === 'asc' ? 1 : -1;
+      }
+      if (defaultSortingDirection) {
+        sortingDirection = defaultSortingDirection === 'asc' ? 1 : -1;
+      }
+
       const computedIsMultiSort = computedProps.computedIsMultiSort;
       const nextSortInfo = computedIsMultiSort
         ? getNextMultipleSortInfo(computedColumn, sortInfo, {
@@ -282,7 +310,8 @@ const useSortInfo = (
         : getNextSingleSortInfo(computedColumn, sortInfo, {
             allowUnsort,
             multiSort: false,
-            forceDir: sortingDirection,
+            forceDir: undefined,
+            defaultDir: sortingDirection,
             sortFunctions: computedProps.sortFunctions,
           });
       setSortInfo(nextSortInfo);

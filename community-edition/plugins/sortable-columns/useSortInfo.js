@@ -8,7 +8,7 @@ import { useCallback } from 'react';
 import isControlledProperty from '../../utils/isControlledProperty';
 import useProperty from '../../hooks/useProperty';
 import batchUpdate from '../../utils/batchUpdate';
-const getNextSortInfoForColumn = (currentDir, column, { allowUnsort, multiSort, forceDir, sortFunctions, }) => {
+const getNextSortInfoForColumn = (currentDir, column, { allowUnsort, multiSort, forceDir, defaultDir, sortFunctions, }) => {
     const newSortInfo = {
         dir: 1,
         id: column.id,
@@ -31,24 +31,46 @@ const getNextSortInfoForColumn = (currentDir, column, { allowUnsort, multiSort, 
         newSortInfo.dir = forceDir;
         return newSortInfo;
     }
-    if (!currentDir) {
-        newSortInfo.dir = 1;
+    if (defaultDir === undefined) {
+        defaultDir = 1;
     }
-    else if (currentDir === 1) {
-        newSortInfo.dir = -1;
-    }
-    else if (currentDir === -1) {
-        // newSortInfo shoud be null in this case
-        // this means there is no sort
-        // so there is no need to sort with nothing
-        if (allowUnsort || multiSort) {
-            return null;
+    if (defaultDir === 1) {
+        if (!currentDir) {
+            newSortInfo.dir = 1;
         }
-        newSortInfo.dir = 1;
+        else if (currentDir === 1) {
+            newSortInfo.dir = -1;
+        }
+        else if (currentDir === -1) {
+            // newSortInfo should be null in this case
+            // this means there is no sort
+            // so there is no need to sort with nothing
+            if (allowUnsort || multiSort) {
+                return null;
+            }
+            newSortInfo.dir = 1;
+        }
+    }
+    else if (defaultDir === -1) {
+        if (!currentDir) {
+            newSortInfo.dir = -1;
+        }
+        else if (currentDir === -1) {
+            newSortInfo.dir = 1;
+        }
+        else if (currentDir === 1) {
+            // newSortInfo should be null in this case
+            // this means there is no sort
+            // so there is no need to sort with nothing
+            if (allowUnsort || multiSort) {
+                return null;
+            }
+            newSortInfo.dir = 1;
+        }
     }
     return newSortInfo;
 };
-const getNextSingleSortInfo = (column, currentSortInfo, { allowUnsort = false, multiSort, forceDir, sortFunctions, }) => {
+const getNextSingleSortInfo = (column, currentSortInfo, { allowUnsort = false, multiSort, forceDir, defaultDir, sortFunctions, }) => {
     if (Array.isArray(currentSortInfo)) {
         return null;
     }
@@ -57,7 +79,7 @@ const getNextSingleSortInfo = (column, currentSortInfo, { allowUnsort = false, m
             currentSortInfo.id === column.id ||
             currentSortInfo.name === column.sortName)
         ? currentSortInfo.dir
-        : 0, column, { allowUnsort, multiSort, forceDir, sortFunctions });
+        : 0, column, { allowUnsort, multiSort, forceDir, defaultDir, sortFunctions });
 };
 const getNextMultipleSortInfo = (column, currentSortInfo, { allowUnsort = false, forceDir, sortFunctions, }) => {
     let result;
@@ -131,13 +153,14 @@ const useSortInfo = (props, _, computedPropsRef) => {
         const sortInfo = computedProps.computedSortInfo === undefined
             ? null
             : computedProps.computedSortInfo;
-        const sortingDirection = defaultSortingDirection !== undefined
-            ? defaultSortingDirection
-            : computedProps.defaultSortingDirection !== undefined
-                ? computedProps.defaultSortingDirection === 'asc'
-                    ? 1
-                    : -1
-                : undefined;
+        let sortingDirection;
+        if (computedProps.defaultSortingDirection) {
+            sortingDirection =
+                computedProps.defaultSortingDirection === 'asc' ? 1 : -1;
+        }
+        if (defaultSortingDirection) {
+            sortingDirection = defaultSortingDirection === 'asc' ? 1 : -1;
+        }
         const computedIsMultiSort = computedProps.computedIsMultiSort;
         const nextSortInfo = computedIsMultiSort
             ? getNextMultipleSortInfo(computedColumn, sortInfo, {
@@ -147,7 +170,8 @@ const useSortInfo = (props, _, computedPropsRef) => {
             : getNextSingleSortInfo(computedColumn, sortInfo, {
                 allowUnsort,
                 multiSort: false,
-                forceDir: sortingDirection,
+                forceDir: undefined,
+                defaultDir: sortingDirection,
                 sortFunctions: computedProps.sortFunctions,
             });
         setSortInfo(nextSortInfo);
