@@ -39,8 +39,12 @@ const getPasteSelectedCellsDataFromCsv = (data, computedProps) => {
         cells.map((c, j) => {
             const column = computedProps.getColumnBy(activeColumn + j);
             if (column) {
+                const enableClipboardForEditableCellsOnly = computedProps.enableClipboardForEditableCellsOnly;
+                const shouldReplaceValue = enableClipboardForEditableCellsOnly
+                    ? column.computedEditable
+                    : true;
                 const id = column.id;
-                const computedColumn = { [id]: c };
+                const computedColumn = shouldReplaceValue ? { [id]: c } : undefined;
                 row[i] = Object.assign({}, row[i], computedColumn);
             }
         });
@@ -60,8 +64,14 @@ const getPasteSelectedCellsData = (data, computedProps) => {
         Object.keys(row).map((columnKey, i) => {
             const column = computedProps.getColumnBy(activeColumn + i);
             if (column) {
+                const enableClipboardForEditableCellsOnly = computedProps.enableClipboardForEditableCellsOnly;
+                const shouldReplaceValue = enableClipboardForEditableCellsOnly
+                    ? column.computedEditable
+                    : true;
                 const id = column.id;
-                const computedColumn = { [id]: row[columnKey] };
+                const computedColumn = shouldReplaceValue
+                    ? { [id]: row[columnKey] }
+                    : undefined;
                 columns[index] = Object.assign({}, columns[index], computedColumn);
             }
         });

@@ -159,6 +159,7 @@ type TypeGridPublicAPI = any;
 
 type TypeDataGridPropsNoI18n = {
   copySpreadsheetCompatibleString?: boolean;
+  enableClipboardForEditableCellsOnly?: boolean;
   activeCellThrottle?: number;
   activeIndexThrottle?: number;
   allowRowTabNavigation?: boolean;

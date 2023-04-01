@@ -52,10 +52,16 @@ const getPasteSelectedCellsDataFromCsv = (
     const row: any = {};
     const cells = r.split(clipboardSeparator);
     cells.map((c: string, j: number) => {
-      const column = computedProps.getColumnBy(activeColumn + j);
+      const column: any = computedProps.getColumnBy(activeColumn + j);
       if (column) {
+        const enableClipboardForEditableCellsOnly =
+          computedProps.enableClipboardForEditableCellsOnly;
+        const shouldReplaceValue = enableClipboardForEditableCellsOnly
+          ? column.computedEditable
+          : true;
+
         const id: string | undefined = column.id;
-        const computedColumn = { [id!]: c };
+        const computedColumn = shouldReplaceValue ? { [id!]: c } : undefined;
 
         row[i] = Object.assign({}, row[i], computedColumn);
       }
@@ -83,11 +89,19 @@ const getPasteSelectedCellsData = (
     const row = parsedData[key];
 
     Object.keys(row).map((columnKey: string, i: number): void => {
-      const column = computedProps.getColumnBy(activeColumn + i);
+      const column: any = computedProps.getColumnBy(activeColumn + i);
 
       if (column) {
+        const enableClipboardForEditableCellsOnly =
+          computedProps.enableClipboardForEditableCellsOnly;
+        const shouldReplaceValue = enableClipboardForEditableCellsOnly
+          ? column.computedEditable
+          : true;
+
         const id: any = column.id;
-        const computedColumn = { [id]: row[columnKey] };
+        const computedColumn = shouldReplaceValue
+          ? { [id]: row[columnKey] }
+          : undefined;
         columns[index] = Object.assign({}, columns[index], computedColumn);
       }
     });
