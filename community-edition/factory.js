@@ -597,7 +597,10 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
                     : undefined;
             const col = computedProps.visibleColumns[columnIndex];
             const scrollToRow = () => {
-                computedProps.scrollToIndex(clamp(rowIndex + (top ? -0 : 0), 0, computedProps.count - 1), { top, offset: 0 });
+                const maxIndex = computedProps.computedTreeEnabled
+                    ? computedProps.data.length - 1
+                    : computedProps.count - 1;
+                computedProps.scrollToIndex(clamp(rowIndex + (top ? -0 : 0), 0, maxIndex), { top, offset: 0 });
             };
             if (!col) {
                 return;

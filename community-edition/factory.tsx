@@ -914,8 +914,12 @@ const GridFactory = (
       const col = computedProps.visibleColumns[columnIndex];
 
       const scrollToRow = () => {
+        const maxIndex = computedProps.computedTreeEnabled
+          ? computedProps.data.length - 1
+          : computedProps.count - 1;
+
         computedProps.scrollToIndex(
-          clamp(rowIndex + (top ? -0 : 0), 0, computedProps.count - 1),
+          clamp(rowIndex + (top ? -0 : 0), 0, maxIndex),
           { top, offset: 0 }
         );
       };
