@@ -39,6 +39,7 @@ const getNextSortInfoForColumn = (
     dir: 1,
     id: column.id,
     name: column.sortName || column.name || '',
+    columnName: column.name || '',
     type: column.type,
   };
 

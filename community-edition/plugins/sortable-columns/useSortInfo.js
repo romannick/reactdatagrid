@@ -13,6 +13,7 @@ const getNextSortInfoForColumn = (currentDir, column, { allowUnsort, multiSort, 
         dir: 1,
         id: column.id,
         name: column.sortName || column.name || '',
+        columnName: column.name || '',
         type: column.type,
     };
     // column cannot be sorted if it has no name and no sort function

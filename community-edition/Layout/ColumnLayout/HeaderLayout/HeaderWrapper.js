@@ -24,11 +24,11 @@ export default class HeaderWrapper extends React.Component {
         let sortedColumnsInfo = [];
         if (Array.isArray(computedSortInfo)) {
             computedSortInfo.map(sortInfo => {
-                sortedColumnsInfo.push(columnsMap[sortInfo.name]);
+                sortedColumnsInfo.push(columnsMap[sortInfo.columnName]);
             });
         }
         else {
-            return columnsMap[computedSortInfo.name];
+            return columnsMap[computedSortInfo.columnName];
         }
         return sortedColumnsInfo;
     };

@@ -11,6 +11,7 @@ export type TypeSingleSortInfo = {
   id?: string;
   type?: string;
   fn?: Function;
+  columnName?: string;
 };
 export type TypeSortInfo = TypeSingleSortInfo | TypeSingleSortInfo[] | null;
 
