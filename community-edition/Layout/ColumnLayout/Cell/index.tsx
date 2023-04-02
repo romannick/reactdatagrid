@@ -1172,7 +1172,7 @@ function InovuaDataGridCell(props: CellProps) {
     (event: MouseEvent) => {
       const thisProps: CellProps = getProps();
       const initialDOMProps: any = getInitialDOMProps();
-  
+
       if (event.button === 2) {
         return;
       }

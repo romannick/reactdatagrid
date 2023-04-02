@@ -688,7 +688,7 @@ export default (
           }
         }
 
-        if (expandedNodes && expandedNodes[itemId]) {
+        if (expandedNodes && expandedNodes[idFromPath]) {
           if (Array.isArray(itemNodes)) {
             treeGridChildrenSelection(
               itemNodes,
