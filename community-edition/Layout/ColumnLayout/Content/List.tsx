@@ -542,7 +542,7 @@ export default class InovuaDataGridList extends Component<ListProps> {
   };
 
   getRowAt = index => {
-    return this.getRows().filter(r => r.props.rowIndex === index)[0];
+    return this.getRows().filter(r => r?.props?.rowIndex === index)[0];
   };
 
   startEdit = ({ rowIndex, columnIndex, value }) => {

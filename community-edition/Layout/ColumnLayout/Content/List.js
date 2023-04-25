@@ -335,7 +335,7 @@ export default class InovuaDataGridList extends Component {
         return result;
     };
     getRowAt = index => {
-        return this.getRows().filter(r => r.props.rowIndex === index)[0];
+        return this.getRows().filter(r => r?.props?.rowIndex === index)[0];
     };
     startEdit = ({ rowIndex, columnIndex, value }) => {
         const row = this.getRowAt(rowIndex);
