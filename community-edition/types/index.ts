@@ -79,12 +79,12 @@ export type TypeGroup = {
 };
 export type TypePivotItem =
   | {
-      name: 'string';
+      name: string;
       summaryReducer?: TypePivotColumnSummaryReducer;
       summaryColumn?: Partial<TypeColumn>;
       summaryGroup?: Partial<TypeGroup>;
     }
-  | 'string';
+  | string;
 
 export { TypePaginationProps } from './TypePaginationProps';
 
