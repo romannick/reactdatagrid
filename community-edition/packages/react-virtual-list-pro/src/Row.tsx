@@ -143,6 +143,7 @@ export default class InovuaVirtualListRow extends React.Component<
     const node = this.getDOMNode();
 
     if (!this.props.virtualized) {
+      this.prepareSetIndex();
       return;
     }
 
@@ -150,7 +151,7 @@ export default class InovuaVirtualListRow extends React.Component<
       node.style.visibility = STR_HIDDEN;
     }
 
-    const { contain, rowHeightManager } = this.props;
+    const { contain } = this.props;
 
     if (node) {
       node.style.position = STR_ABSOLUTE;
@@ -163,14 +164,20 @@ export default class InovuaVirtualListRow extends React.Component<
         }
       }
 
-      if (rowHeightManager != null) {
-        const index = this.getIndex();
-        // in order to force setIndex to set the transform position and not skip the transform
-        delete this.index;
-        this.setIndex(index, undefined, false);
-      }
+      this.prepareSetIndex();
     }
   }
+
+  prepareSetIndex = () => {
+    const { rowHeightManager } = this.props;
+
+    if (rowHeightManager != null) {
+      const index = this.getIndex();
+      // in order to force setIndex to set the transform position and not skip the transform
+      delete this.index;
+      this.setIndex(index, undefined, false);
+    }
+  };
 
   render() {
     const {

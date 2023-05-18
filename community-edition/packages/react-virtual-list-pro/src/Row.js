@@ -102,12 +102,13 @@ export default class InovuaVirtualListRow extends React.Component {
     fetchNode() {
         const node = this.getDOMNode();
         if (!this.props.virtualized) {
+            this.prepareSetIndex();
             return;
         }
         if (node && !this.isVisible()) {
             node.style.visibility = STR_HIDDEN;
         }
-        const { contain, rowHeightManager } = this.props;
+        const { contain } = this.props;
         if (node) {
             node.style.position = STR_ABSOLUTE;
             node.style.top = STR_ZERO_PX;
@@ -119,14 +120,18 @@ export default class InovuaVirtualListRow extends React.Component {
                     node.style.contain = contain;
                 }
             }
-            if (rowHeightManager != null) {
-                const index = this.getIndex();
-                // in order to force setIndex to set the transform position and not skip the transform
-                delete this.index;
-                this.setIndex(index, undefined, false);
-            }
+            this.prepareSetIndex();
         }
     }
+    prepareSetIndex = () => {
+        const { rowHeightManager } = this.props;
+        if (rowHeightManager != null) {
+            const index = this.getIndex();
+            // in order to force setIndex to set the transform position and not skip the transform
+            delete this.index;
+            this.setIndex(index, undefined, false);
+        }
+    };
     render() {
         const { renderRow, count, index: renderIndex, showEmptyRows, onKeyDown, onFocus, rowHeightManager, sticky, contain, virtualized, useTransformPosition, } = this.props;
         const index = this.getIndex();

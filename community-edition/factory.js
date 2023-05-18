@@ -222,8 +222,11 @@ const GridFactory = ({ plugins } = {}, edition = 'community') => {
                 }
                 setSize(size);
                 updateViewportAvailableWidth(size.width);
-                if (props.rowHeight) {
-                    setMaxVisibleRows(Math.ceil(size.height / props.rowHeight));
+                const rowHeight = typeof props.rowHeight !== 'number'
+                    ? props.minRowHeight
+                    : props.rowHeight;
+                if (rowHeight) {
+                    setMaxVisibleRows(Math.ceil(size.height / rowHeight));
                 }
             });
         };

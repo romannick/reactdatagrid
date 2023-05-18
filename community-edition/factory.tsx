@@ -350,8 +350,12 @@ const GridFactory = (
         setSize(size);
         updateViewportAvailableWidth(size.width);
 
-        if (props.rowHeight) {
-          setMaxVisibleRows(Math.ceil(size.height / props.rowHeight));
+        const rowHeight: number | undefined =
+          typeof props.rowHeight !== 'number'
+            ? props.minRowHeight
+            : props.rowHeight;
+        if (rowHeight) {
+          setMaxVisibleRows(Math.ceil(size.height / rowHeight));
         }
       });
     };
