@@ -793,7 +793,22 @@ type TypeDataGridPropsNoI18n = {
   rowReorderArrowStyle?: CSSProperties;
   rowReorderAutoScrollSpeed?: number;
   compoundIdProperty?: boolean;
+  renderTreeCollapseTool?: ({
+    domProps,
+    size,
+  }: {
+    domProps: any;
+    size?: number;
+  }) => void;
+  renderTreeExpandTool?: ({
+    domProps,
+    size,
+  }: {
+    domProps: any;
+    size?: number;
+  }) => void;
 };
+
 type TypeDataGridComputedClashingProps = {
   i18n?: TypeI18n;
 };
