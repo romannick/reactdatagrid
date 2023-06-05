@@ -124,6 +124,7 @@ export interface IColumn {
   readonly renderHeader?: (cellProps: CellProps) => string | ReactNode;
   renderCheckbox?: (...args: any[]) => any;
   shouldComponentUpdate?: () => boolean;
+  readonly className?: string;
 }
 
 export interface TypeColWithNameProperty extends IColumn {
