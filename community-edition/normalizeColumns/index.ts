@@ -423,15 +423,17 @@ export default ({
       ...columnOrder.filter(id => !generatedColumnIds[id]),
     ];
   }
+
   if (columnOrder) {
     const groupSpacerColumns = visibleColumns.filter(
       col => col.groupSpacerColumn
     );
+    const checkboxColumn = visibleColumns.filter(col => col.checkboxColumn);
     const groupColumns = visibleColumns.filter(
       col => col.groupColumn && !col.groupSpacerColumn
     );
     const ungroupColumns = visibleColumns.filter(
-      col => !col.groupColumn && !col.groupSpacerColumn
+      col => !col.groupColumn && !col.groupSpacerColumn && !col.checkboxColumn
     );
 
     visibleColumns = columnOrder
@@ -441,6 +443,7 @@ export default ({
       .filter((x: any) => !!x) as TypeComputedColumn[];
 
     visibleColumns = [
+      ...checkboxColumn,
       ...groupSpacerColumns,
       ...groupColumns,
       ...visibleColumns,

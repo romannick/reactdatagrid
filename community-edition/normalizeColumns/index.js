@@ -263,14 +263,16 @@ export default ({ generatedColumnsLength = 0, columns, columnMinWidth, columnMax
     }
     if (columnOrder) {
         const groupSpacerColumns = visibleColumns.filter(col => col.groupSpacerColumn);
+        const checkboxColumn = visibleColumns.filter(col => col.checkboxColumn);
         const groupColumns = visibleColumns.filter(col => col.groupColumn && !col.groupSpacerColumn);
-        const ungroupColumns = visibleColumns.filter(col => !col.groupColumn && !col.groupSpacerColumn);
+        const ungroupColumns = visibleColumns.filter(col => !col.groupColumn && !col.groupSpacerColumn && !col.checkboxColumn);
         visibleColumns = columnOrder
             .map((colId) => {
             return ungroupColumns.find(col => col.id == colId);
         })
             .filter((x) => !!x);
         visibleColumns = [
+            ...checkboxColumn,
             ...groupSpacerColumns,
             ...groupColumns,
             ...visibleColumns,

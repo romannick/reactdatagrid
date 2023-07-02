@@ -11,7 +11,7 @@ import { CellProps } from '../types';
 
 type TypeCheckboxProps = {
   disabled?: boolean;
-  tabIndex?: number;
+  tabIndex?: number | null;
   onClick?: (event: MouseEvent) => void;
   supportIndeterminate?: boolean;
   theme?: string;
