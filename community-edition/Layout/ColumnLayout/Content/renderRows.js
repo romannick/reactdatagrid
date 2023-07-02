@@ -259,7 +259,7 @@ computedSelected, computedUnselected, treeColumn, renderNodeTool, renderTreeColl
             rowProps.onGroupToggle = onGroupToggle;
             rowProps.groupSummary = rowData.groupSummary;
             rowProps.groupColumnSummaries = rowData.groupColumnSummaries;
-            rowProps.selected = false;
+            // rowProps.selected = false;
         }
         if (isGrouped) {
             rowProps.parentGroupDataArray = [];
