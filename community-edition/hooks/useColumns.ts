@@ -20,10 +20,9 @@ import {
   TypeComputedProps,
   TypeGroupBy,
   TypeGetColumnByParam,
-  TypeFilterValue,
   TypeSingleFilterValue,
 } from '../types';
-import { useState, MutableRefObject, Dispatch, SetStateAction } from 'react';
+import { MutableRefObject, Dispatch, SetStateAction } from 'react';
 
 import batchUpdate from '../utils/batchUpdate';
 import useProperty from './useProperty';
@@ -160,6 +159,7 @@ export default (
     lockedColumnsState: { [key: string]: 'start' | 'end' | false };
     maybeAddColumns: any;
     columnSizes: TypeNumberMap;
+    hasValueSetter: boolean;
   },
   computedPropsRef: MutableRefObject<TypeComputedProps>
 ) => {
@@ -208,6 +208,7 @@ export default (
     totalUnlockedWidth,
     minColumnsSize,
     computedHasColSpan,
+    hasValueSetter,
   } = useColumnInfo({
     showPivotSummaryColumns: props.showPivotSummaryColumns,
     lockedColumnsState,
@@ -480,10 +481,13 @@ export default (
 
     const { setLockedColumnsState } = computedProps;
 
-    setLockedColumnsState(lockedColumnsState => ({
-      ...lockedColumnsState,
-      [column.id]: locked,
-    }));
+    setLockedColumnsState(
+      lockedColumnsState =>
+        ({
+          ...lockedColumnsState,
+          [column.id]: locked,
+        } as any)
+    );
   };
 
   const getColumnsInOrder = (): TypeComputedColumn[] => {
@@ -555,5 +559,6 @@ export default (
     computedOnColumnResize,
     getColumnBy: getColumn,
     isColumnVisible,
+    hasValueSetter,
   };
 };

@@ -125,6 +125,7 @@ export interface IColumn {
   renderCheckbox?: (...args: any[]) => any;
   shouldComponentUpdate?: () => boolean;
   readonly className?: string;
+  setValue?: (props: any) => void;
 }
 
 export interface TypeColWithNameProperty extends IColumn {

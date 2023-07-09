@@ -62,6 +62,7 @@ export default ({ generatedColumnsLength = 0, columns, columnMinWidth, columnMax
     };
     let hasLockedStart = false;
     let hasLockedEnd = false;
+    let hasValueSetter = false;
     let rowExpandColumn;
     const setComputedColumnWidthsParam = {
         columnFlexes,
@@ -127,6 +128,9 @@ export default ({ generatedColumnsLength = 0, columns, columnMinWidth, columnMax
         if (col.enableColumnHover != null) {
             col.computedEnableColumnHover = col.enableColumnHover;
             delete col.enableColumnHover;
+        }
+        if (col.setValue) {
+            hasValueSetter = true;
         }
         return col;
     });
@@ -439,6 +443,7 @@ export default ({ generatedColumnsLength = 0, columns, columnMinWidth, columnMax
         allColumns: normalizedColumns,
         columnsMap,
         visibleColumnsMap,
+        hasValueSetter,
     };
 };
 const getPivotGroupColumnForPath = (columnConfig, { pivot, pivotGrandSummaryColumn, }) => {

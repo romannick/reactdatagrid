@@ -55,6 +55,12 @@ export default class InovuaDataGridList extends Component {
         return !equal(nextState, this.state);
     }
     componentDidMount() {
+        if (this.props.hasValueSetter) {
+            // we need a timeout to wait for data to be set
+            setTimeout(() => {
+                this.setValue();
+            }, 100);
+        }
         this.__willUnmount = false;
     }
     componentWillUnmount() {
@@ -62,6 +68,30 @@ export default class InovuaDataGridList extends Component {
     }
     isRowFullyVisible = index => {
         return this.getVirtualList().isRowVisible(index);
+    };
+    setValue = () => {
+        const { hasValueSetter, data, columns, idProperty, setItemsAt, } = this.props;
+        if (!hasValueSetter) {
+            return;
+        }
+        const newData = data.reduce((acc, current) => {
+            for (let i = 0; i < columns.length; i++) {
+                const column = columns[i];
+                if (column.setValue) {
+                    const columnName = column.name;
+                    const value = current[columnName];
+                    const result = column.setValue({ value, data: current, ...column });
+                    if (value !== result) {
+                        acc.push({
+                            id: current[idProperty],
+                            [columnName]: result,
+                        });
+                    }
+                }
+            }
+            return acc;
+        }, []);
+        setItemsAt(newData, { replace: false });
     };
     computeRows = (props, { from, to, rowHeight, renderIndex, empty, setRowSpan, sticky, } = EMPTY_OBJECT) => {
         const { columnRenderCount } = props;
@@ -581,6 +611,7 @@ const propTypes = Object.assign({}, virtualListPropTypes, {
     showWarnings: PropTypes.bool,
     to: PropTypes.number,
     virtualizeColumns: PropTypes.bool,
+    hasValueSetter: PropTypes.bool,
 });
 delete propTypes.renderRow;
 InovuaDataGridList.propTypes = propTypes;

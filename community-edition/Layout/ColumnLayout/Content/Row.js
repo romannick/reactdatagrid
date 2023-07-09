@@ -398,8 +398,8 @@ const DataGridRow = React.forwardRef((props, ref) => {
             : null;
         const lastInRange = lastCellInRange || activeCell || null;
         let maxRowspanVar = 1;
-        const cellPropsArray = columns.map((column, xindex) => {
-            let theColumnIndex = xindex + startIndex;
+        const cellPropsArray = columns.map((column, idx) => {
+            let theColumnIndex = idx + startIndex;
             const columnProps = column;
             const { name, computedVisibleIndex } = columnProps;
             let value = data ? data[name] : null;

@@ -807,6 +807,7 @@ type TypeDataGridPropsNoI18n = {
     domProps: any;
     size?: number;
   }) => void;
+  hasValueSetter?: boolean;
 };
 
 type TypeDataGridComputedClashingProps = {

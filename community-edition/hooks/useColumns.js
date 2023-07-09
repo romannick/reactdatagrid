@@ -72,7 +72,7 @@ export default (props, { maxAvailableWidthForColumns, lockedColumnsState, comput
         }
         return acc;
     }, {}), props.context, 'stateColumnVisibilityMap');
-    const { groupColumnSummaryReducers, pivotColumnSummaryReducers, visibleColumns, lockedStartColumns, lockedEndColumns, unlockedColumns, columnWidthPrefixSums, columnsMap, columnVisibilityMap, allColumns, computedEnableRowspan, totalComputedWidth, totalLockedStartWidth, totalFlexColumnCount, totalLockedEndWidth, totalUnlockedWidth, minColumnsSize, computedHasColSpan, } = useColumnInfo({
+    const { groupColumnSummaryReducers, pivotColumnSummaryReducers, visibleColumns, lockedStartColumns, lockedEndColumns, unlockedColumns, columnWidthPrefixSums, columnsMap, columnVisibilityMap, allColumns, computedEnableRowspan, totalComputedWidth, totalLockedStartWidth, totalFlexColumnCount, totalLockedEndWidth, totalUnlockedWidth, minColumnsSize, computedHasColSpan, hasValueSetter, } = useColumnInfo({
         showPivotSummaryColumns: props.showPivotSummaryColumns,
         lockedColumnsState,
         columnOrder,
@@ -325,5 +325,6 @@ export default (props, { maxAvailableWidthForColumns, lockedColumnsState, comput
         computedOnColumnResize,
         getColumnBy: getColumn,
         isColumnVisible,
+        hasValueSetter,
     };
 };
