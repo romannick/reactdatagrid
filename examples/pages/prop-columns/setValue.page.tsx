@@ -7,7 +7,17 @@ const gridStyle = { maxHeight: 207 };
 
 const columns = [
   { name: 'firstName', defaultFlex: 1, header: 'First Name' },
-  { name: 'lastName', defaultFlex: 1, header: 'Last Name' },
+  {
+    name: 'lastName',
+    defaultFlex: 1,
+    header: 'Last Name',
+    setValue({ value }: { value: string }) {
+      if (value === 'Fil' || value === 'Twain') {
+        return 'Johnny';
+      }
+      return value;
+    },
+  },
   {
     name: 'country',
     header: 'Country',
@@ -42,7 +52,7 @@ const columns = [
 ];
 
 const dataSource = [
-  { firstName: 'John', lastName: 'Grayner', country: 'usa', age: 35, id: 0 },
+  { firstName: 'John', lastName: 'Grainer', country: 'usa', age: 35, id: 0 },
   { firstName: 'Mary', lastName: 'Stones', country: 'ca', age: 25, id: 1 },
   { firstName: 'Robert', lastName: 'Fil', country: 'uk', age: 27, id: 2 },
   { firstName: 'Mark', lastName: 'Twain', country: 'usa', age: 74, id: 3 },

@@ -118,25 +118,29 @@ export default class InovuaDataGridList extends Component<ListProps> {
       return;
     }
 
-    const newData = data.reduce((acc: any[], current: any) => {
-      for (let i = 0; i < columns.length; i++) {
-        const column: TypeColumn = columns[i];
-
+    const newDataMap = data.reduce((acc: any, current: any) => {
+      for (const column of columns) {
         if (column.setValue) {
-          const columnName = column.name!;
+          const columnName = column.name || column.id;
           const value = current[columnName];
-          const result = column.setValue({ value, data: current, ...column });
+          if (value) {
+            const result = column.setValue({ value, data: current, ...column });
 
-          if (value !== result) {
-            acc.push({
-              id: current[idProperty],
-              [columnName]: result,
-            });
+            if (value !== result) {
+              const id = current[idProperty];
+              acc[id] = { ...acc[id], [columnName!]: result };
+            }
           }
         }
       }
+
       return acc;
-    }, []);
+    }, {});
+
+    const newData = Object.keys(newDataMap).map((key: string) => {
+      const id = isNaN(Number(key)) ? key : Number(key);
+      return { id, ...newDataMap[key] };
+    });
 
     setItemsAt(newData, { replace: false });
   };
