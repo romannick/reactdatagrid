@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { useState, useCallback, useEffect, } from 'react';
+import { 
+// useState,
+useCallback, useEffect, } from 'react';
 import useProperty from '../useProperty';
 import isSelectionEnabled from './isSelectionEnabled';
 import isMultiSelect from './isMultiSelect';
@@ -59,9 +61,11 @@ const getSelectedCountFromProps = (computedProps, selected, unselected) => {
             ? 0
             : 1;
 };
-const useUnselected = (props, { rowSelectionEnabled, rowMultiSelectionEnabled, }, computedPropsRef) => {
+const useUnselected = (props, { rowSelectionEnabled, rowMultiSelectionEnabled, }, _computedPropsRef) => {
     let [unselected, setUnselected] = useProperty(props, 'unselected');
-    let [unselectedCount, setUnselectedCount] = useState(unselected ? Object.keys(unselected).length : 0);
+    // let [unselectedCount, setUnselectedCount] = useState<number>(
+    //   unselected ? Object.keys(unselected).length : 0
+    // );
     if (!rowSelectionEnabled) {
         return {
             unselected: null,
@@ -79,7 +83,7 @@ const useUnselected = (props, { rowSelectionEnabled, rowMultiSelectionEnabled, }
         setUnselected,
     };
 };
-const useSelected = (props, computedProps, computedPropsRef) => {
+const useSelected = (props, _computedProps, computedPropsRef) => {
     let [selected, setSelected] = useProperty(props, 'selected', undefined, {
         onChange: (selected, { silent, unselected, data, } = {}) => {
             const { current: computedProps } = computedPropsRef;
@@ -354,6 +358,53 @@ export default (props, computedProps, computedPropsRef) => {
         }
         return clone;
     };
+    const groupChildrenSelection = ({ clone, id, selected, dataMap, }) => {
+        if (!dataMap) {
+            return;
+        }
+        for (const key in dataMap) {
+            if (!key) {
+                break;
+            }
+            if (!key.includes(id)) {
+                continue;
+            }
+            const data = dataMap[key];
+            if (data.__group) {
+                if (selected) {
+                    if (!clone[key]) {
+                        clone[key] = data;
+                    }
+                }
+                else {
+                    delete clone[key];
+                }
+                if (data.array && Array.isArray(data.array)) {
+                    for (const item of data.array) {
+                        if (selected) {
+                            if (!clone[item.id])
+                                clone[item.id] = item;
+                        }
+                        else {
+                            delete clone[item.id];
+                        }
+                    }
+                }
+            }
+            else {
+                if (data.id === id) {
+                    if (selected) {
+                        if (!clone[id])
+                            clone[id] = data;
+                    }
+                    else {
+                        delete clone[id];
+                    }
+                }
+            }
+        }
+        return clone;
+    };
     const setSelectedById = useCallback((id, selected, queue) => {
         const { current: computedProps } = computedPropsRef;
         if (!computedProps) {
@@ -401,6 +452,14 @@ export default (props, computedProps, computedPropsRef) => {
                     const cloneOriginalData = [...JSON.parse(originalData)];
                     const treeGridChildrenDeselectionEnabled = computedProps.treeGridChildrenDeselectionEnabled;
                     treeGridChildrenSelection(cloneOriginalData, id, selected, clone, treeGridChildrenDeselectionEnabled);
+                }
+                else if (computedProps.groupColumn) {
+                    groupChildrenSelection({
+                        clone,
+                        id,
+                        selected,
+                        dataMap: computedProps.dataMap,
+                    });
                 }
                 else {
                     if (selected) {

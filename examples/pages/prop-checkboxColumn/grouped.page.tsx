@@ -71,7 +71,7 @@ const App = () => {
         groupColumn={showGroupColumn}
         columns={columns}
         dataSource={cities}
-        defaultGroupBy={['country']}
+        defaultGroupBy={['country', 'name']}
         renderGroupTitle={renderGroupTitle}
         checkboxColumn
       />
