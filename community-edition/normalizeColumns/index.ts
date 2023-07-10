@@ -80,6 +80,7 @@ export type TypeParam = {
   showPivotSummaryColumns?: boolean;
   onRowReorder?: TypeRowReorderFn | boolean;
   rowReorderColumn?: IColumn;
+  hasValueSetter?: boolean;
 };
 
 type TypeFilterValue = {
@@ -172,6 +173,7 @@ export default ({
 
   let hasLockedStart = false;
   let hasLockedEnd = false;
+  let hasValueSetter = false;
 
   let rowExpandColumn: TypeComputedColumn | undefined;
 
@@ -251,6 +253,10 @@ export default ({
       if (col.enableColumnHover != null) {
         col.computedEnableColumnHover = col.enableColumnHover;
         delete col.enableColumnHover;
+      }
+
+      if (col.setValue) {
+        hasValueSetter = true;
       }
 
       return col;
@@ -657,6 +663,7 @@ export default ({
     allColumns: normalizedColumns as TypeComputedColumn[],
     columnsMap,
     visibleColumnsMap,
+    hasValueSetter,
   };
 };
 

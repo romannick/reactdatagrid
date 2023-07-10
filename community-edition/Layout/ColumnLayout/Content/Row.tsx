@@ -679,8 +679,8 @@ const DataGridRow = React.forwardRef((props: RowProps, ref: any) => {
 
     let maxRowspanVar = 1;
 
-    const cellPropsArray = columns.map((column, xindex) => {
-      let theColumnIndex = xindex + startIndex!;
+    const cellPropsArray = columns.map((column, idx) => {
+      let theColumnIndex = idx + startIndex!;
       const columnProps: any = column;
 
       const { name, computedVisibleIndex } = columnProps;

@@ -55,6 +55,12 @@ export default class InovuaDataGridList extends Component {
         return !equal(nextState, this.state);
     }
     componentDidMount() {
+        if (this.props.hasValueSetter) {
+            // we need a timeout to wait for data to be set
+            setTimeout(() => {
+                this.setValue();
+            }, 100);
+        }
         this.__willUnmount = false;
     }
     componentWillUnmount() {
@@ -62,6 +68,33 @@ export default class InovuaDataGridList extends Component {
     }
     isRowFullyVisible = index => {
         return this.getVirtualList().isRowVisible(index);
+    };
+    setValue = () => {
+        const { hasValueSetter, data, columns, idProperty, setItemsAt, } = this.props;
+        if (!hasValueSetter) {
+            return;
+        }
+        const newDataMap = data.reduce((acc, current) => {
+            for (const column of columns) {
+                if (column.setValue) {
+                    const columnName = column.name || column.id;
+                    const value = current[columnName];
+                    if (value) {
+                        const result = column.setValue({ value, data: current, ...column });
+                        if (value !== result) {
+                            const id = current[idProperty];
+                            acc[id] = { ...acc[id], [columnName]: result };
+                        }
+                    }
+                }
+            }
+            return acc;
+        }, {});
+        const newData = Object.keys(newDataMap).map((key) => {
+            const id = isNaN(Number(key)) ? key : Number(key);
+            return { id, ...newDataMap[key] };
+        });
+        setItemsAt(newData, { replace: false });
     };
     computeRows = (props, { from, to, rowHeight, renderIndex, empty, setRowSpan, sticky, } = EMPTY_OBJECT) => {
         const { columnRenderCount } = props;
@@ -581,6 +614,7 @@ const propTypes = Object.assign({}, virtualListPropTypes, {
     showWarnings: PropTypes.bool,
     to: PropTypes.number,
     virtualizeColumns: PropTypes.bool,
+    hasValueSetter: PropTypes.bool,
 });
 delete propTypes.renderRow;
 InovuaDataGridList.propTypes = propTypes;
