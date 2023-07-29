@@ -521,14 +521,21 @@ export default (
 
     if (computedProps.computedGroupBy) {
       // need to filter out groups
+      // data = data.filter(d => {
+      //   const id = computedProps.getItemId(d);
+
+      //   if (!d.__group) {
+      //     dataMap![id] = id;
+      //     return true;
+      //   }
+      // });
+
+      // selection is implemented for groups too
       dataMap = {};
-      data = data.filter(d => {
+      data = data.map(d => {
         const id = computedProps.getItemId(d);
 
-        if (!d.__group) {
-          dataMap![id] = id;
-          return true;
-        }
+        dataMap![id] = id;
       });
     }
 
@@ -711,10 +718,12 @@ export default (
     id,
     selected,
     dataMap,
+    idProperty,
   }: {
     clone: { [key: string]: any };
     id: string;
     dataMap: { [key: string]: any } | null;
+    idProperty: string;
     selected?: boolean;
   }) => {
     if (!dataMap) {
@@ -742,15 +751,17 @@ export default (
         }
         if (data.array && Array.isArray(data.array)) {
           for (const item of data.array) {
+            const itemId = item[idProperty];
             if (selected) {
-              if (!clone[item.id]) clone[item.id] = item;
+              if (!clone[itemId]) clone[itemId] = item;
             } else {
-              delete clone[item.id];
+              delete clone[itemId];
             }
           }
         }
       } else {
-        if (data.id === id) {
+        const dataId = data[idProperty];
+        if (dataId === id) {
           if (selected) {
             if (!clone[id]) clone[id] = data;
           } else {
@@ -839,6 +850,7 @@ export default (
               id,
               selected,
               dataMap: computedProps.dataMap,
+              idProperty: computedProps.idProperty,
             });
           } else {
             if (selected) {

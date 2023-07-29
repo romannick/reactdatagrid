@@ -234,13 +234,18 @@ export default (props, computedProps, computedPropsRef) => {
         let dataMap = computedProps.dataMap;
         if (computedProps.computedGroupBy) {
             // need to filter out groups
+            // data = data.filter(d => {
+            //   const id = computedProps.getItemId(d);
+            //   if (!d.__group) {
+            //     dataMap![id] = id;
+            //     return true;
+            //   }
+            // });
+            // selection is implemented for groups too
             dataMap = {};
-            data = data.filter(d => {
+            data = data.map(d => {
                 const id = computedProps.getItemId(d);
-                if (!d.__group) {
-                    dataMap[id] = id;
-                    return true;
-                }
+                dataMap[id] = id;
             });
         }
         if (computedProps.computedTreeEnabled && computedProps.stickyTreeNodes) {
@@ -358,7 +363,7 @@ export default (props, computedProps, computedPropsRef) => {
         }
         return clone;
     };
-    const groupChildrenSelection = ({ clone, id, selected, dataMap, }) => {
+    const groupChildrenSelection = ({ clone, id, selected, dataMap, idProperty, }) => {
         if (!dataMap) {
             return;
         }
@@ -381,18 +386,20 @@ export default (props, computedProps, computedPropsRef) => {
                 }
                 if (data.array && Array.isArray(data.array)) {
                     for (const item of data.array) {
+                        const itemId = item[idProperty];
                         if (selected) {
-                            if (!clone[item.id])
-                                clone[item.id] = item;
+                            if (!clone[itemId])
+                                clone[itemId] = item;
                         }
                         else {
-                            delete clone[item.id];
+                            delete clone[itemId];
                         }
                     }
                 }
             }
             else {
-                if (data.id === id) {
+                const dataId = data[idProperty];
+                if (dataId === id) {
                     if (selected) {
                         if (!clone[id])
                             clone[id] = data;
@@ -459,6 +466,7 @@ export default (props, computedProps, computedPropsRef) => {
                         id,
                         selected,
                         dataMap: computedProps.dataMap,
+                        idProperty: computedProps.idProperty,
                     });
                 }
                 else {
