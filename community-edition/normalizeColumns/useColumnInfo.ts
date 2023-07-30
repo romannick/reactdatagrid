@@ -269,6 +269,7 @@ const useColumnInfo = (params: TypeParamObject) => {
         availableWidth,
         onRowReorder,
         rowReorderColumn,
+        groupColumn,
       });
     },
     params,

@@ -120,6 +120,7 @@ export default ({
   availableWidth = 0,
   onRowReorder,
   rowReorderColumn,
+  groupColumn: computedGroupColumn,
 }: TypeParam) => {
   if (columnVisibilityMap) {
     columnVisibilityMap = { ...columnVisibilityMap };
@@ -438,9 +439,15 @@ export default ({
     const groupColumns = visibleColumns.filter(
       col => col.groupColumn && !col.groupSpacerColumn
     );
-    const ungroupColumns = visibleColumns.filter(
-      col => !col.groupColumn && !col.groupSpacerColumn && !col.checkboxColumn
-    );
+    const ungroupColumns = visibleColumns.filter(col => {
+      if (computedGroupColumn) {
+        return (
+          !col.groupColumn && !col.groupSpacerColumn && !col.checkboxColumn
+        );
+      } else {
+        return !col.groupColumn && !col.groupSpacerColumn;
+      }
+    });
 
     visibleColumns = columnOrder
       .map((colId: string) => {
@@ -448,12 +455,20 @@ export default ({
       })
       .filter((x: any) => !!x) as TypeComputedColumn[];
 
-    visibleColumns = [
-      ...checkboxColumn,
-      ...groupSpacerColumns,
-      ...groupColumns,
-      ...visibleColumns,
-    ];
+    if (computedGroupColumn) {
+      visibleColumns = [
+        ...checkboxColumn,
+        ...groupSpacerColumns,
+        ...groupColumns,
+        ...visibleColumns,
+      ];
+    } else {
+      visibleColumns = [
+        ...groupSpacerColumns,
+        ...groupColumns,
+        ...visibleColumns,
+      ];
+    }
   }
 
   if (typeof filter == 'function') {

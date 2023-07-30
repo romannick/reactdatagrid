@@ -131,6 +131,7 @@ const useColumnInfo = (params) => {
             availableWidth,
             onRowReorder,
             rowReorderColumn,
+            groupColumn,
         });
     }, params, (a, b) => {
         const { result, key } = equalReturnKey(a, b);
