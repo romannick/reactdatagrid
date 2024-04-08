@@ -181,7 +181,10 @@ export default class InovuaDataGridHeader extends React.Component {
         if (this.props.virtualizeColumns && !cellProps.computedLocked) {
             this.unlockedCells.push(c);
         }
-        this.cells.push(c);
+
+        console.log('this.cells=', this.cells)
+      
+        this.cells?.push(c);
     };
     onCellUnmount = (cellProps, cell) => {
         // do not consider cells while dragging
